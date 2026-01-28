@@ -1,0 +1,86 @@
+name: Typst Build & Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build Typst PDFs
+    container: ghcr.io/typst/typst
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Install dependencies
+        run: |
+          apk add python3 py3-pip
+          pip install pyyaml --break-system-packages
+
+      - name: Generate Typst course files
+        run: |
+          python3 .github/build.py
+
+      - name: Compile Typst to PDFs
+        run: |
+          mkdir -p build/notes
+          for course_dir in ./*; do
+            if [ -d "$course_dir" ]; then
+              course_name=$(basename "$course_dir")
+              typ_file="$course_dir/notes/$course_name.typ"
+              if [ -f "$typ_file" ]; then
+                typst compile --root ../ "$typ_file" "build/notes/${course_name}.pdf"
+              fi
+            fi
+          done
+
+      - name: Generate Index
+        run: |
+          echo "<!DOCTYPE html><html><head><title>Course Notes</title><style>body{font-family:sans-serif;padding:20px;}ul{list-style:none;padding:0;}li{margin:10px 0;}a{text-decoration:none;color:#00aa88;font-weight:bold;}a:hover{text-decoration:underline;}</style></head><body><h1>Course Notes</h1><ul>" > build/index.html
+          for pdf in build/notes/*.pdf; do
+            if [ -f "$pdf" ]; then
+              name=$(basename "$pdf" .pdf)
+              echo "<li><a href=\"notes/$name.pdf\">$name</a></li>" >> build/index.html
+            fi
+          done
+          echo "</ul></body></html>" >> build/index.html
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@main
+        with:
+          name: pdfs
+          path: build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+      - name: Download artifacts
+        uses: actions/download-artifact@main
+        with:
+          name: pdfs
+          path: site
+      - name: Setup Pages
+        uses: actions/configure-pages@main
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@main
+        with:
+          path: site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@main
