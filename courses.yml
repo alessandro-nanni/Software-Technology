@@ -2,3 +2,7 @@ star:
   name: "Software Testing and Risk Assessment"
   primary_color: "#00aa88"
   secondary_color: "#ffaa00"
+soaws:
+  name: "Service-Oriented Architecture with Web Services"
+  primary_color: "#00aa88"
+  secondary_color: "#ffaa00"

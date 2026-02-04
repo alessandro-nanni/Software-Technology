@@ -101,13 +101,20 @@
     v(1pt)
     body
 }
+#let delimiters = (
+    "<": ">",
+    "(": ")",
+    "[": "]",
+    "{": "}",
+)
+
+
+#let wrap(delimiter: "<", content) = delimiter + content + delimiters.at(delimiter)
 
 // shortcuts
 #let h(content) = highlight(content)
 #let u(content) = underline(content)
 #let i(content) = important(content)
-#let n(supplement: none, title, body) = note(supplement, title, body)
-
+#let n(supplement: none, title, body) = note(supplement: supplement, title, body)
 #let a(bracket: ${$, note, body) = annotate(bracket, note, body)
-
-
+#let w(delimiter: "<", content) = wrap(delimiter: delimiter, content)
