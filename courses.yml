@@ -6,3 +6,7 @@ soaws:
   name: "Service-Oriented Architecture with Web Services"
   primary_color: "#00aa88"
   secondary_color: "#ffaa00"
+ldsw:
+  name: "Linked Data and Semantic Web"
+  primary_color: "#00aa88"
+  secondary_color: "#ffaa00"
