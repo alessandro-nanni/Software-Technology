@@ -68,14 +68,22 @@ Quiescence is the absence of output. A state is quiescent if it has no output tr
     A state $q in Q$ is quiescent iff $forall o! in L_0 : q cancel(=>^(a!))$.\
     We write $L^delta = L union (delta)$, and $L^delta_O = L_O union {delta}$
 ]][#figure(caption: [Explicit quiescent state], diagram({
-    node(stroke: 1pt, (0, 0), [$l_0$])
+    node(stroke: 1pt, (0, 0), [$q_0$])
     edge((0, 0), (0, 0), [$delta$], label-side: left, "->", bend: 140deg, loop-angle: 0deg)
 }))]
 
 Quiescent states are denoted with $delta(q)$. $delta$ can be made explicit by adding them to the LTS.
-#i[There's always either a quiescent transition or an output transition.]
+#i[There's always either a quiescent transition or an output transition outgoing from a state.]
 
-An LTS is deterministic if $forall q in Q, forall rho in "traces"(q): |q aft rho| lt.eq 1$.
+An LTS is deterministic if $forall q in Q, forall rho in "traces"(q): |q aft rho| lt.eq 1$. A non-deterministic state refers to a situation where the future behavior of the system cannot be uniquely determined by its current state and the input label alone.
+
+A state $q$ is considered non-deterministic if one of the following conditions is met:
+/ Multiple Transitions for the same label: From state $q$, there are two or more outgoing transitions with the exact same label leading to different destination states.
+#note(supplement:[ex])[Non deterministic state][If the system is in State A and receives input 'x', it can go to State B OR it can go to State C. You cannot predict which one it will choose.
+]
+/ Hidden Transitions ($tau$-transitions): The system can transition from state $q$ to another state without consuming any input label (denoted as $tau$). This means the system can change states "silently" or spontaneously.
+
+== Paths and Traces
 
 #note(supplement: [def])[Path and Trace][
     A path $pi$ is an infinite sequence $q_0a_0q_1a_1...$ such that $forall i in NN: (q_i, a_i, q_(i+1)) in T$.
