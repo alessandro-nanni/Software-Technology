@@ -9,15 +9,13 @@
         v(0.4cm)
         strong(it)
     }
-    show outline: it => {
-        it
-        pagebreak(weak: true)
-    }
-    set outline(title: none)
+    show outline: columns.with(2)
+    set outline(title: none,depth:2)
 
     // content
     align(center, text(size: 20pt, title))
     outline()
+    pagebreak(weak:true)
     doc
 }
 

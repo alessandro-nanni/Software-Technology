@@ -64,10 +64,13 @@ $
 == Quiescence
 Quiescence is the absence of output. A state is quiescent if it has no output transitions. The SUT will not produce any output until the next input arrives. A different state may cause a different output.
 
-#note(supplement: [def])[Quiescence][
+#grid(columns: (1fr,) * 2, column-gutter: 20pt)[#note(supplement: [def])[Quiescence][
     A state $q in Q$ is quiescent iff $forall o! in L_0 : q cancel(=>^(a!))$.\
     We write $L^delta = L union (delta)$, and $L^delta_O = L_O union {delta}$
-]
+]][#figure(caption: [Explicit quiescent state], diagram({
+    node(stroke: 1pt, (0, 0), [$l_0$])
+    edge((0, 0), (0, 0), [$delta$], label-side: left, "->", bend: 140deg, loop-angle: 0deg)
+}))]
 
 Quiescent states are denoted with $delta(q)$. $delta$ can be made explicit by adding them to the LTS.
 #i[There's always either a quiescent transition or an output transition.]
@@ -95,11 +98,11 @@ Equivalent definition of traces and #aft:
 
 Labeled Transition Systems (LTS) are foundational and simple models for describing the behavior of concurrent systems. They consist of states and labeled transitions, but using them explicitly to represent large systems can be unwieldy. To address this, large LTS are often expressed in compact forms by constructing them from smaller, modular components. This is achieved through parallel composition (denoted as $P_1 parallel P_2$), which allows independent processes to execute simultaneously while interacting through specific points. These interactions are defined by synchronization vectors, which list the actions that must occur together across different components. Internal computations or unobservable steps within the system are abstracted away using the silent action ($tau$), ensuring that the model focuses only on externally visible behavior.
 
-#image("src/lts_par_comp.png")
+#figure(image("src/lts_par_comp.png"))
 
 == LTS with variables
 Real systems work with data (VLTS)
-#image("src/lts_var.png")
+#figure(image("src/lts_var.png"))
 Parallel composition of VLTS can also be denoted
 
 == Symbolic Transition Systems (STS)
