@@ -72,8 +72,10 @@ Quiescence is the absence of output. A state is quiescent if it has no output tr
     edge((0, 0), (0, 0), [$delta$], label-side: left, "->", bend: 140deg, loop-angle: 0deg)
 }))]
 
-Quiescent states are denoted with $delta(q)$. $delta$ can be made explicit by adding them to the LTS.
+Quiescent states are denoted with $delta(q)$. $delta$ can be made explicit by adding them to the LTS. If a state has no outputs (denoted by !, a quiescent transition must be made explicit by adding a $delta$ transition from the node to itself).
 #i[There's always either a quiescent transition or an output transition outgoing from a state.]
+
+A non-quiescent state after $delta$ is always $emptyset$.
 
 An LTS is deterministic if $forall q in Q, forall rho in "traces"(q): |q aft rho| lt.eq 1$. A non-deterministic state refers to a situation where the future behavior of the system cannot be uniquely determined by its current state and the input label alone.
 

@@ -10,12 +10,12 @@
         strong(it)
     }
     show outline: columns.with(2)
-    set outline(title: none,depth:2)
+    set outline(title: none, depth: 2)
 
     // content
     align(center, text(size: 20pt, title))
     outline()
-    pagebreak(weak:true)
+    pagebreak(weak: true)
     doc
 }
 
@@ -106,8 +106,14 @@
     "{": "}",
 )
 
-
 #let wrap(delimiter: "<", content) = delimiter + content + delimiters.at(delimiter)
+
+#let missing(page: none) = box(stroke: 1pt + red, inset: 2pt, baseline: 25%, text(fill: red, {
+    smallcaps[Missing]
+    if (page != none) {
+        [ p.] + [#page]
+    }
+}))
 
 // shortcuts
 #let h(content) = highlight(content)
@@ -116,3 +122,4 @@
 #let n(supplement: none, title, body) = note(supplement: supplement, title, body)
 #let a(bracket: ${$, note, body) = annotate(bracket, note, body)
 #let w(delimiter: "<", content) = wrap(delimiter: delimiter, content)
+#let m(page: none) = missing(page: page)
