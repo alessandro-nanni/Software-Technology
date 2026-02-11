@@ -50,6 +50,8 @@
         it,
     )
 
+    show link: it => underline(text(fill: blue, it))
+
     doc
 }
 

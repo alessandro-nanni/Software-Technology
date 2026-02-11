@@ -7,7 +7,7 @@ Atomic services remain separate from the composite service to promote reusabilit
 
 SOA architectures have better support for business processes.
 == Choreography
-Choreography (implicit support) is a collection of services know what they must do in order to #m(). The choreographer informs the dancers (components) on what to do beforehand. The process definition is explicit.
+With choreography (implicit support), a collection of services knows what they must do in order to work together and implement a certain service. The choreographer informs the dancers (components) on what to do beforehand. The process definition is explicit.
 
 The public process is the one everyone sees. The private process is the one that is given to the implementer.
 
@@ -15,7 +15,7 @@ The public process is the one everyone sees. The private process is the one that
 With orchestration (explicit support), a service is defined to implement each process and orchestrate other services in order to make sure the process is correctly performed.
 The maestro tells the musicians (components) how to play their parts.
 
-Either orchestration and composition can be used
+Either orchestration and composition can be used when defining a service architecture
 BPMN is a process modelling language.
 
 = Docker
@@ -38,19 +38,19 @@ Instead of having one big application on the server, smaller services are hosted
 
 Virtual machine VS container: the VM has more overhead, a container is just the environment where an application can be ran. Docker is a containerization engine.
 
-Users can fully commit to containerization without having to worry about the engine used (docker right now).
+Users can fully commit to containerization without having to worry about the engine used (currently docker).
 
 == Docker
 Docker is the most popular container technology available today.
 
-An image describes a container. Images can be pulled from a docker hub. The daemon exposes an API, and the CLI communicates with the API. the CLI manages networking, #m().
+An image describes a container. Images can be pulled from a docker hub. The daemon exposes an API, and the CLI communicates with the API. the CLI manages networking, data volumes, containers and images.
 
 An image is a readonly template with instructions for creating a container.
 A container is a runnable instance of an image. A container can be started, stopped, moved or deleted using the API or CLI. A container can be connected to one or more networks, and storage can be attached to it. A container is defined by its image and configuration options.
 A registry is used to store and distribute Images.
 The daemon listens for docker API requests and manages objects. It can also communicate with other daemons in clusters.
 
-The bridge network is giving #m()
+The bridge network is giving port exposure at `8080:80`.
 
 == Docker Storage
 Data stored in a container is lost when the container stops, since the image is immutable.
@@ -69,3 +69,6 @@ the container runs the compiled java file defined in the image
 In production, make the container as small as possible, with no root and non-shell. Always specify the version, never use `:latest`. Always use a repository proxy that allows caching. This way, when dockerHub is down, your infrastructure won't fail.
 
 Solutions have been developed to support clusters of containers to facilitate their configuration and management.
+
+#link("https://docs.docker.com/get-started/docker_cheatsheet.pdf
+")
