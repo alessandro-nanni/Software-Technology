@@ -65,7 +65,7 @@ In description logics (used in OWL2), ontologies can be separated in two parts:
     Many methodologies have been defined in literature, with different approaches. Different scenarios can be implemented by combining steps as described in the NeOn project.
 ]
 
-Ontologies can be developed
+Ontologies can be developed: 
 / top-down: from scratch, by extending foundation ontologies or by reusing ontological patters.
 / bottom-up: by extracting knowledge from available resources.
 
@@ -88,10 +88,10 @@ This process is supported by knowledge acquisition. It defines concepts, relatio
 === Design and Implementation
 The reference ontology and non-functional requirements are used to derive a compliant operational ontology design specification to be implemented. The operational ontology is then coded in the indented operational language (OWL2). Tools can help to translate the reference ontology to the language of the operational ontology.
 
-== Testing
+=== Testing
 In this phase, there is a strong involvement from the ontology tester and ontology user. Sub-ontologies should be tested separately fist (unit, integration and system tests). Tests should be _competency-questions driven_ and black box. The ontology should be tested considering its intended use. Individuals are then generated to check whether the intended models are correctly represented.
 
-== Support Processes
+=== Support Processes
 / Knowledge acquisition: brainstorming, inspection of sources, interviews;
 / Reuse: looking for similar ontologies, reuse of foundation ontologies, ontology patterns.
 / Documentation: uniformity via document templates, naming conventions;
