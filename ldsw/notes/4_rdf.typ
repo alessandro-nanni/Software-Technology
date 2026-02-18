@@ -2,13 +2,16 @@
 #show: template
 = RDF
 #note(supplement:[def])[Interoperability][The ability of two or more systems or components to exchange information and to use it.]
-#note(supplement:[def])[Semantic Interoperability][#m(page: 7)]
+#note(supplement:[def])[Semantic Interoperability][
+  Focus on implementation of shared data in an unambiguous way, ensuring that the understanding of information is the same for the senders and the receivers.
+]
 
 == Naming
 
 / URI: sequence of characters to uniquely identify a resource.
 / IRI: extends URIs with unicode#footnote[URIs and IRIs will be used interchangeably].
-/ URN: uniform resource name: resource identifiers with the specific requirements for enabling location independent #m(page:11)
+/ URN: uniform resource name: resource identifiers with the specific requirements for enabling location independent identification for a resource
+/ URL: uniform resource locator, subset of URIs that in addition to identifying a resource, provide the means to locating the resource by describing its primary access mechanism.
 
 == Syntaxes
 / RDF/XML: RDF syntax based on XML,
@@ -32,7 +35,7 @@ Containers are an unbounded resource type that contains groups of resources (mem
 / Alt: unordered set of alternatives (mutually exclusive), in which the first is the default option.
 
 === Collections
-Collections are closed, members can be counted. They are linked lists (`rdf:List`). Some properties are `rdf:first`, `rdf: rest`, `rdf:nil`.
+Collections are closed, members can be counted. They are linked lists (`rdf:List`). Some properties are `rdf:first`, `rdf:rest`, `rdf:nil`.
 
 == RDFS
 RDF Schema extends RDF with the possibility to define classes and associated properties. Allows RDF applications to agree on a common description vocabulary.
@@ -42,3 +45,4 @@ RDF defines specific relations, such as:
 - `rdf:property` and `rdf:subPropertyOf`
 - `rdfs:domain`
 - `rdfs:range`
+- `rdfs:subClassOf`
