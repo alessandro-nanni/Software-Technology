@@ -35,7 +35,7 @@
     c([Service-oriented Architecture with Web services], "mantle"),
     c([Software Management], "mantle"),
     c([Linked Data and Semantic Web], "elective"),
-    c([Capita Selecta Software Technology], "elective"),
+    c([192130112 / 201700083 / 202001579 / 202300047 / 202400121], "elective"),
     y(2),
     c([System Validation], "core"),
     c([Design of Software Architecture], "core"),
@@ -43,7 +43,7 @@
     c([Model Driven Engineering], "mantle"),
     c([Computer Ethics], "mandatory"),
     c([Quantitative Evaluation of Systems], "mantle"),
-    c([192130112 / 201700083 / 202001579 / 202300047 / 202400121], "elective", rowspan: 2),
+    c([192130112 / 201700083 / 202001579 / 202300047 / 202400121], "elective"),
     c(
         colspan: 2,
         [Industrial Software Engineering Project
@@ -56,7 +56,7 @@
         ],
         "elective",
     ),
-    //c([], "elective",),
+    c([Capita Selecta Software Technology], "elective"),
     y(3),
     c([Final Project], "mandatory", colspan: 2, rowspan: 3), table.cell(rowspan: 3, colspan: 2)[],
 )

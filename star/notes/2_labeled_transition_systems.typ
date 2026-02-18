@@ -81,7 +81,9 @@ An LTS is deterministic if $forall q in Q, forall rho in "traces"(q): |q aft rho
 
 A state $q$ is considered non-deterministic if one of the following conditions is met:
 / Multiple Transitions for the same label: From state $q$, there are two or more outgoing transitions with the exact same label leading to different destination states.
-#note(supplement:[ex])[Non deterministic state][If the system is in State A and receives input 'x', it can go to State B OR it can go to State C. You cannot predict which one it will choose.
+#note(
+    supplement: [ex],
+)[Non deterministic state][If the system is in State A and receives input 'x', it can go to State B OR it can go to State C. You cannot predict which one it will choose.
 ]
 / Hidden Transitions ($tau$-transitions): The system can transition from state $q$ to another state without consuming any input label (denoted as $tau$). This means the system can change states "silently" or spontaneously.
 
@@ -117,6 +119,21 @@ Parallel composition of VLTS can also be denoted
 
 == Symbolic Transition Systems (STS)
 Actions now have parameters. Variables are no longer just in the states. States are locations with variables.
+
+A gate is the label or the interaction mechanism that is used during a transition, and is divided between input and output gates. Switches are the actual movement from one state (called location in an STS) to another, defined by a switch relation ($R$).
+
+#note(supplement: [def])[Switch][
+    A switch is a tuple containing:
+    - $l_1$: the starting location
+    - $lambda$ (gate): the "label" used
+    - $p_0 dots p_k$: the data parameters
+    - $phi.alt$ (guard): the condition that must be true to take this path. If implicit resolves to true
+    - $psi$ (update): changes made to variables
+    - $l_2$: the target location
+
+    The gate is just the name of the event, the switch is the entire event.
+]
+
 #figure(caption: [Coffee machine STS], diagram(node-stroke: 1pt, {
     node(stroke: none, (-2, -1), text(fill: green)[$x=0$])
     node(stroke: blue, (-1, -1), text(fill: blue)[$I_0$])
