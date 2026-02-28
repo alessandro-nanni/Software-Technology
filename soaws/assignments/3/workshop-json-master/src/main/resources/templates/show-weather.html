@@ -16,7 +16,32 @@
             <th>weather</th>
             <td>
                 <ul>
-                    <li th:each="item : ${weather.weather}"><span th:text="${item.description}"></span></li>
+                    <li th:each="item : ${weather.weather}">
+                        <span th:text="${item.description}"></span>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <h2>5-Day Forecast (3-Hour Intervals)</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Date & Time</th>
+            <th>Temperature</th>
+            <th>Conditions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="forecastItem : ${forecast.list}">
+            <td th:text="${forecastItem.dt}"></td>
+            <td th:text="${forecastItem.main.temp}"></td>
+            <td>
+                <ul>
+                    <li th:each="condition : ${forecastItem.weather}">
+                        <span th:text="${condition.description}"></span>
+                    </li>
                 </ul>
             </td>
         </tr>

@@ -1,6 +1,7 @@
 package nl.utwente.soa.sampleWebapplication.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.utwente.soa.sampleWebapplication.domain.ForecastResult;
 import nl.utwente.soa.sampleWebapplication.domain.WeatherResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,13 @@ public class WeatherService {
         RestTemplate restTemplate = restTemplateBuilder.build();
         WeatherResult weatherResult = restTemplate.getForObject(url, WeatherResult.class);
         return weatherResult;
+    }
+
+    public ForecastResult getFiveDayForecast(String city) {
+        String url = host + "/data/2.5/forecast?q=" + city + "&appid=" + key + "&units=metric";
+
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        return restTemplate.getForObject(url, ForecastResult.class);
     }
 
 

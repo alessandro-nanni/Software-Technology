@@ -14,10 +14,13 @@ public class IndexController {
 
     @GetMapping("/")
     public String showWeather(Model model) {
+        String city = "Amsterdam,NL";
 
-        model.addAttribute("weather", weatherService.getCurrentWeatherByHand(
-                "Amsterdam,NL")
-        );
+        model.addAttribute("weather", weatherService.getCurrentWeatherWithSpringRestTemplate(city));
+
+        model.addAttribute("forecast", weatherService.getFiveDayForecast(city));
+
         return "show-weather";
     }
+
 }

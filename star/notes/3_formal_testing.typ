@@ -16,8 +16,8 @@ A test case is a cycle of providing input, waiting for output, or stopping with 
 
 Test cases can be modeled as Labeled Transition Systems with specific rules:
 / Angelic Completion: Test cases include a special label $delta$ representing quiescence or timeouts.
-/ Pass/Fail States: There are two distinct states, Pass and Fail, which have self-loops for all outputs (to handle any subsequent behavior harmlessly) but no transitions for inputs.
-/ Structure: A test case must be deterministic and acyclic (except for the recursion in the Pass/Fail states) to ensure a finite execution.
+/ pass/fail States: There are two distinct states, pass and fail, which have self-loops for all outputs (to handle any subsequent behavior harmlessly) but no transitions for inputs.
+/ Structure: A test case must be deterministic and acyclic (except for the recursion in the pass/fail states) to ensure a finite execution.
 
 #note[Test Case formal definition][
     A test case for an LTS $S^delta$ is an LTS $t=(Q^t,L_I,L_O union {delta},T^t,q_0^t)$ such that:
@@ -98,7 +98,7 @@ Test generation is used to bridge the gap between the specification and the actu
 
 #note(supplement: [function])[#otfg][
     The algorithm sits in a loop with the real system. At each step, it checks the current state $Q prime$:
-    + Pass: it can decide to stop and return a pass verdict;
+    + pass: it can decide to stop and return a pass verdict;
     + Observe input: it waits to see if the system produces an output $x!$
         - If the output occurs, it checks if $x!$ is allowed by the specification $(x! in "out"(Q prime))$
         - If the output is not allowed, it immediately returns fail
