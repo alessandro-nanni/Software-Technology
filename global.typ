@@ -125,3 +125,4 @@
 #let a(bracket: ${$, note, body) = annotate(bracket, note, body)
 #let w(delimiter: "<", content) = wrap(delimiter: delimiter, content)
 #let m(page: none) = missing(page: page)
+#let def(title, body) = note(supplement: [def], title, body)
