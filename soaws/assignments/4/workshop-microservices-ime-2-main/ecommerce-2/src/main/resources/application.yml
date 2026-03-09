@@ -1,0 +1,19 @@
+spring:
+  application:
+     name: ecommerceApp
+  config:
+     import: "consul:"
+  cloud:
+    consul:
+      host: consul # modified to use docker-compose
+      port: 8500
+      discovery:
+        healthCheckInterval: 1s
+        healthCheckPath: ${server.servlet.context-path}/actuator/health
+        instance-id: ${spring.application.name}:${random.value}
+        queryPassing: true
+      enabled: true
+server:
+   servlet:
+      context-path: /ecommerce-service
+   port: 9080

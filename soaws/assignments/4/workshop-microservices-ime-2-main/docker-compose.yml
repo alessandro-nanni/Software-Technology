@@ -1,0 +1,19 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8080:80"
+  consul:
+    image: hashicorp/consul:latest
+    container_name: consul
+    ports:
+      - "8500:8500"
+    command: "agent -dev -bootstrap -client 0.0.0.0"
+  product:
+    image: product:latest
+  images:
+    image: image:latest
+  ecommerce:
+    image: ecommerce:latest
