@@ -1,6 +1,6 @@
 #import "_ldsw.typ": *
 #show: template
-#let c(body) = $#text(body, font: "Roboto", weight: 5, size: 10pt)$
+#let c(body) = $#text(body, font: "Roboto-Regular", weight: 5, size: 10pt)$
 = Description Logics
 A description logic (DL) is a structured fragment of first order logic. It's a representation oat a predicate level, without variables.
 It claims to be a unifying formalism for other knowledge representation languages, such as frames-based systems, object oriented modelling, semantic data models,...
