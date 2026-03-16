@@ -119,7 +119,7 @@ OWL uses URI references as names. OWL gathers information in documents stored in
 / OWL 2 RL: inspired by Description Logic Programs, for ontologies with rules and data in RDF triple format
 
 == OWL 2 Syntaxes examples
-$"FirstYearcourse" subset.eq.sq forall "isTaughtBy.Professor"$
+$"FirstYearCourse" subset.eq.sq forall "isTaughtBy.Professor"$
 #figure(```xml
 <owl:Class rdf:about="&exOKB17;FirstYearCourse">
     <rdfs:subClassOf rdf:resource="&owl;Thing"/>

@@ -9,7 +9,7 @@
 #def[Soundness][
   A test case $t$ for an LTS $S$ is sound if for any IELTS $I$:
   $ I "ioco" S "implies that execution of " t "on" I "yields" bold("pass") $
-  A test suite TS is sound if all its test cases $t in "TS"$ are sou#image("/assets/image.png")nd
+  A test suite TS is sound if all its test cases $t in "TS"$ are sound
 ]
 
 #def[Exhaustiveness][
