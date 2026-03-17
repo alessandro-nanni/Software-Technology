@@ -37,8 +37,7 @@ Risk mitigation doesn't affect the probability, but reduces the impact. There ar
 
 == Deming Cycle
 
-#missing(page:"?")
-
+#figure(image("src/deming cycle.png"),caption:[Deming Cycle])
 
 == When to do risk assessment
 
@@ -70,6 +69,6 @@ FMEA steps:
   - Failure Effect at level 1;
   - Failure Mode at level 2;
   - Failure Cause at level 3;
-+ Quantify: assign *severity*, *probability* and *detection* on a scale 1-10. Detection is higher the harder it is to detect. 
++ Quantify: assign *severity*, *probability* and *detection* on a scale 1-10. Detection is higher the harder it is to detect.
 + Find measures
 + Reassess.
