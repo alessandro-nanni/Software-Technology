@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="SampleCommentApplication.main" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="nl.utwente.soa.SampleBlogApplication" target="22" />
+      <module name="nl.utwente.soa.SampleBlogApplication.main" target="22" />
+      <module name="nl.utwente.soa.SampleBlogApplication.test" target="22" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="SampleBlogApplication" options="-parameters" />
+      <module name="SampleBlogApplication.main" options="-parameters" />
+      <module name="SampleBlogApplication.test" options="-parameters" />
+      <module name="SampleCommentApplication" options="-parameters" />
+      <module name="SampleCommentApplication.main" options="-parameters" />
+      <module name="SampleCommentApplication.test" options="-parameters" />
+      <module name="nl.utwente.soa.SampleBlogApplication" options="-parameters" />
+      <module name="nl.utwente.soa.SampleBlogApplication.main" options="-parameters" />
+      <module name="nl.utwente.soa.SampleBlogApplication.test" options="-parameters" />
+    </option>
+  </component>
+</project>
