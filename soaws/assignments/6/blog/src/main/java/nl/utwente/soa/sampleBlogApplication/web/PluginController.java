@@ -13,9 +13,11 @@ public class PluginController {
     @PostMapping("/subscribe")
     public void subscribe(@RequestParam String name,
                           @RequestParam String url,
-                          @RequestParam String healthUrl) {
+                          @RequestParam String healthUrl,
+                          @RequestParam String canDeleteUrl,
+                          @RequestParam String confirmDeleteUrl) {
 
-        pluginService.addPlugin(name, url, healthUrl);
+        pluginService.addPlugin(name, url, healthUrl, canDeleteUrl, confirmDeleteUrl);
         System.out.println("Plugin registered: " + name + " → " + url + " (health: " + healthUrl + ")");
     }
 }

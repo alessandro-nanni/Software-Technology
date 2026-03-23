@@ -14,8 +14,32 @@ public class BlogPluginService {
     private final List<Plugin> plugins = new CopyOnWriteArrayList<>();
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public void addPlugin(String name, String url, String healthUrl) {
-        plugins.add(new Plugin(name, url, healthUrl));
+    public void addPlugin(String name, String url, String healthUrl, String canDeleteUrl, String confirmDeleteUrl) {
+        plugins.add(new Plugin(name, url, healthUrl, canDeleteUrl, confirmDeleteUrl));
+    }
+
+    public boolean canDeleteBlog(Long blogId) {
+        for (Plugin plugin : plugins) {
+            try {
+                Boolean canDelete = restTemplate.getForObject(plugin.canDeleteUrl() + blogId, Boolean.class);
+                if (canDelete != null && !canDelete) {
+                    return false;
+                }
+            } catch (RestClientException e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void confirmDeleteBlog(Long blogId) {
+        for (Plugin plugin : plugins) {
+            try {
+                restTemplate.delete(plugin.confirmDeleteUrl() + blogId);
+            } catch (RestClientException e) {
+                System.out.println("Failed to notify plugin " + plugin.name() + " about blog deletion.");
+            }
+        }
     }
     @Scheduled(fixedDelay = 10000)
     public void checkPluginsHealth() {

@@ -23,6 +23,9 @@ import java.util.Objects;
 public class BlogService {
     private static List<Blog> blogs = new ArrayList<>();
 
+    @Autowired
+    private BlogPluginService blogPluginService;
+
     @PostConstruct
     public void blogSetup() {
         blogs.add(
@@ -49,5 +52,16 @@ public class BlogService {
 
     public Blog getBlogById(Long id) {
         return blogs.stream().filter(blog -> Objects.equals(blog.getId(), id)).findFirst().orElse(null);
+    }
+
+    public void deleteBlogById(Long id) {
+        if (blogPluginService.canDeleteBlog(id)) {
+            blogPluginService.confirmDeleteBlog(id);
+            blogs.removeIf(blog -> Objects.equals(blog.getId(), id));
+            System.out.println("Blog " + id + " successfully deleted.");
+        } else {
+            System.err.println("Deletion aborted: A plugin vetoed the deletion of blog " + id);
+            throw new RuntimeException("Cannot delete blog: Subscribed plugins rejected the deletion.");
+        }
     }
 }

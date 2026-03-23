@@ -26,4 +26,15 @@ public class IndexController {
         model.addAttribute("plugins", blogPluginService.getPlugins());
         return "detail";
     }
+
+    @GetMapping("/blog/{blogid}/delete")
+    public String deleteBlog(@PathVariable("blogid") Long blogId) {
+        try {
+            blogService.deleteBlogById(blogId);
+        } catch (RuntimeException e) {
+            System.err.println("Could not delete because of constraints: " + e.getMessage());
+            // Optionally, you could redirect to "/blog/{blogid}?error=true" to show a popup
+        }
+        return "redirect:/";
+    }
 }

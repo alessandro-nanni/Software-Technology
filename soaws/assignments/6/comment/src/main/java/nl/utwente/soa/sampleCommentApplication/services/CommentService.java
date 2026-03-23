@@ -25,4 +25,12 @@ public class CommentService {
                 .filter(comment -> Objects.equals(comment.getBlogId(), blogId))
                 .collect(Collectors.toList());
     }
+
+    public boolean canDeleteBlog(Long blogId) {
+        return getCommentsForBlog(blogId).size() <= 1;
+    }
+
+    public void deleteCommentsForBlog(Long blogId) {
+        comments.removeIf(comment -> Objects.equals(comment.getBlogId(), blogId));
+    }
 }
