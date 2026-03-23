@@ -1,6 +1,7 @@
 package nl.utwente.soa.sampleBlogApplication.web;
 
 import nl.utwente.soa.sampleBlogApplication.services.BlogService;
+import nl.utwente.soa.sampleBlogApplication.services.BlogPluginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class IndexController {
 
     @Autowired private BlogService blogService;
+    @Autowired private BlogPluginService blogPluginService;
 
     @GetMapping("/")
     public String showOverview(Model model) {
@@ -21,6 +23,7 @@ public class IndexController {
     @GetMapping("/blog/{blogid}")
     public String showBlog(Model model, @PathVariable("blogid") Long blogId) {
         model.addAttribute("blog", blogService.getBlogById(blogId));
+        model.addAttribute("plugins", blogPluginService.getPlugins());
         return "detail";
     }
 }

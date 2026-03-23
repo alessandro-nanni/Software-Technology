@@ -8,7 +8,10 @@
         <h3 th:text="${blog.title}">Blog Title</h3>
         <p th:text="${blog.content}">Blog content</p>
         <hr>
-        <iframe th:src="|http://localhost:8081/comments/${blog.id}|" width="100%" height="400px" style="border:none;"></iframe>
+        
+        <div th:each="plugin : ${plugins}">
+            <iframe th:src="|${plugin.url}${blog.id}|" width="100%" height="400px" style="border:none;"></iframe>
+        </div>
 
     </div>
 </body>
