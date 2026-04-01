@@ -35,7 +35,7 @@
     c([Service-oriented Architecture with Web services], "mantle"),
     c([Software Management], "mantle"),
     c([Linked Data and Semantic Web], "elective"),
-    c([192130112 / 201700083 / 202001579 / 202300047 / 202400121], "elective"),
+    c([Distributed Systems], "elective"),
     y(2),
     c([System Validation], "core"),
     c([Design of Software Architecture], "core"),
@@ -43,7 +43,7 @@
     c([Model Driven Engineering], "mantle"),
     c([Computer Ethics], "mandatory"),
     c([Quantitative Evaluation of Systems], "mantle"),
-    c([192130112 / 201700083 / 202001579 / 202300047 / 202400121], "elective"),
+    c([192130112 / 202001579 ], "elective"),
     c(
         colspan: 2,
         [Industrial Software Engineering Project
