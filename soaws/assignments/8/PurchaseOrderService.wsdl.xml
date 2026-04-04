@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="PurchaseOrderService" targetNamespace="http://supply.com/PurchaseService" xmlns:tns="http://supply.com/PurchaseService" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://supply.com/PurchaseService" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    	<xsd:complexType name="CustomerInfo">
+        <xsd:all>
+          <xsd:element name="CusName" type="xsd:string"/>
+          <xsd:element name="CusAddress" type="xsd:string"/>
+        </xsd:all>
+      </xsd:complexType>
+
+	<xsd:complexType name="PurchaseOrder">
+        <xsd:all>
+          <xsd:element name="PONumber" type="xsd:integer"/>
+          <xsd:element name="PODate" type="xsd:string"/>
+        </xsd:all>
+      </xsd:complexType>
+      
+     <xsd:element name="PORequest">        
+      <xsd:complexType>
+      	<xsd:all>
+      		<xsd:element name="customer" type="tns:CustomerInfo"/>
+      		<xsd:element name="type" type="tns:PurchaseOrder"/>
+      	</xsd:all>
+      </xsd:complexType>
+     </xsd:element>
+      
+      <xsd:element name="Invoice">     
+      <xsd:complexType>
+        <xsd:all>
+          <xsd:element name="InvPrice" type="xsd:float"/>
+          <xsd:element name="InvDate" type="xsd:string"/>
+        </xsd:all>
+      </xsd:complexType>
+           
+     </xsd:element>
+     
+    </xsd:schema>
+  </wsdl:types>
+  
+  <wsdl:message name="POMessage">
+    <wsdl:part name="body" element="tns:PORequest"/>
+  </wsdl:message>
+  <wsdl:message name="InvMessage">
+    <wsdl:part name="invoice" element="tns:Invoice"/>
+  </wsdl:message>
+  
+  <wsdl:portType name="PurchaseOrderPortType">
+    <wsdl:operation name="SendPurchase">
+      <wsdl:input message="tns:POMessage"/>
+      <wsdl:output message="tns:InvMessage"/>
+    </wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:binding name="PurchaseOrderSOAPBinding" type="tns:PurchaseOrderPortType">
+    <!-- leverage off soapbind:binding synchronous style -->
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="SendPurchase">
+      <!-- again bind to SOAP -->
+      <soap:operation soapAction="http://supply.com/PurchaseService/wsdl/SendPurchase" style="document"/>
+      <!-- further specify that the messages in the wsdl:operation use SOAP -->
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PurchaseOrderService">
+    <wsdl:port name="PurchaseOrderPort" binding="tns:PurchaseOrderSOAPBinding">
+      <!-- give the binding a network endpoint address or URI of service  -->
+      <soap:address location="http://localhost:8080/ws.PurchaseOrder/services/PurchaseOrderService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

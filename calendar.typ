@@ -43,7 +43,7 @@
     c([Model Driven Engineering], "mantle"),
     c([Computer Ethics], "mandatory"),
     c([Quantitative Evaluation of Systems], "mantle"),
-    c([192130112 / 202001579 ], "elective"),
+    c([E-Law], "elective"),
     c(
         colspan: 2,
         [Industrial Software Engineering Project
@@ -52,7 +52,7 @@
     ),
     c(
         [
-            201700079 / 202001492 / 202300300 / 202100114
+           Internet Security
         ],
         "elective",
     ),
