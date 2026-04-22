@@ -10,7 +10,7 @@
     strong(it)
   }
   show outline: columns.with(2)
-  set outline(title: none, depth: 2)
+  set outline(title: none)
 
   // content
   align(center, text(size: 20pt, title))
