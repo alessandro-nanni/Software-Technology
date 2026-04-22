@@ -10,3 +10,7 @@ ldsw:
   name: "Linked Data and Semantic Web"
   primary_color: "#00aa88"
   secondary_color: "#ffaa00"
+se:
+  name: "Software Evolution"
+  primary_color: "#00aa88"
+  secondary_color: "#ffaa00"

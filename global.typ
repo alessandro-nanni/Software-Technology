@@ -23,6 +23,8 @@
 #let secondary-color = state("secondary-color", green)
 
 #let template(doc) = context {
+    set page(columns: 2, flipped: true)
+
     // heading
     set heading(numbering: "1.1")
 
