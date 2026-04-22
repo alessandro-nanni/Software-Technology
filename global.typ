@@ -9,7 +9,6 @@
     v(0.4cm)
     strong(it)
   }
-  show outline: columns.with(2)
   set outline(title: none)
 
   // content
