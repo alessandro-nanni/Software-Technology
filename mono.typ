@@ -1,28 +1,11 @@
 #let lighten = 85%
 
-#let course-template(title, doc) = {
-  set page(columns: 2, flipped: true, numbering: "1")
-
-  // outline
-  show outline.entry.where(level: 1): it => {
-    show repeat: none
-    v(0.4cm)
-    strong(it)
-  }
-  set outline(title: none)
-
-  // content
-  align(center, text(size: 20pt, title))
-  outline()
-  // pagebreak(weak: true)
-  doc
-}
 
 #let primary-color = state("primary-color", blue)
 #let secondary-color = state("secondary-color", green)
 
-#let template(doc) = context {
-  set page(columns: 2, flipped: true)
+#let template(primary-color, secondary-color, title, doc) = context {
+  set page(columns: 2, flipped: true, numbering: "1")
 
   // heading
   set heading(numbering: "1.1")
@@ -34,24 +17,38 @@
   set par(justify: true)
   set text(overhang: false, ligatures: false)
 
-  let outline = secondary-color.get().desaturate(50%)
+  let outline-color = secondary-color.desaturate(50%)
 
-  set highlight(fill: primary-color.get().transparentize(50%).lighten(20%))
+  set highlight(fill: primary-color.transparentize(50%).lighten(20%))
 
   show raw.where(block: false): highlight.with(
-    fill: secondary-color.get().lighten(lighten),
+    fill: secondary-color.lighten(lighten),
     radius: 2pt,
     top-edge: 1em,
   )
   show raw.where(block: true): it => box(
-    stroke: 0.5pt + outline,
+    stroke: 0.5pt + outline-color,
     radius: 2pt,
     inset: 2pt,
-    fill: outline.transparentize(70%),
+    fill: outline-color.transparentize(70%),
     it,
   )
 
   show link: it => underline(text(fill: blue, it))
+
+
+  // outline
+  show outline.entry.where(level: 1): it => {
+    show repeat: none
+    v(0.4cm)
+    strong(it)
+  }
+  set outline(title: none)
+
+  // content
+  align(center, text(size: 20pt, title))
+  block(outline(depth: 2))
+  // pagebreak(weak: true)
 
   doc
 }
@@ -97,7 +94,7 @@
     header = smallcaps(lower(supplement)) + [: ]
   }
   header += title
-  show: block.with(stroke: 1pt + color, fill: color.lighten(lighten), inset: 5pt, radius: 2pt)
+  show: block.with(stroke: 1pt + color, width:100%, fill: color.lighten(lighten), inset: 5pt, radius: 2pt)
   strong(header)
   v(1pt)
   body
