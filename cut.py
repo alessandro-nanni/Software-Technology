@@ -20,7 +20,7 @@ def chapters(input_pdf, page_ranges, output_prefix):
             print(f"Sezione {i + 1}: Pagine {start_page} a {end_page} salvata in '{output_pdf}'.")
 
 input_pdf = "ds/book.pdf" 
-page_ranges = [(17,70),(71,125),(197,262),(263,339),(407,476),(477,560),(561,630)]  
+page_ranges = [(17,70),(71,125),(197,262),(263,339),(341,406),(407,476),(477,560),(561,630)]  
 output_prefix = "ds/chapters/"
 
 chapters(input_pdf, page_ranges, output_prefix)

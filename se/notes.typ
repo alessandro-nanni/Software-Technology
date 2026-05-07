@@ -95,8 +95,8 @@ No longer phases, due to AGILE development (the happen weekly/biweekly in sprint
 === Requirements #sym.arrow Requirements Creep
 The most significant risk in SE. Environment changes unexpectedly, so the requirements change. This can make a system useless or allow to pursue new opportunities.\ The amount of errors introduced in Requirements & Design grew from 40% in 1984 to 70% in 2002. Rework cost is 300$times$.\
 It is common for requirements to change.
-- Stable/Enduring requirements: technical core of business.
-- Changing
+/ Stable/Enduring requirements: technical core of business.
+/ Changing requirements:
   - Mutable: the market has changed, it is possible to improve the system or cutoff unused features.
   - Emergent: occur when stakeholders are involved in requirement elicitation.
   - Consequential: directly caused by delivery#footnote[From Lehman's 7th law: the perceived value of the system decreases when no changes are made.], more features are demanded.
@@ -104,7 +104,7 @@ It is common for requirements to change.
   - Migration: move from one piece of hardware to another, or from one database to another. Some requirements can be retired after the migration.
 
 === Design #sym.arrow Model Management
-#merge[Models are used to manage complexity][they are used in complex project][they become complex][they need to change/evolve][they need to be managed].\
+#merge[Models are used to manage complexity][they are used in complex projects][they become complex][they need to change/evolve][they need to be managed].\
 Types of model management:
 - Quality check: slight improvement
 - Transform with intent
@@ -121,7 +121,7 @@ A *model change* can be triggered by:
 
 === Construction #sym.arrow Evolution of Code
 / Refactoring: changing the code without changing it's behavior. _Correctness must be guaranteed_ by the tool used, testing or proofs.\
-/ Restucturing: change the behavior, but _maintain some form of structure_.\
+/ Restructuring: change the behavior, but _maintain some form of structure_.\
 / Reengeneeing: happens on the design level. What design pattern should be used, what should the level of visibility be...?\
 / Rearchitecting: can be based on rewriting or reengeneeing. It means recovering the architectural models while disregarding the implementation.
 === Testing #sym.arrow Test Code Smells
@@ -146,8 +146,17 @@ Data migration occurs because:
 - company policy changes
 - cutbacks
 
+== Emergent Language Design
+How languages evolve trough time.
++ Human computes, machine helps
++ Machine computes, program dictates steps
++ Machine computes, program prescribes tasks
++ Machine runs tasks, program instructs
++ Machine runs tasks, instructions grouped into functions, program calls functions
++ ... functions from a machine, which computes
+
 == Coupled Software Evolution
-When two artefacts are consistent, if one of them evolves, the other one *co*\evolves (coupled evolution).
+When two artifacts are consistent, if one of them evolves, the other one *co*\evolves (coupled evolution).
 
 === Coupled Evolution Examples
 / Cooperative Editing: the changes must sync and be distributed. I.e. shared Google doc.;
@@ -159,6 +168,7 @@ When two artefacts are consistent, if one of them evolves, the other one *co*\ev
 / Negotiated program transformations:
 
 === Patterns
+
 *No reconciliation*: $g$ is a transformation that doesn't endanger the consistency.
 #figure(diagram(node-stroke: 1pt, node-corner-radius: 8pt, {
   node((0, 0), [$a:A$])
@@ -178,7 +188,7 @@ When two artefacts are consistent, if one of them evolves, the other one *co*\ev
   edge((-2, -1), (-2, 1), [$g$], label-side: left, "->")
   edge((-2, -1), (2, -1), "<|--|>")
   edge((-2, 1), (2, 1), "<|--|>")
-  edge((-2, -1), (2, -1), "->", bend: -30deg)
+  edge((-2, -1), (2, -1), "-|>", bend: -30deg)
   edge((-2, 1), (2, 1), [$t:A-> B$], label-side: left, "-|>", bend: 30deg)
 }))
 
@@ -208,3 +218,84 @@ A product family/line is a group of products advertised with the same methods, b
 It's usually drawn as a tree with or/xor-groups, requires or excludes.
 
 #i[Domain engineering and application engineering are separated.]
+
+=
+
+== Software Quality Models
+
+Code quality can refer to:
+/ Quality in use: bugs that manifest;
+/ External quality: that can be benchmarked;
+/ Internal quality: the code is examined, not ran;
+/ Process quality: the process that was followed in order to create the code. i.e. AGILE.
+
+
+Process quality models: the way software is handled.\
+Product quality models: how good a software system is.
+
+=== SQuaRE (Product)
+_Software and systems Quality Requirements and Evaluation_
+/ Suitability: functional requirements: completeness, correctness, appropriateness.
+/ Efficiency: time behavior, resource utilization, capacity.
+/ Compatibility: co-existence of pieces or systems of software, interoperability.
+/ Usability: how easy it is to learn and use the system, how does it look, how accessible is it.
+/ Reliability: availability and maturity of the system, it's fault tolerance and recoverability.
+/ Security: who is accountable when something bad happens, is the person that is using the software who they say they are
+/ Maintainability: the ability to do something with the system.
+/ Portability: can you do something at runtime to adapt to changes in the environment.
+
+=== CMMI (Process)
+_Capability Maturity Model Integration_: level of maturity available in a project or organization.
+/ Level 1: Initial: unpredictable, reactive, poorly controllable.
+/ Level 2: Managed: reactive, project specific.
+/ Level 3: Defined: proactive, organization specific and tailored processes.
+/ Level 4: Measured: measured, controlled, quantitatively managed.
+/ Level 5: Optimizing: improving with experiments.
+
+== Technical Debt
+
+#merge[Poor code in the codebase][task based on it takes longer][system doesn't evolve timely][business suffers, company makes less money][less money for developers][developers become overstressed].
+
+Technical debt is a process that happens when you try to take time from your future self.
+
+=== Backlog
+
+#i[The backlog is composed of things you know should be doing very soon or should have done already.]
+
+#figure(table(columns: 3)[][Visible][Invisible][*Positive*][Feature][Architecture][*Negative*][Bug][Debt])
+
+Debt makes actions less efficient, if removed no user will notice, only the developers.
+
+Every corner of this table has a different stakeholder:
+/ Developers: want to improve the architecture
+/ Managers: want to see more features
+/ User: complains about bugs
+/ No one: is stakeholder of the technical debt, no one wants to tackle the debt.
+
+#figure(table(columns: 3)[][Reckless][Careful][*Deliberate*][_We don't have time for design!_][_We can ship now and clean up later._][*Accidental*][There is a lack of knowledge or expertise][_Now we know what not to do next time_#footnote[Learn from a previous experience.]],caption: [Technical Debt Quadrant])
+
+#figure(table(columns: 3)[][Evolution][Maintainability][*Visible*][Improve functionality][Improve quality][*Invisible*][Architecture][Code smells],caption: [Technical Debt Landscape])
+
+== Software Metrics
+
+#i[Measurement is quantitatively expressed reduction of uncertainty based on one or more observations.]
+
+/ Direct quantification: measurement;
+/ Indirect quantification: calculation.
+
+Without measurements there would be no requirements. All software would be reliable or user friendly. The component (design, code, test) costs would be fused. There would be no business promises#footnote[i.e. how fast or reliable a system is.].
+
+Metrics are based on abstractions (models).
+
+=== Evolution of Measurements
+With scale you can compare previous results, quantitative not qualitative comparisons. A scale should be physically defined.
+
+Measurement is a *mapping*. Empirical relations must be preserved under the mapping done by the measurement. If A is hotter than B, B can't measure 50#sym.degree\C and A 10#sym.degree\C.
+
+=== Scales
+Scales define what you are allowed to do with your measurements.
+/ Nominal: classification with no order#footnote[i.e. S, P, E systems].
+/ Ordinal: different classes and rankings, ordering is possible but no other operations.
+/ Interval: explicit ordering and differences. Addition and subtraction work, but not multiplication.
+/ Ratio: ordering, difference, ratios. Can be measured in intervals.
+/ Absolute: number of actual occurrences of something in a real world entity, the observed reality.
