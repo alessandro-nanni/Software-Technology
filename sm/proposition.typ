@@ -1,5 +1,7 @@
 *Are software development processes and project management techniques applicable in the development, release and maintaining of minecraft datapacks?*
 
+Alessandro Nanni `a.nanni@student.utwente.nl`
+
 _A datapack is a third party content bundle that can be downloaded as a zip file and installed in a save file to add or modify game content. They are written using a domain specific language (DSL) called mcfunction._
 
 The proposition is to conduct a primary study where we discuss how development processes and project management relate with minecraft datapack development and management: what tools are used to facilitate/automate development and releases, how is the code quality and project organization maintained, is there a development process or team structure?
@@ -8,15 +10,15 @@ The proposition is to use google forms to gather answers from online communities
 
 = Questions
 == Demographics and context
-- How old are you?
-- How long have you been developing minecraft datapacks for?
+- What year were you born in?
+- When did you start developing minecraft datapacks?
 - Are you a computer science student/work in the field of computer science?
 -  Do you develop datapacks purely as a hobby, or do you receive financial compensation?
 == Software Development Processes & Tools
 - What code editor do you use, and which specific features (e.g., syntax highlighting, autocomplete) actively speed up your development process
 - Do you use a precompiler or external scripts to automate file generation?
 - Do any of your projects rely on external libraries?
-
+- Do you use AI to generate commands?
 == Software Project Management & Agile Approaches
 - Do you work in a team?
 - Do you use a formal version control system (such as Git) to manage your codebase and track changes?
@@ -27,7 +29,7 @@ The proposition is to use google forms to gather answers from online communities
 - Do you have beta testers to ensure code quality before release?
 - On average, how long do you spend maintaining a datapack (fixing bugs, updating to new Minecraft versions) after its initial release?
 - Roughly what percentage of your total development time is dedicated to optimizing code performance versus writing new features?
-- Do you adhere to code conventions (i.e.,namespacing, Smithed,...)
+- Do you adhere to code conventions (i.e.,namespacing, Smithed,...)?
 - How do you track and manage bugs or feature requests from your users (e.g., GitHub Issues, Discord channels, informal feedback)?
 
 

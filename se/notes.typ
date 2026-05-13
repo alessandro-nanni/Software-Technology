@@ -256,7 +256,8 @@ _Capability Maturity Model Integration_: level of maturity available in a projec
 
 #merge[Poor code in the codebase][task based on it takes longer][system doesn't evolve timely][business suffers, company makes less money][less money for developers][developers become overstressed].
 
-Technical debt is a process that happens when you try to take time from your future self.
+Technical debt is a process that happens when you try to take time from your future self.\
+With self admitted technical debt you admit to borrowing time from someone else. Studies found no correlation with internal quality. 
 
 === Backlog
 
@@ -299,3 +300,37 @@ Scales define what you are allowed to do with your measurements.
 / Interval: explicit ordering and differences. Addition and subtraction work, but not multiplication.
 / Ratio: ordering, difference, ratios. Can be measured in intervals.
 / Absolute: number of actual occurrences of something in a real world entity, the observed reality.
+
+
+=== Maintainability with mixed paradigms
+The paradigms are kept apart and interleaved locally. The focus is not on how much mix there is, but how the mixture is arranged.
+
+A metric is how many times the paradigm changes (switch count). Stretch: how long did the code stay in a certain paradigm.
+
+Mixed paradigm fragmentation can be considered a code smell.
+
+
+== Code Review
+_Statistically, the best way to fix bugs._
+
+It forces you to share a mental model with another person. It also helps to:
+- Catch bugs
+- Improve code quality
+- Share knowledge
+- Enforce standards
+- Improve estimates of how hard it is to implement something
+- Mentor new engineers
+- Build a better team
+
+=== Types of Code Review
+/ Tool assisted: agents & linters.
+/ Instant: pair programming.
+/ Synchronous: over the shoulder: work on it first, ask for feedback later.
+/ Asynchronous: lightweight.
+/ Team review: hour of code.
+/ Formal review: artefact evaluation.
+
+=== Elements
+- Clear and shared objectives.
+- Defined and followed process.
+- Constructive and actionable feedback. Descriptive feedback: share your comprehension process.   
