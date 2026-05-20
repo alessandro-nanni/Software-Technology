@@ -4,9 +4,9 @@ Alessandro Nanni `a.nanni@student.utwente.nl`
 
 _A datapack is a third party content bundle that can be downloaded as a zip file and installed in a save file to add or modify game content. They are written using a domain specific language (DSL) called mcfunction._
 
-The proposition is to conduct a primary study where we discuss how development processes and project management relate with minecraft datapack development and management: what tools are used to facilitate/automate development and releases, how is the code quality and project organization maintained, is there a development process or team structure?
+The proposition is to conduct a primary study where I discuss how development processes and project management relate with minecraft datapack development and management: what tools are used to facilitate/automate development and releases? How is the code quality and project organization maintained? Is there a development process or team structure?
 
-The proposition is to use google forms to gather answers from online communities with members with different experience levels. The goal is to get at least 50-60 answers, with the following questions (the form will use options wherever possible to ensure consistent results and reduce the amount of data cleaning)
+I plan to use google forms to gather answers from online communities with members with different experience levels. The goal is to get at least 50-60 answers, with the following questions (the form will use options wherever possible to ensure consistent results and reduce the amount of data cleaning)
 
 = Questions
 == Demographics and context
@@ -34,20 +34,20 @@ The proposition is to use google forms to gather answers from online communities
 
 
 A datapack development enviornment is typically large and messy, due to the strict compiler rules when it comes to structure and verbosity of the DSL.
-We want to see how people have adapted to make development easier in a system never intended to be used for big, "enterprise level" projects;
+I want to see how people have adapted to make development easier in a system never intended to be used for big, "enterprise level" projects;
 
-This is an extremely niche community, so no papers on the process of developing and maintaining minecraft datapacks exist.
+This is an extremely niche community, so no papers on the process of developing and maintaining minecraft datapacks exist. Most sources from this topic would come from the #link("https://minecraft.wiki/w/Data_pack")[Minecraft Technical Wiki] or websites for the tools/conventions (i.e. #link("https://docs.smithed.dev/conventions/index.html"))
 
 However, can review existing literature on agile approaches, release pipelines, versioning systems, effort extimation and discuss how these are traditionally applied in standard environments, then use the gathered data to see how they compare in this niche development environment.
 
 We can apply the quality appraisal criteria that Kitchenham outlines for evaluating survey based studies
 
-There is the possibility to do interview with developer with one of the oldest and biggest datapacks ever, with one of the biggest teams and the most intricate publishing pipelines.
+There is also the possibility to do an interview with the developer of one of the oldest and biggest datapacks ever, with one of the biggest teams and the most intricate CI/CD pipelines.
 
 = Possible Index
 
 + Illustrate the process used for literature review, data gathering, source inclusion
-+ Explain how the DSL works and the typical problems user facilitate
-+ Shine typical software development processes citing the papers, then review/criticize the them with the aid of primary data to see if these processes are applicable in the development of datapacks
++ Explain how the DSL works and the typical problems users face and how they try to circumnavigate them
++ Shine light on typical software development processes citing the papers, then review/criticize the them with the aid of primary data to see if these processes are applicable in the development of datapacks
 + Illustrate how software is typically managed using the papers as source, and use the data gathered to see if these techniques are also applied or are applicable in the development/release of datapacks.
 + Conclusion

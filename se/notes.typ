@@ -334,3 +334,94 @@ It forces you to share a mental model with another person. It also helps to:
 - Clear and shared objectives.
 - Defined and followed process.
 - Constructive and actionable feedback. Descriptive feedback: share your comprehension process.   
+
+
+= 
+ 
+== Legacy Languages
+/ 1GL: First generation languages, basically machine code;
+/ 2GL: Assembly languages, 1-1 mapped to machine code but with names to refer to bytes and registers.
+/ 3GL: Most languages, from Cobol to C++ and Java.
+/ 4GL: Focus on efficiency, expressivity. 3GL code was used to patch leaky abstractions.
+/ DSL: the opposite of a general purpose language (GPL). Abstractions targeted to a problem domain, the opposite to a library. They are 4GL languages.
+
+=== Advantages of a DSL
++ Domain specific notations and abstractions, to facilitate reuse in a specific solution domain.
++ Tool support.
++ Conciseness, self-documentation
++ Reliability, portability, testability
++ Designed lifespan
++ Configurable per costumer
+
+== Refactoring
+#def[Refactoring][
+  - _I'm refactoring my code because..._ I'm collapsing the hierarchy, extracting methods, moving code from one field to another...#footnote[Stick to one type of refactoring.]
+  - Automated code change supported by your IDE
+  - Changing the internals without changing the externals (behavior)
+]
+
+A refactoring that breaks code isn't real refactoring.
+
+=== Refactoring Best Practices
++ Remove dead code (code that is never ran)
++ Extract function/method
++ Combine functions into class
++ Replace loop with pipeline (steams, maps)
++ Collapse hierarchy
++ Inline variable
++ Move a field (inappropriate intimacy)
++ Before refactoring, ensure you have a solid suite of tests
++ Since refactoring changes things in small steps, its easy to find where the bug is.
++ First you refactor the program to make it easy to add the feature, then add the feature
++ If code breaks when doing refactoring, then you're not doing refactoring
++ Refactoring is not limited to code, can also be applied to grammars, data...
+
+Not always IDE related, sometimes language dependant.
+
+== Software renovation
+=== Realities of working with legacy software
+- Source code may be lost, or only bytecode is available
+- Documentation is not available or outdated
+- Old technology was extended _ad hoc_
+- Don't know why it works
+- Language or notation mixture and interoperability
+- The design has been decided beforehand, no choice but to implement it like this
+- Painful choices // ?
+
+=== Legacy System Renovation Paths
+
+*Path 1: Rewrite* -  _Why don't we just rewrite it?_\
+/ Question: If something took 30 years to build, how long would it take to rebuild it?
+/ Pro: Software engineering is more efficient now than 30 years algorithm
+/ Cons: you are still biased to the technology you're using, you need to invest in reverse engineering first. Tools to verify the same functionality are required.
+/ Thus: It's possible if flexibility is tolerable or in specific project parts.
+
+*Path 2: Refactor*\
+Massive refactoring is possible: GO TO elimination, objectification, wrapping.
+/ Pro: possible to automate, can use transformation languages
+/ Con: you are still using the same tech
+/ Thus: often feasible, sometimes satisfactory.
+
+*Path 3: Dethrone*\
+Generate a 3GL from a 4GL for the last time, then you refactor it and improve it. This way you remove the 4GL.
+/ Pros: full automation, retires a language, represents semantics
+/ Cons: per language approach, hard to generalize across multiple 4GLs.
+
+*Path 4: Migration*\
+Restructure the original program so that it's ready for a syntax swap. Only then you restructure the target program to use it's features. You change the language while keeping the logic.
+/ Pro: sounds perfect
+/ Cons: must restructure the original and target, syntax swap must be feasible, native constructs map to simulated ones.
+/ Thus: it's feasible under very specific circumstances.
+
+*Path 5: Upgrade*\
+Keep the language, but you change the platform/ecosystem where it operates.
+/ Pros: no change to the code, executes in a new environment, empowers later change
+/ Cons: technological dependencies remain, it's harder to develop solutions.
+/ Thus: can build a business.
+
+*Path 6: Reinvent*\
+Take the language and re-develop the compiler (cover a language's subset).
+/ Pros: code mostly stays the same, get modern development and execution environments, full control over the target environment.
+/ Cons: documentation may not exist, substantial effort
+/ Thus: perfect for a combination of rich client and expert migrator company
+
