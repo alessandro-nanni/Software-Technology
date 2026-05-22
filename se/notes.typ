@@ -386,7 +386,7 @@ Not always IDE related, sometimes language dependant.
 - Don't know why it works
 - Language or notation mixture and interoperability
 - The design has been decided beforehand, no choice but to implement it like this
-- Painful choices // ?
+- Painful choices
 
 === Legacy System Renovation Paths
 
@@ -424,4 +424,67 @@ Take the language and re-develop the compiler (cover a language's subset).
 / Pros: code mostly stays the same, get modern development and execution environments, full control over the target environment.
 / Cons: documentation may not exist, substantial effort
 / Thus: perfect for a combination of rich client and expert migrator company
+
+=
+
+== Code Cloning Causes & Consequences
+_What makes people create duplicate pieces of code?_
+
+Usually you understand, adjust and reuse a certain functionality. When you clone a piece of software, you loose the understanding and make the codebase larger. More code $=>$ higher maintenance costs. Removing clones involves refactoring efforts. Usually there is 10-20% of code duplication.
+
+Cloning also leads to dead code. They can compete for internal usage and become disconnected. Removal is not always the best option.
+
+Clones must coevolve. If they have bugs, they must be fixed everywhere (and in the same way). 
+
+Templated clones are ok. They can be achieved with polymorphism. "Clone and own": copy and then take care of that clone. Good clones, like code patterns (micro patterns), are called idioms.
+
+Customized clones are inevitable, for example when forking source code to implement a bug fix. Specialized replications are used when you have a working solution that needs to be repurposed for something else. Sometimes finding an abstraction can be hard so cloning is necessary.
+
+Forks are a "less evil version of cloning". Porting something to an architecture to another is easier to make something portable. Experimental variation is used to test differences and performance.
+
+*Clones lead to software aging.*
+
+== Types of Clones
+/ Type 1 - Exact clones: No variance in system behavior
+/ Type 2 - Parametrized clones: same execution over different variables.
+/ Type 3 - Near miss clones: similar code that shares significant structural or functional similarities, making their detection more complex.
+/ Type 4 - Semantic clones: They do the same thing but with different representations.
+/ Structural Clones: Similarities on an architectural level (higher level analysis).
+/ Artefact Clones: comparisons between files, methods and paragraphs.
+/ Model Clones:
+/ Contextual Clones: similar things called differently. They aren't clones if they resolve to different things. They might appear similar or different based on the level they are observed from. 
+
+== Clone Detection
+#def[Clone][Fragment of code that is duplicated somewhere else.]
+
+If something is duplicated, any instance of it is considered a clone.
+
+#def[Clone Pair][Two code fragments that are duplicates of each other]
+
+#def[Clone Class][Any number of code fragments that are all duplicates of one another.]
+
+Clone detection can happen on different levels.
+
+/ Strings: Line by line comparison, uses hashing to speed up. Matched sections can be expanded to check further characters.
+/ Tokens: Every word has a type. Tokens can be normalized. Algorithms can be used to efficiently identify clones. With leximes you cannot normalize types, with regular matching you can attempt to match.
+/ Abstract Syntax Trees: It is possible to find identical subtrees after assigning the types. It is possible to ignore the leaves to detect type 2 clones. Language specific matching will allow to identify type 3 clones.
+/ Diagram/Model: Usually program dependence graph. First you construct the control flow graph, then the data flow. Using approximations it is possible to find subgraphs with the same shape (type 3 clones).
+/ Metrics: instead of comparing representations, you split the code in fragments and hash them. You then get a list of metrics for each fragment (size, complexity, number of calls,...). Based on that you can infer the similarity between pieces of code (type 3 & 4 clones).
+
+= 
+== Mining Software Repositories
+
+Empirical software evolution: software is considered an observable phenomenon (like weather). You look at the data that you have and try to formulate hypothesis on it (bottom-up). You then test those hypothesis (top-down). 
+
+=== Software Mining Goals
+/ Identifying developer effort: (was it just one person or a team? What did they focus on? Who did what?)
+/ Developer social network: how do the developers communicate? How does knowledge propagate?
+/ Identifying the impact of changes: what things need to change in unison.
+/ Hotspot analysis: identifying what changes frequently, is it because of poorly structured code?
+/ Defect prediction: identifying potential future bugs
+
+=== Mining Phases
++ Data retrieval: look at the available sources and what can be extracted from them (git repository, issue tracker, documentation,...)
++ Data modelling: after the data is retrieved and *structured*, what should be the schema of that data, how will it be saved? (triples, database,...) 
++ Data analysis: visualize data in a manner that helps the developer to build tools/panels/plugins.
 

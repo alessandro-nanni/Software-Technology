@@ -8,14 +8,17 @@ The proposition is to conduct a primary study where I discuss how development pr
 
 I plan to use google forms to gather answers from online communities with members with different experience levels. The goal is to get at least 50-60 answers, with the following questions (the form will use options wherever possible to ensure consistent results and reduce the amount of data cleaning)
 
+
+Clustering? 
 = Questions
 == Demographics and context
 - What year were you born in?
-- When did you start developing minecraft datapacks?
+- How skilled would you consider yourself 0 to 5?
+- Where are you from?
 - Are you a computer science student/work in the field of computer science?
 -  Do you develop datapacks purely as a hobby, or do you receive financial compensation?
 == Software Development Processes & Tools
-- What code editor do you use, and which specific features (e.g., syntax highlighting, autocomplete) actively speed up your development process
+- What code editor do you use, and which specific features (e.g., syntax highlighting, autocomplete) actively speed up your development process? VScode, Notepad++, Sublime, default text editor.
 - Do you use a precompiler or external scripts to automate file generation?
 - Do any of your projects rely on external libraries?
 - Do you use AI to generate commands?
@@ -33,6 +36,8 @@ I plan to use google forms to gather answers from online communities with member
 - How do you track and manage bugs or feature requests from your users (e.g., GitHub Issues, Discord channels, informal feedback)?
 
 
+Related works on similar questions in other areas? See the best practices.
+
 A datapack development enviornment is typically large and messy, due to the strict compiler rules when it comes to structure and verbosity of the DSL.
 I want to see how people have adapted to make development easier in a system never intended to be used for big, "enterprise level" projects;
 
@@ -45,9 +50,27 @@ We can apply the quality appraisal criteria that Kitchenham outlines for evaluat
 There is also the possibility to do an interview with the developer of one of the oldest and biggest datapacks ever, with one of the biggest teams and the most intricate CI/CD pipelines.
 
 = Possible Index
++ Introduction tell story, put index
+what dsl is, what the techniques are, what processes are used.
 
 + Illustrate the process used for literature review, data gathering, source inclusion
 + Explain how the DSL works and the typical problems users face and how they try to circumnavigate them
 + Shine light on typical software development processes citing the papers, then review/criticize the them with the aid of primary data to see if these processes are applicable in the development of datapacks
 + Illustrate how software is typically managed using the papers as source, and use the data gathered to see if these techniques are also applied or are applicable in the development/release of datapacks.
 + Conclusion
+
+Cite pressman because data is software
+
+Related work: 
+
+= Papers
+Software life cycle process
+https://ieeexplore.ieee.org/search/searchresult.jsp?queryText=software%20development%20process&highlight=true&returnFacets=ALL&returnType=SEARCH&matchPubs=true&ranges=2020_2026_Year
+A Taxonomy of Contextual Factors in Continuous Integration Processes
+https://ieeexplore.ieee.org/document/11010154
+Let's Supercharge the Workflows: An Empirical Study of GitHub Actions
+https://ieeexplore.ieee.org/document/9742138
+A Comprehensive Approach to Evaluating Software Code Quality Through a Flexible Quality Model
+https://ieeexplore.ieee.org/document/10215004
+Scrum Software Maintenance Model: Efficient Software Maintenance in Agile Methodology
+https://ieeexplore.ieee.org/document/8593152
