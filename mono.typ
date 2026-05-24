@@ -40,7 +40,7 @@
   // outline
   show outline.entry.where(level: 1): it => {
     show repeat: none
-    v(0.4cm)
+    v(0.2cm)
     strong(it)
   }
   set outline(title: none)

@@ -41,10 +41,10 @@ P-types are usually solved only once. E-types can change because the world they 
 + *Increasing Complexity*: an e-system becomes more complex as it evolves, unless we explicitly do something.
 + *Self Regulation*: an e-system is a self regulating process (SRP). It obeys certain statistical laws: trends and invariances. The distribution is close to normal
 + *The Work Rate is Invariant*: the activity of developers stay the same (conservation of organizational stability).
-+ *Invariant Perceived Complexity*: the number of new features per release is statistically invariant (low of conservation of familiarity). Not overwhelm or bore the user.
++ *Invariant Perceived Complexity*: the number of new features per release is statistically invariant (law of conservation of familiarity). Not overwhelm or bore the user.
 + *Continuing Growth*: the e-system must add new features overtime to keep the users satisfied.
 + *Declining Quality*: the perceived quality of the system declines for both the customers and the developer (unless constantly maintained).
-+ *Feedback System*: a developed system evolves trough a feedback system. It can be multi-level, multi-loop or multi-agent.
++ *Feedback System*: a developed system evolves through a feedback system. It can be multi-level, multi-loop or multi-agent.
 
 == Challenges
 
@@ -78,7 +78,7 @@ Adaptable Software Factors:
 / Flexibility: how easy it is to change the _kind_ of capabilities;
 / Tunability: how easy is it to _tweak_.
 / Fixability: if we encounter _one_ problem, how easy it is to fix it without affecting other things.
-Adaptation can be possible *trough tolerance* by preserving the original behavior when a new change comes from the environment or *trough adjustment* by making unchanged artifacts sync when welcome changes occur.
+Adaptation can be possible *through tolerance* by preserving the original behavior when a new change comes from the environment or *through adjustment* by making unchanged artifacts sync when welcome changes occur.
 
 =
 == Elements of Software Evolution
@@ -147,7 +147,7 @@ Data migration occurs because:
 - cutbacks
 
 == Emergent Language Design
-How languages evolve trough time.
+How languages evolve through time.
 + Human computes, machine helps
 + Machine computes, program dictates steps
 + Machine computes, program prescribes tasks
@@ -210,7 +210,7 @@ A product family/line is a group of products advertised with the same methods, b
   - More interdependencies
 + Assets: 
   / Common: present everywhere
-  / Variable: configuration dependant 
+  / Variable: configuration dependent 
   / Specific: only for a particular product
 + Adding products
 === Variability Models #sym.arrow Feature Model
@@ -351,7 +351,7 @@ It forces you to share a mental model with another person. It also helps to:
 + Conciseness, self-documentation
 + Reliability, portability, testability
 + Designed lifespan
-+ Configurable per costumer
++ Configurable per customer
 
 == Refactoring
 #def[Refactoring][
@@ -376,7 +376,7 @@ A refactoring that breaks code isn't real refactoring.
 + If code breaks when doing refactoring, then you're not doing refactoring
 + Refactoring is not limited to code, can also be applied to grammars, data...
 
-Not always IDE related, sometimes language dependant.
+Not always IDE related, sometimes language dependent.
 
 == Software renovation
 === Realities of working with legacy software
@@ -430,7 +430,7 @@ Take the language and re-develop the compiler (cover a language's subset).
 == Code Cloning Causes & Consequences
 _What makes people create duplicate pieces of code?_
 
-Usually you understand, adjust and reuse a certain functionality. When you clone a piece of software, you loose the understanding and make the codebase larger. More code $=>$ higher maintenance costs. Removing clones involves refactoring efforts. Usually there is 10-20% of code duplication.
+Usually you understand, adjust and reuse a certain functionality. When you clone a piece of software, you lose the understanding and make the codebase larger. More code $=>$ higher maintenance costs. Removing clones involves refactoring efforts. Usually there is 10-20% of code duplication.
 
 Cloning also leads to dead code. They can compete for internal usage and become disconnected. Removal is not always the best option.
 
@@ -472,7 +472,7 @@ Clone detection can happen on different levels.
 / Metrics: instead of comparing representations, you split the code in fragments and hash them. You then get a list of metrics for each fragment (size, complexity, number of calls,...). Based on that you can infer the similarity between pieces of code (type 3 & 4 clones).
 
 = 
-== Mining Software Repositories
+== Mining Software Repositories (MSR)
 
 Empirical software evolution: software is considered an observable phenomenon (like weather). You look at the data that you have and try to formulate hypothesis on it (bottom-up). You then test those hypothesis (top-down). 
 
@@ -488,3 +488,126 @@ Empirical software evolution: software is considered an observable phenomenon (l
 + Data modelling: after the data is retrieved and *structured*, what should be the schema of that data, how will it be saved? (triples, database,...) 
 + Data analysis: visualize data in a manner that helps the developer to build tools/panels/plugins.
 
+=== Questions answered by MSR
+- What kind of projects live longer?
+- Does copy&paste programming lead to license violations?
+- Do users leave projects when bugs don't get fixed fast?
+- Is software just code with some extras?
+
+== MSR for Understanding #sym.arrow Questions
+_Mining software repositories for the sake of understanding what is in them._
+
+=== Developer Effort
+- How hard was/is to develop a particular feature (and how hard it's going to be for me to implement it)?
+- What is the maintenance rate of the project (how often are bugs fixed)? Usually it's tied to contractual obligations.
+- What is the distribution of effort in the team?
+
+=== Change Coupling
+_Two or more artifacts can evolve together, and are co-changing._
+- Which components change together often?
+- What are the modules with the strongest coupling?
+- Which files/folders are responsible for the coupling?
+
+=== Hotspots
+A hotspot is an outlier component, an evolutional hotspot is an evolutional outlier, something that changes in a different way compared to the rest of the software.
+
+=== Unstructured Data
+Even code, which is the most structured data, can be unorganized. How easy is it to identify a structure? Is it derived from an _unstructured_ document?
+
+Comments are linguistic data, an unstructured part of code. Names/naming conventions are also types of linguistic data.
+
+Bug databases/issue trackers are another type of unstructured data. A structured issue would have an explicit link between a problem and a solution with timestamps and documentation.
+
+Archives are another type of unstructured information. They include mailing lists, chat logs, requirement documents,... All require natural language processing, tokenization, topic discovery and concept matching.
+
+== MSR for Prediction
+/ Why: When do we stop testing? When do we know the quality of the software is enough? _What is the most efficient quality assurance resource allocation?_
+
+Some modules are more error-prone than others. Issue trackers (for that project or similar) help.
+
+=== Error Prone modules
+_What make a module error prone?_
+/ Complexity: number of classes, level of interconnection.
+/ Integration (external complexity): how reliant is this module on others.
+/ Problem Domain: some problem domains are more error prone than others.
+/ Requirements Creep: some module might need to be changed all the time because you didn't have all the requirements at the start.
+/ Process: what process was used to develop the module. Code review and testing make modules less error prone. Errors would be caught earlier.
+
+=== Experimental Setup
+To build a predictive model you need to *split* your information. One part is used to infer the predictive model, and the other part to validate it.
+
+/ Precision: measures how many components are truly predicted as defect prone ($"true positives"/("true positives"+"false positives")$). High precision means that the information is usually predicted correctly.
+/ Recall: ($"true positives"/("true positives"+"false negatives"))$ measures how many defect prone components are actually predicted as such.
+/ F-score: harmonic mean that combines precision and recall. Avoids cases of unbalanced precision & recall.
+/ Correlation: measures the strength and direction of the relationship between predicted ranking and observed ranking. //? 
+/ Co-occurrence: if somethings co-occur many times then they may be somehow related.
+
+=== Main Approaches
+/ Changelog: recently/often changed files are the source of defects.
+/ Single Version: the current behavior has bugs and will lead to defects in the future (draw conclusions from the current version). 
+/ Dependencies: if you have a lot of dependencies, thats where vulnerabilities can come from.
+
+_Don't focus on the "then", focus on the "now"._ 
+
+=
+
+== Search-Based Software Evolution (SBSE)
+
+Software engineering is a problem with a lot of (correlate, clear or vague) constraints that must all be satisfied. Changing just one of them has a big impact on the solution.
+
+Instead of looking for the perfect solution that satisfies all these constraints, we can use an algorithm that helps us find a *near optimal* solution.
+
+This type of problem solving is called Search-Based Software Engineering.
+
+
+=== Requirements for SBSE
+
+/ A Problem: and it's representation
+/ Encoding: we don't want to work with real world elements, only with the aspects that can be modelled. 
+/ Fitness Functions: a quantitative evaluation of the problem solution.
+/ Operators: that can be used to produce new or variated solutions.
+
+These solutions' _fitness_ is tested on how the _problem_ is being tackled. Search based techniques are used to find the optimal solution.
+
+=== Genetic Terminology in SE
+/ Chromosome: problem representation
+/ Genotype: decision/solution
+/ Phenotype: objective
+
+=== Search Based Algorithms
+/ Hill Climbing: start at a random point on a solution space (hill), you move towards the direction that gives immediate benefits, until you are in a better condition than all of your neighbors (not the whole space). There should be balance between cohesion and coupling.
+/ Simulated Annealing: you start somewhere and explore your neighbors. If you see that your neighbors are worse than you, you can still explore them. This can be done to the extent of the permitted temperature. With time the system can be cooled to expand the domain of valid solutions. This grants the ability to explore things that seemed worse at first glance.
+/ Particle Swarm Optimization: evaluates a swarm of candidate solutions. Each candidate independently explores different combinations of code changes, but the entire swarm shares a collective memory of the best results. By communicating the highest quality solutions they discover, the swarm converges on the best one.
+/ Genetic Algorithms: survival of the fittest, using the fitness functions. We try to combine the chromosomes/genotypes to form a new genotype that leads to a better Phenotype that can be tested with the fitness function.
+
+=== Other SBSE-Solvable Problems
+
+/ Complexity Reduction: graphs (to represent complexity), metrics to assess it, refactoring to reduce it.
+/ Automatic Program Repair: to patch a bug shown from a test. How to find that one line to fix the bug? The test suite acts as the fitness function. We do not want to go towards tests that fail. Solutions are applied through code mutations.
+/ Program Optimization: Analysis on the program at runtime (model, logs,...). Metrics are used to identify what you want to improve (security, testability, usability, complexity,...). Program transformations (refactorings or behavior changes) are used to apply the optimizations. These types of optimizations are very computationally heavy, but cheaper than hiring a developer.
+
+== Formal Verification in Software Evolution
+
+#def[Formal Verification][A technique used to prove existence consistency. It proves if a system satisfies the requirements.]
+
+To do this, we need:
+- A formal description of the system
+- A formal specification of the requirements (usually text, which can be left to interpretation).
+- Rigorous formal rules to reason how the system conforms to the specification/requirements#footnote[We assume that this formal verification is automated.]. 
+
+=== Regression Verification (RV)
+_Writing specifications is hard, so we trust the existence of the system (specification) to define a spec that the current system needs to satisfy._
+
+RV can be used to prove that the values used in regression testing are representative of the correct equivalence classes. In order to do this, an equivalence relation definition is required.
+
+=== Generalized Test Tables
+_Since writing specs is hard, is there a simpler way to write them?_
+
+We put them in a table that links the inputs to the outputs. We can replace the concrete values in the table with constraints. This also makes RV easier by generating a random value from the equivalence classes. Generalized test tables enable thorough investigations, weaker/stricter conformance can be checked.
+
+=== Interdisciplinary models
+_Since writing specs is hard, is there a way to infer them?_
+
+We can take a (UML) model of the system, composed of elements. We can infer from it a smaller model, tailored to a specific tool (i.e. a theorem prover). 
+
+Always using formal methods is not always feasible, but should be used to cover gaps/critical sections.
