@@ -74,3 +74,16 @@ A Comprehensive Approach to Evaluating Software Code Quality Through a Flexible 
 https://ieeexplore.ieee.org/document/10215004
 Scrum Software Maintenance Model: Efficient Software Maintenance in Agile Methodology
 https://ieeexplore.ieee.org/document/8593152
+
+
+Understanding Similarities and Differences in Software Development Practices Across Domains
+https://ieeexplore.ieee.org/document/8807455
+
+Experiences from conducting semi-structured interviews in empirical software engineering research
+https://ieeexplore.ieee.org/document/1509301
+
+Reasons for software effort estimation error: impact of respondent role, information collection approach, and data analysis method
+https://ieeexplore.ieee.org/document/1377193
+
+The study on competency characteristic of JAVA software engineer of the Internet enterprise
+https://ieeexplore.ieee.org/document/7385971

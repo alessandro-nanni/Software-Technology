@@ -1,9 +1,0 @@
-
-https://zenodo.org/records/6555241
-https://www.nature.com/articles/s41597-025-05465-z
-https://www.sciencedirect.com/science/article/pii/S095058492200221X
-https://github.com/HRI-EU/SmellyCodeDataset/tree/main/Java/SmellyAnnotated
-https://figshare.com/articles/dataset/Code_smells_and_quality_attributes_dataset/24057336
-https://pmc.ncbi.nlm.nih.gov/articles/PMC12255726/ uses https://github.com/nawafalomari/code_smell_detection_dataset
-
-https://www.researchgate.net/figure/List-of-publicly-available-code-smell-datasets_tbl1_371290361
