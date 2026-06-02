@@ -1,0 +1,34 @@
+The Goal-Question-Metric (GQM) framework is a highly structured approach used in software engineering research to ensure that every single piece of data you collect actually serves a specific, measurable purpose. It prevents the common research trap of asking interesting but ultimately useless questions.
+
+Here is how the hierarchy works:
+
+    Goal (Conceptual level): What specifically are you trying to understand, evaluate, or improve?
+
+    Question (Operational level): What questions do you need to ask to achieve that goal?
+
+    Metric (Quantitative level): What specific, measurable data point will answer that question?
+
+Right now, you have a great list of Questions, and the Metrics are implied by the way you intend to collect the answers (e.g., percentages, 1-5 scales). To use GQM effectively in your paper, you need to work backward slightly and define the formal Goals that justify why these questions exist.
+
+Here is how your current survey translates into the GQM framework.
+Applying GQM to Your Survey
+The Goal (What you want to learn)	The Question (From your survey)	The Metric (How you will measure it)
+Goal 1: Characterize the demographic profile and professional background of the datapack developer community.	Are you a computer science student/work in the field?	Nominal (Categorical): % Yes vs. % No.
+	How skilled would you consider yourself?	Ordinal: Distribution of scores on a 0-5 Likert scale.
+	Do you develop purely as a hobby, or for financial compensation?	Nominal: % Hobbyist vs. % Paid/Patreon-supported.
+Goal 2: Assess the technical sophistication of development workflows and tooling in datapack creation.	What code editor do you use, and which specific features actively speed up your process?	Nominal: Frequency count of editor types (VSCode, Notepad++) and specific features cited.
+	Do you use AI to generate commands?	Nominal: % of developers adopting LLMs in their workflow.
+Goal 3: Determine the adoption rate of formal software project management techniques in a hobbyist ecosystem.	Do you use a formal version control system (like Git)?	Nominal: % adoption rate of formal VCS vs. local backups.
+	Do you release iteratively or use a traditional waterfall approach?	Nominal: Ratio of Agile/Iterative developers to Waterfall developers.
+Goal 4: Evaluate the rigor of quality assurance practices and post-release maintenance efforts.	Do you have beta testers to ensure code quality before release?	Nominal: % of developers utilizing external QA vs. solo testing.
+	How do you track and manage bugs or feature requests?	Nominal: Categorical breakdown of issue tracking methods (GitHub, Discord, memory).
+	What percentage of your time is dedicated to optimizing code vs. writing new features?	Ratio: Average percentage split across the developer population.
+Why GQM is Crucial for Your Paper
+
+When you write the "Methodology" section of your research paper, explicitly mentioning that you used the GQM approach will instantly elevate its academic rigor.
+
+Instead of saying, "I asked them these questions to see what they do," you can say: "The survey was designed using the Goal-Question-Metric (GQM) framework to ensure empirical validity. We established four primary goals regarding developer demographics, tooling, project management, and quality assurance, and derived targeted questions and measurable data points for each."
+
+This proves to your readers (or graders) that every question on your Google Form is carrying its weight and directly contributing to your thesis.
+
+Looking at your "Metrics" in the table above, are you planning to cross-reference any of these data points (for example, checking if developers who use Git are also the ones who spend more time optimizing their code)?

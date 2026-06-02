@@ -17,6 +17,7 @@ Clustering?
 - Where are you from?
 - Are you a computer science student/work in the field of computer science?
 -  Do you develop datapacks purely as a hobby, or do you receive financial compensation?
+- How many datapacks have you released?
 == Software Development Processes & Tools
 - What code editor do you use, and which specific features (e.g., syntax highlighting, autocomplete) actively speed up your development process? VScode, Notepad++, Sublime, default text editor.
 - Do you use a precompiler or external scripts to automate file generation?
@@ -76,8 +77,6 @@ Scrum Software Maintenance Model: Efficient Software Maintenance in Agile Method
 https://ieeexplore.ieee.org/document/8593152
 
 
-Understanding Similarities and Differences in Software Development Practices Across Domains
-https://ieeexplore.ieee.org/document/8807455
 
 Experiences from conducting semi-structured interviews in empirical software engineering research
 https://ieeexplore.ieee.org/document/1509301
@@ -87,3 +86,16 @@ https://ieeexplore.ieee.org/document/1377193
 
 The study on competency characteristic of JAVA software engineer of the Internet enterprise
 https://ieeexplore.ieee.org/document/7385971
+
+
+A Survey on a State of the Practice in Video Game Development
+https://www.researchgate.net/publication/242659876_A_Survey_on_a_State_of_the_Practice_in_Video_Game_Development
+
+Exploring Quality Assurance Practices and Tools for Indie Games
+https://ieeexplore.ieee.org/document/10190458
+
+Understanding Similarities and Differences in Software Development Practices Across Domains
+https://ieeexplore.ieee.org/document/8807455
+
+Domain-Specific Languages in Practice: A User Study on the Success Factors
+https://link.springer.com/chapter/10.1007/978-3-642-04425-0_33
