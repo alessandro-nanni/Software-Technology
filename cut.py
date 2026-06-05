@@ -19,8 +19,8 @@ def chapters(input_pdf, page_ranges, output_prefix):
 
             print(f"Sezione {i + 1}: Pagine {start_page} a {end_page} salvata in '{output_pdf}'.")
 
-input_pdf = "sm/book pressman.pdf" 
-page_ranges = [(31,44),(47,75),(83,105),(107,138),(141,170),(173,189),(193,219),(221,247),(253,268),(273,297),(299,325),(327,361),(363,390),(393,427),(429,448),(451,463),(465,503),(505,533),(535,565),(569,596),(599,629),(631,657),(659,678),(681,697),(701,725),(727,747),(749,773),(775,794),(797,825),(827,851),(853,871),(873,881)]  
-output_prefix = "sm/chapters/chapter"
+input_pdf = "sm/book somerville.PDF" 
+page_ranges = [(102,136),(491,518),(642,665),(668,698)]  
+output_prefix = "sm/chapters_s/chapter_"
 
 chapters(input_pdf, page_ranges, output_prefix)

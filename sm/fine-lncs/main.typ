@@ -1,9 +1,10 @@
 #import "@preview/fine-lncs:0.6.4": author, institute, lncs, proof, theorem
-
 #let inst_twente = institute(
   "Twente University",
   addr: "Drienerlolaan 5, 7522 NB Enschede, Netherlands",
 )
+
+#let todo = align(center, text(size: 20pt, fill: red)[*TODO*])
 
 
 #show: lncs.with(
@@ -22,11 +23,10 @@
   ],
   keywords: ("Datapack", "Mcfunction", "Software Management", "Development Processes"),
   acknowledgements: [
-    A bold run-in heading in small font size at the end of the paper is used for general acknowledgments #footnote([If EquinOCS, our proceedings submission system, is used, then the disclaimer can be provided directly in the system.]), for example: This study was funded by X (grant number Y).
+    #todo
   ],
   interests: [
-    It is now necessary to declare any competing interests or to specifically state that the authors have no competing interests. Please place the statement with a bold run-in heading in small font size beneath the (optional) acknowledgments4, for example: The authors have no competing interests to declare
-    that are relevant to the content of this article. Or: Author A has received research grants from Company W. Author B has received a speaker honorarium from Company X and owns stock in Company Y. Author C is a member of committee Z
+    #todo
   ],
   bibliography: bibliography("refs.bib"),
   // optional configuration of page (takes all page parameter)
@@ -42,17 +42,23 @@ Since its early years, minecraft has included a suite of commands that allowed p
 
 However, despite this shift to modern development environments, the _mcfunction_ DSL still retains numerous syntactical and structural limitations. These unique shortcomings force developers to find creative solutions to maintain organized and scalable codebases. To understand how creators navigate these constraints, I conducted a primary study. Through this research, I investigate which software engineering techniques the respondents organically apply, and evaluate whether their approaches align with established literature focused on GPL developers.
 
-While Minecraft is natively written in Java, this study focuses strictly on the game's internal DSL rather than external source code modifications, commonly known as mods. They are written in a GPL and distributed as compiled Java Archive (`.jar`) files, mods directly alter the underlying game engine. Although this traditional modding community boasts a much wider audience of developers and consumers than the datapack ecosystem, it operates entirely outside the structural constraints of the DSL. Interestingly, while Java based mods offer a technically superior and unrestricted development environment, qualitative survey data (Q24) reveals that many datapack developers actively avoid them because traditional Java coding too closely mirrors their daily professional jobs. Three respondents explicitly noted that the severe limitations of the _mcfunction_ DSL are exactly what draws them to the medium, turning the act of bypassing these constraints into a "welcome challenge".
+While minecraft is natively written in Java, this study focuses strictly on the game's internal DSL rather than external source code modifications, commonly known as mods. They are written in a GPL and distributed as compiled Java Archive (`.jar`) files, mods directly alter the underlying game engine. Although this traditional modding community boasts a much wider audience of developers and consumers than the datapack ecosystem, it operates entirely outside the structural constraints of the DSL. Interestingly, while Java based mods offer a technically superior and unrestricted development environment, qualitative survey data (Q24) reveals that many datapack developers actively avoid them because traditional Java coding too closely mirrors their daily professional jobs. Three respondents explicitly noted that the severe limitations of the _mcfunction_ DSL are exactly what draws them to the medium, turning the act of bypassing these constraints into a "welcome challenge".
 
 The remainder of this paper is structured as follows:\
 Chapter 2 discusses the limitations of the DSL, explaining why it doesn't feel like a high level language and what structural constraints it has.\
-Chapter 3 discusses \
-In chapter 4 we analyze the results of the survey \
-In chapter 5 we compare the collected result with other practices devised by the academia \
-Chapter 6 shines light on the conclusion \
+Chapter 3 discusses related works and the absence thereof in this field.\
+In chapter 4 I analyze the results of the survey. \
+In chapter 5 I compare the collected result with other practices devised by the academia. \
+Chapter 6 concludes the paper. \
 
 
 = Theoretical Background
+
+== An Overview of DSLs
+
+To contextualize the constraints of the minecraft _mcfunction_ environment, it is crucial to first understand DSLs in general. A DSL is a programming language tailored to a specific application domain, designed to offer substantial gains in expressiveness and ease of use compared to GPLs @KOSAR201677. DSLs are foundational to modern software methodologies like Generative Programming, Software Factories, and Model-Driven Engineering @KOSAR201677.
+
+When evaluating a DSL in practice, researchers look at specific success factors: reliability, usability, productivity, learnability, expressiveness, and reusability @hermans2009. For instance, industrial use of DSLs has been shown to successfully automate trivial tasks, significantly reduce time-to-market, and improve software maintainability @hermans2009. However, systematic mapping studies reveal a gap in the literature: while the DSL community heavily focuses on developing new implementation techniques, there is a distinct lack of rigorous empirical evaluation, validation, and maintenance research @KOSAR201677. By surveying actual datapack developers, my study aims to address this empirical gap. The minecraft DSL presents a unique case because it organically evolved from simple console commands into a Turing-complete language, yet it still forces developers to rely on external workarounds due to its lack of high-level constructs and traditional control flow.
 
 == Definitions
 
@@ -66,12 +72,15 @@ A function is a file with the `.mcfunction` extension, which contains one comman
 A datapack is a directory containing functions and related developmental resources. Because the game engine is capable of natively loading and executing datapacks from compressed archives, this format serves as the ideal medium for sharing and distributing completed packages.
 
 A function has it's own resource location within a datapack.
-#figure(``` 
-my_datapack/data/my_namespace/function/my_function.mcfunction
-```,caption:[Function location path in a datapack.])
+#figure(
+  ```
+  my_datapack/data/my_namespace/function/my_function.mcfunction
+  ```,
+  caption: [Function location path in a datapack.],
+)
 When mapped to conventional Java development paradigms, this directory hierarchy closely mirrors standard project architectures. Specifically, `my_datapack` functions as the project's root directory, `my_namespace` operates as the Java package or namespace to prevent naming collisions, and `my_function.mcfunction` acts as the individual source file.
 
-== Weaknesses of the DSL 
+== Weaknesses of the DSL
 
 Because the _mcfunction_ DSL was not initially concieved as a Turing-complete language, it still carries some limitations of it's original design of a simple way to bypass game obstacles.
 At first, each command was designed to give users advantages in a specific domain of the game, unrelated to the others. For this reason, to this day, each command is strongly decoupled from the next, there is no proper way to carry context over without relying on an external data source.
@@ -155,28 +164,61 @@ As previously mentioned, DSL lacks traditional local variables, so developers mu
 With the mechanics of computation and data manipulation detailed, the final essential characteristic of a traditional programming language to address is control flow.
 
 At the time of writing, the Minecraft DSL lacks native support for traditional block-level control flow structures, such as `if-else` statements or iterative loops, within a single `.mcfunction` file. Consequently, developers must emulate looping behavior through recursive function calls.
-#figure(```
-## Contents of function loop.mcfunction ##
+#figure(
+  ```
+  ## Contents of function loop.mcfunction ##
 
-# decrease $count by 1
-scoreboard players remove $count temp 1
-# Invoke the function again if $count >=1
-execute if score $count temp matches 1.. run function loop 
+  # decrease $count by 1
+  scoreboard players remove $count temp 1
+  # Invoke the function again if $count >=1
+  execute if score $count temp matches 1.. run function loop
 
-```,caption:[_mcfunction_ code to run a function a `$count` amount of times.]) <recursion-ex>
+  ```,
+  caption: [_mcfunction_ code to run a function a `$count` amount of times.],
+) <recursion-ex>
 
 
 While the example in @recursion-ex illustrates a basic loop, real-world scenarios usually involve additional commands that run before or after the loop and must not be repeated. For this reason, the iterative block must be extracted into an entirely separate function file. This necessity severely complicates the development experience. Given how fundamental iteration is for tasks like traversing arrays, function approximation algorithms, having to create a new physical file every single time a loop is required adds massive management overhead to the project.
 Furthermore, each individual branch of an `if-else` construct must reside in its own distinct function file. This is because the execute if command only supports the conditional execution of a single instruction. Therefore, if developers need to run multiple commands under the same condition, those commands must be grouped together and called via a separate function.
 
+== High Risk of Incompatibility
+
+Previously namespaces were mentioned as a means to avoid naming collisions. However, creating files (functions) in different namespaces doesn't guarantee conflicts in other aspects of the datapack.
+#quote(
+  block: true,
+  attribution: [Nathan Adams#footnote[Minecraft developer, part of the team that develops datapack related features.]],
+  [This isn't a new concept, but I thought I should reiterate what a "namespace" is. Most things in the game has a namespace, so that if we add `something` and a mod (or map, or whatever) adds `something`, they're both different `something`s. Whenever you're asked to name something, for example a loot table, you're expected to also provide what namespace that thing comes from. If you don't specify the namespace, we default to `minecraft`. This means that `something` and `minecraft:something` are the same thing.],
+)
+Since there is no datapack specific or local scope for variables (`scoreboard`s), every defined `scoreboard` must be declared with a namespace prefix. I.e. `foo.math`, to prevent collisions with other scoreboards called `math`. The same concept applies to `tag`s, which are a means to identify a game entity or item as "belonging" or "being used" by a certain datapack.
+
+#todo code snippet
+
+= Related Works
+
+Given the lack of scientific paper is this field of study, to establish a robust methodology for analyzing minecraft datapack development, I have aligned my survey preparation process with established empirical studies spanning DSLs @KOSAR201677 @ALBUQUERQUE2015, video game development @musil2010, and cross domain software engineering @viggiato2022.
+
+== Empirical Survey Methodologies in Related Literature
+
+In designing my survey, I analyzed how other researchers evaluate software engineering in niche or creative domains. To ensure my data serves a measurable purpose, I am adopting the Goal-Question-Metric (GQM) framework, a structured approach that prevents the collection of irrelevant data by mapping every question to a specific objective. This methodology was successfully used by Musil et al. to assess the state of the practice and identify ad-hoc processes in the video game industry @musil2010.
+
+When constructing survey instruments, researchers carefully utilize targeted metrics. For instance, Hermans et al. evaluated a commercial DSL by mapping survey questions directly to DSL success factors using 5-point Likert scales @hermans2009. Similarly, Cho et al. utilized Likert-like prompts combined with qualitative free-text questions to identify differences between indie and non-indie game testing practices, noting that indie developers often lack formal testing plans @cho2023. // do something similar for developers with releases and not?
+Viggiato et al. expanded on cross-domain surveying by conducting interviews and web surveys to discover that development practices are highly context-dependent; for example, financial and e-commerce domains frequently interrupt Continuous Integration (CI) during critical periods like Black Friday @viggiato2022.
+
+Finally, deploying an effective survey requires a rigorous validation phase. Cho et al. pre-tested their survey with diverse game developers and conducted debriefing interviews to refine the flow and phrasing before wide deployment @cho2023.
 
 
-= Related works
-// what methodologies were used to gather this type of data in other fields
 = Survey Details and Results
-== Preparation Processes
-The Goal-Question-Metric approach was used to devise questions for the survey.
 
+== My Proposed Survey Preparation Process
+
+Drawing from these established methodologies, I have designed a survey preparation process tailored specifically to the minecraft datapack community:
+
+/ Phase 1: Defining Goals via GQM. I established four primary goals for my research: (G1) characterizing the demographic profile of the developers, (G2) assessing software development processes and tooling, (G3) evaluating project management techniques, and (G4) analyzing quality assurance practices.
+/ Phase 2: Adapting DSL and Game Dev Metrics. To capture the unique constraints of the `mcfunction` DSL, I incorporated metrics based on known DSL success factors, such as the usability of external tooling and the expressiveness of the code @hermans2009. Because datapack creation shares similarities with the chaotic, unstructured testing approaches commonly seen in independent game development @cho2023, relying solely on predefined checkboxes and linear scales is insufficient. To capture the highly unconventional and ad-hoc practices of these creative environments, the survey incorporates an "Other" field into these questions. This ensures that respondents have the option to write in a custom response if their specific methods are not available in the predefined choices.
+/ Phase 3: Testing and Piloting. Inspired by empirical practices, my questionnaire underwent a review and piloting phase. This ensured that questions regarding tools and standard practices were interpreted correctly by the respondents @cho2023. Before making the survey public, a small group of domain experts completed the survey and provided feedback that helped make the questions clearer for a broader audience.
+/ Phase 4: Execution and Community Targeting. I distributed the survey within specialized online datapack communities. While this introduces a selection bias toward more "hardcore" or professional hobbyists, it ensures high external validity, providing me with substantial answers from dedicated developers who actively interact with the DSL's limitations and workarounds.
+
+== Goal-Question-Metric
 _G1: Get background context for those who typically develop datapacks._\
 Q1: How old are you (optional)? #sym.arrow Short answer.\
 Q2: Indicate your level of experience in the domain of datapack development. #sym.arrow Linear scale.\
@@ -234,4 +276,3 @@ the following measures have been taken:
 = Conclusion
 // including future developments
 
-For citations of references, we prefer the use of square brackets and consecutive numbers. Citations using labels or the author/year convention are also acceptable. The following bibliography provides a sample reference list with entries for journal articles @PAPER:1, a book @BOOK:2, and a homepage @WEBSITE:1. Multiple citations are grouped @BOOK:2@ARTICLE:1@BOOK:1.
