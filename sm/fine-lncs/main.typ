@@ -206,6 +206,18 @@ Viggiato et al. expanded on cross-domain surveying by conducting interviews and 
 
 Finally, deploying an effective survey requires a rigorous validation phase. Cho et al. pre-tested their survey with diverse game developers and conducted debriefing interviews to refine the flow and phrasing before wide deployment @cho2023.
 
+== Empirical Surveys in Industrial Software Houses
+
+While datapack creation shares many characteristics with independent and unstructured game development, my study also aims to evaluate formal project management and software engineering practices. To do this effectively, I examined how empirical surveys are conducted within corporate software houses where structured development processes are critical.
+
+In traditional corporate environments, researchers frequently utilize surveys to measure an organization's structural maturity and project management efficacy. For example, McGuire surveyed 64 software development professionals within a large, multinational organization to assess their transition from a chaotic, "ad hoc" development environment, classified as Level 1 in the Capability Maturity Model (CMM), to a structured, repeatable process @mcguire1996. // software evo reference
+To efficiently collect this data, McGuire utilized 5-point Likert-scale surveys covering 79 distinct factors across categories like project management, teamwork, change management, and quality focus @mcguire1996. While McGuire noted that Likert scales are inherently limited to capturing subjective perceptions rather than objective facts, they remain a highly effective means of quickly gathering data and revealing overarching trends in developer thinking @mcguire1996. I apply this same principle in my primary study: using linear scales to gauge datapack developers' perceptions of their own process maturity, even if their coding environment fundamentally lacks corporate structure.
+
+To complement this rigid corporate perspective, I also examined how modern surveys measure productivity in flexible, non-contractual environments. Canedo et al. conducted an empirical study combining a systematic literature review with an online survey of software practitioners to evaluate 37 different factors that influence team productivity @canedo2019. Similarly to Hermans et al., they heavily relied on closed questions using 5-point Likert scales to capture the opinions of the developers.
+
+Canedo et al. specifically analyzed open-source projects, finding that the "lack of contractual relationships" in these communities can actually improve productivity by freeing contributors from administrative overhead, allowing them to spend their time directly on development @canedo2019. This finding strongly parallels the core environment of my primary study: Minecraft datapack developers operate entirely outside of corporate contracts, driven by community engagement and personal motivation rather than formal employment @canedo2019.
+
+By combining the maturity metrics used by McGuire to evaluate professional software houses with the open-source productivity factors explored by Canedo et al. and the survey designs used in indie game development, I believe my questionnaire able to capture all aspects of the datapack engineering experience.
 
 = Survey Details and Results
 
