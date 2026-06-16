@@ -190,8 +190,16 @@ Previously namespaces were mentioned as a means to avoid naming collisions. Howe
   [This isn't a new concept, but I thought I should reiterate what a "namespace" is. Most things in the game has a namespace, so that if we add `something` and a mod (or map, or whatever) adds `something`, they're both different `something`s. Whenever you're asked to name something, for example a loot table, you're expected to also provide what namespace that thing comes from. If you don't specify the namespace, we default to `minecraft`. This means that `something` and `minecraft:something` are the same thing.],
 )
 Since there is no datapack specific or local scope for variables (`scoreboard`s), every defined `scoreboard` must be declared with a namespace prefix. I.e. `foo.math`, to prevent collisions with other scoreboards called `math`. The same concept applies to `tag`s, which are a means to identify a game entity or item as "belonging" or "being used" by a certain datapack.
+#figure(
+  ```
+  # datapack foo:
+  execute as @e[type=cat,tag=foo.entity] run function foo:my_entity
 
-#todo code snippet
+  # datapack bar:
+  execute as @e[type=cat,tag=bar.entity] run function bar:my_entity
+  ```,
+  caption: [Example on how namespaces are used in tags to differentiate entities used in two separate datapacks. ],
+)
 
 = Related Works
 
@@ -206,7 +214,7 @@ Viggiato et al. expanded on cross-domain surveying by conducting interviews and 
 
 Finally, deploying an effective survey requires a rigorous validation phase. Cho et al. pre-tested their survey with diverse game developers and conducted debriefing interviews to refine the flow and phrasing before wide deployment @cho2023.
 
-== Empirical Surveys in Industrial Software Houses
+== Empirical Surveys in Software Houses
 
 While datapack creation shares many characteristics with independent and unstructured game development, my study also aims to evaluate formal project management and software engineering practices. To do this effectively, I examined how empirical surveys are conducted within corporate software houses where structured development processes are critical.
 
@@ -266,12 +274,127 @@ Q23: Open space for additional comments on methodologies, software processes,...
 Q24: Open space for comments on what aspect of developing datapacks you dislike the most.
 
 == Data Analysis
+
+Before interpreting the implications of the survey responses, it is standard empirical practice to first conduct a basic evaluation using descriptive statistics to present the most interesting aspects of the dataset @musil2010. In this chapter, my main objective is to report the gathered data exactly as it is, establishing a clear, factual foundation of the datapack community's demographics, habits, and methodologies.
+
+Following the structured methodologies seen in related DSL and software engineering studies, this section is dedicated to presenting the quantitative and qualitative data obtained from the respondents. Therefore, I will not be making cross domain evaluations here. Instead, the comparative analysis where I contextualize these findings against the established literature on general purpose languages, independent game development, and formal DSL practices will be entirely delegated to the subsequent @discussion_ch @ALBUQUERQUE2015 @cho2023.
+
+It's immediately noticeable how most of the respondents consider themselves very experienced in both datapack and broader computer programming.
+
+OTHER RESPONSES
+
+To analyze the open-ended feedback from Q23 and Q24, I employed Reflexive Thematic Analysis (RTA) to systematically code the responses @cho2023. These responses were then gathered into overarching themes representing the most common concepts expressed by the developers.
+
+#figure(
+  table(
+    columns: 2,
+    align: left + bottom,
+    table.hline(),
+    [*Occurrences*], [*Concept*],
+    table.hline(),
+    [6], [Add lots of abstractions with precompilers as to write as little raw mcfunction as possible, while using design patterns.],
+    table.hline(),
+    [3],
+    [Uses website code generators (developed by 3rd parties), also because LLMs are terrible at generating datapack code.],
+    table.hline(),
+    [2],
+    [Makes content that will only be viewable on youtube, so they don't care about testing/efficiency as long as it works and looks good.],
+    table.hline(),
+    table.hline(),
+    [2], [Agile methodology: planning, conceptualization, refining code, quality check, big testing, feedback, repeat.],
+    table.hline(),
+    [2], [Precompilers have high entry barrier, low documentation, not always updated.],
+    table.hline(),
+    [2], [Writes pseudocode before actually implementing it in mcfunction.],
+    table.hline(),
+    [1], [Writes some sort of mcfunction unit tests.],
+    table.hline(),
+    [1], [Uses multiple namespaces to reduce nesting levels.],
+    table.hline(),
+    [1], [Uses fail fast methodology: quick testing and iteration of ideas to rapidly determine their viability.],
+    table.hline(),
+    [1], [Premature optimization is pointless, will make code more unredable.],
+    table.hline(),
+    [1], [Focus on readability rather than using abbreviations.],
+    table.hline(),
+    [1], [Uses preprocessors/scripts to generate hardcoded values rather than using variables for more efficiency.],
+    table.hline(),
+    [1],
+    [Most knowledge is found in experimentation, discussion. Flow of knowledge is like in a company where the more experienced users act as senior developers.],
+    table.hline(),
+    [1], [Works in teams, but in separate domains (artist, programmer, composer,...).],
+    table.hline(),
+    [1], [Releases hotfixes frequently between major updates.],
+    table.hline(),
+    [1], [Writes custom linting scripts that run in CI/CD.],
+    table.hline(),
+    [1],
+    [When working with groups, sets up a server that pulls a built datapack from a github repository. Vital for quick iteration when working in a big group.],
+    table.hline(),
+    [1], [Originally developed everything together, after a while split content and library.],
+    table.hline(),
+  ),
+  caption: [Responses for Q23],
+)
+
+#figure(
+  table(
+    columns: 2,
+    align: left + bottom,
+    table.hline(),
+    [*Occurrences*], [*Concept*],
+    table.hline(),
+    [14], [Lack of complex math operations.],
+    table.hline(),
+    [7], [Not possible to define multiple resources in a single file.],
+    table.hline(),
+    [5],
+    [Despite being a DSL, mcfunction feels similar to a low level language (C/assembly), feels very repetitive to write.],
+    table.hline(),
+    [5], [Lack of control flow.],
+    table.hline(),
+    [4], [With each update there is a chance of things breaking (syntax changes).],
+    table.hline(),
+    [4], [Lots of workarounds are required to implement seemingly basic features.],
+    table.hline(),
+    [4], [Constantly having to worry about performance.],
+    table.hline(),
+    [3], [High risk of incompatibility across datapacks.],
+    table.hline(),
+    [2],
+    [Sometimes not even precompilers can overcome the innate limitations of mcfunction, certain things are just unfeasible (i.e. RSA algorithm).],
+    table.hline(),
+    [2], [Struggle with keeping code functional across different minecraft versions, barely doable with different branches.],
+    table.hline(),
+    [2], [Sometimes its more efficient to hardcode function outputs rather than calculating them at runtime.],
+    table.hline(),
+    [2], [Lack of version resolution.],
+    table.hline(),
+    [1], [Large projects are difficult to navigate.],
+    table.hline(),
+    [1], [Lack of string manipulation.],
+    table.hline(),
+    [1], [Limited documentation/information.],
+    table.hline(),
+  ),
+  caption: [Responses for Q24],
+)
+
+
+#figure(
+  image("process/survey_averages.png"),
+  caption: [Average response to questions that use a linear scale. We can see how users under the age of 18 are more reliant on external libraries and rely more on LLMs. They also indicated their experience in computer programming and datapack development to be less, compared to the other age groups. They are also the ones that comment code the less, probably because they are unaware of the benefits of commenting in the long term. It's also interesting to notice how the younger group is the one that develops datapacks for compensation the most. This perhaps could be related to the fact that they are looking for a small source of income, whereas older developers with a steady source of income develop datapacks purely as a hobby.],
+)
+
+
+
 == Threats to Validity
 This section discusses potential validity threats to
 this study and how they will be mitigated.
 
 *Internal Validity*. To ensure internal validity
 the following measures have been taken:
+- Insufficient knowledge for young developers. 23.9% of the respondents stated that they are 18 years or younger. It's very unlikely for people at that age to be familiar with software development or project management concepts, which are usually learnt in higher education or trough work experience.
 - To reduce the amount of data processing after gathering the results, many questions asked participants to select from predefined choices rather than writing open ended answers. However, they still had the option to type a custom response if their preferred answer was not listed.
 - In Q23, three participants commented that they would have liked more questions to be checkboxes rather than multiple choice, since not always one option excluded the others. However, this doesn't mean that the data gathered for these users is wrong or unusable, just incomplete.
 - Social Desirability Bias: Developers know they should comment their code, use Git, and adhere to coding conventions#footnote[Additionally, the use of LLMs to generate code is seen as bad practice since it doesn't produce valid syntax and takes the fun out of what is generally seen as a passion project.]. Therefore, it is likely that Q11, Q13, Q16 and Q21 are skewed towards the "good" choices since the participants want to appear professional.
@@ -283,7 +406,7 @@ the following measures have been taken:
 - Temporal Validity: The syntax and capabilities of the _mcfunction_ DSL are constantly changing. It may very well be that in the upcoming years most of the complaints, tools and processes will change based on the language's updates.
 
 // what information does the survey give us (profiles, techniques,...), result description
-= Discussion
+= Discussion <discussion_ch>
 // results contextualized with other papers
 = Conclusion
 // including future developments
