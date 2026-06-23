@@ -201,6 +201,8 @@ Since there is no datapack specific or local scope for variables (`scoreboard`s)
   caption: [Example on how namespaces are used in tags to differentiate entities used in two separate datapacks. ],
 )
 
+In conclusion, simply working in a separate folder isn't enough to guarantee compatibility with other datapacks.
+
 = Related Works
 
 Given the lack of scientific paper is this field of study, to establish a robust methodology for analyzing minecraft datapack development, I have aligned my survey preparation process with established empirical studies spanning DSLs @KOSAR201677 @ALBUQUERQUE2015, video game development @musil2010, and cross domain software engineering @viggiato2022.
@@ -279,7 +281,35 @@ Before interpreting the implications of the survey responses, it is standard emp
 
 Following the structured methodologies seen in related DSL and software engineering studies, this section is dedicated to presenting the quantitative and qualitative data obtained from the respondents. Therefore, I will not be making cross domain evaluations here. Instead, the comparative analysis where I contextualize these findings against the established literature on general purpose languages, independent game development, and formal DSL practices will be entirely delegated to the subsequent @discussion_ch @ALBUQUERQUE2015 @cho2023.
 
-It's immediately noticeable how most of the respondents consider themselves very experienced in both datapack and broader computer programming.
+It's immediately noticeable how most of the respondents consider themselves very experienced in both datapack and broader computer programming (Q2 & Q4). This helps guarantee the overall validity of the survey, since the answers provided will be backed up by concrete experience within domain of the minecraft DSL but also other GPLs.
+
+On average, respondents reported releasing $M=7.85$ datapacks ($"SD"=12.59$). However, the median number of releases was considerably lower at $"Mdn"=5.0$. While the typical developer has contributed a modest number of projects, a minority of highly prolific contributors is present within the ecosystem, with the absolute maximum reaching 86 released datapacks. These extreme outliers are primarily responsible for pulling the sample mean significantly higher than the median. It is important to note, however, that this metric does not account for the size or complexity of individual datapacks. Therefore, it is highly likely that analyzing the average lines of code or overall development effort would yield a considerably different distribution.
+
+#figure(
+  image("process/stats_plot.png"),
+  caption: [Distribution of the number of released Minecraft datapacks among surveyed developers (N=97). (A) Histogram with a Kernel Density Estimate (KDE) overlay showing response frequency. (B) Boxplot illustrating the median, interquartile range, and extreme outliers.],
+)
+
+In response to Q7, almost $90%$ of the participants have claimed to use Visual Studio Code with datapack specific extensions#footnote[#link("https://marketplace.visualstudio.com/items?itemName=SPGoding.datapack-language-server")]. This is an expected outcome since it's the tool that most closely resembles an IDE for datapack development, with Q10 highlighting that all of its core features are used.
+
+#figure(
+  table(
+    columns: 2,
+    table.hline(),
+    [*Percentage*], [*Feature*], table.hline(),
+    [91.8%], [Syntax highlighting], table.hline(),
+    [78.4%], [Syntax validation], table.hline(),
+    [64.9%], [Code completion], table.hline(),
+    [40.2%], [Missing resource creation], table.hline(),
+    [3%], [Resource jumping], table.hline(),
+  ),
+  caption: [The most reported valued code editor functionalities (Q10).
+  ],
+)
+
+When examining coding practices (Q9), the data reveals that a slight majority of the developers (50.5%) does not rely solely on plain mcfunction. They improve their workflows by using GPLs for metacompilation or running custom scripts to generate repetitive boilerplate.
+
+
 
 OTHER RESPONSES
 
@@ -292,7 +322,8 @@ To analyze the open-ended feedback from Q23 and Q24, I employed Reflexive Themat
     table.hline(),
     [*Occurrences*], [*Concept*],
     table.hline(),
-    [6], [Add lots of abstractions with precompilers as to write as little raw mcfunction as possible, while using design patterns.],
+    [6],
+    [Add lots of abstractions with precompilers as to write as little raw mcfunction as possible, while using design patterns.],
     table.hline(),
     [3],
     [Uses website code generators (developed by 3rd parties), also because LLMs are terrible at generating datapack code.],
@@ -364,7 +395,8 @@ To analyze the open-ended feedback from Q23 and Q24, I employed Reflexive Themat
     [2],
     [Sometimes not even precompilers can overcome the innate limitations of mcfunction, certain things are just unfeasible (i.e. RSA algorithm).],
     table.hline(),
-    [2], [Struggle with keeping code functional across different minecraft versions, barely doable with different branches.],
+    [2],
+    [Struggle with keeping code functional across different minecraft versions, barely doable with different branches.],
     table.hline(),
     [2], [Sometimes its more efficient to hardcode function outputs rather than calculating them at runtime.],
     table.hline(),

@@ -1,0 +1,43 @@
+- explain the difference between consistency and quality, provide example.
+consistent= no contradiction, quality= degrees to witch it satisfies the needs of stakeholder...
+
+- do all implementation of babycobol form a product line, family or portfolio? Product line, not family
+
+- Do all mainframe compilers form a product line, family or portfolio? portfolio if all ibm compilers, if from competing then not. More similar to product line.
+
+- How to measure maturity with 3 metrics. argue why they are good. 
+Uptime/Uptime percentage
+Mean time between failures
+Mean time to repair
+Availability/Reliability
+
+- Describe something that seems like technical debt but is not
+A deliberate decision to prioritize something over something else
+Choosing a language that is not widely adopted yet, but shows promise
+
+- What refactorings of babycobol should you perform as the first step in converting it to C? YOU CAN ONLY USE NATIVE BABYCOBOL FEATURE, NOT REWRITE THEM.
+Remove GOTO statements 
+Rename variables that have dashes in them
+
+
+Replace LIKE clauses with picture clauses?
+Replace PERFORM with a loop?
+Replace level numbers with data structures?
+
+- Name two software languages that you know. would syntax swap work from going from one to another?
+JSON and YAML
+
+How to convert a clone detector into a clone removal
+- Clone removal strategy
+- Refactoring techniques
+- Testing and validation
+
+Smell detector into smell removal
+
+- Sme;l removal strategy
+- Refactoring techniques
+- Testing and validation
+
+What question to ask to a person that knows cobol that wants to work for you.
+
+SEE HOW COBOL IS RELEVANT FOR THE JOB.
