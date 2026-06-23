@@ -309,9 +309,29 @@ In response to Q7, almost $90%$ of the participants have claimed to use Visual S
 
 When examining coding practices (Q9), the data reveals that a slight majority of the developers (50.5%) does not rely solely on plain mcfunction. They improve their workflows by using GPLs for metacompilation or running custom scripts to generate repetitive boilerplate.
 
+#figure(
+  table(
+    columns: 2,
+    table.hline(),
+    [*Percentage*], [*Feature*], table.hline(),
+    [89.7%], [Code recovery and storage], table.hline(),
+    [80.5%], [Access previous versions of the codebase], table.hline(),
+    [55.2%], [Release artifact hosting], table.hline(),
+    [54%], [Bug and issue tracking], table.hline(),
+    [49.4%], [Use branches], table.hline(),
+    [34.5%], [Wiki hosting], table.hline(),
+    [25.3%], [CI/CD pipeline hosting], table.hline(),
+    [5.7%], [Project board usage], table.hline(),
+  ),
+  caption: [The most reported used version control system features (Q13).
+  ],
+)
 
+In response to Q15, more than half (55.8%) of the people that work in groups don't have a structured development process. No one claimed to use SCRUM and only 2 respondents use extreme programming.
 
-OTHER RESPONSES
+With regard to coding conventions (Q21), 81.4% of the respondents claimed to use different namespaces, and 48.5% also use the more advanced _Smithed_ conventions. 6 users stated that they don't know what coding conventions are or that they don't use them. 2 responses also mentioned the use of IMP-doc, a comment convention similar to javadoc, but applied to datapack functions.
+
+When asked about their habits for bug tracking and feature requests (Q22), a 2/3 claimed to use informal methdos such as Discord channels, and 52.6% used github issues.
 
 To analyze the open-ended feedback from Q23 and Q24, I employed Reflexive Thematic Analysis (RTA) to systematically code the responses @cho2023. These responses were then gathered into overarching themes representing the most common concepts expressed by the developers.
 
@@ -365,7 +385,7 @@ To analyze the open-ended feedback from Q23 and Q24, I employed Reflexive Themat
     [1], [Originally developed everything together, after a while split content and library.],
     table.hline(),
   ),
-  caption: [Responses for Q23],
+  caption: [Responses for Q23.],
 )
 
 #figure(
@@ -409,16 +429,24 @@ To analyze the open-ended feedback from Q23 and Q24, I employed Reflexive Themat
     [1], [Limited documentation/information.],
     table.hline(),
   ),
-  caption: [Responses for Q24],
+  caption: [Responses for Q24.],
 )
 
+
+Based on their reported methodologies and frustrations with the system, the typical datapack creator can be profiled as a highly technical, modern software engineer engaging in a complex, problem solving hobby. This individual possesses an advanced understanding of general programming paradigms but is paradoxically drawn to the restrictive, assembly like environment of the minecraft DSL precisely for the intellectual challenge it presents. Rather than accepting the language's severe limitations#footnote[In particular, the absence of native control flow, complex mathematics, and string manipulation] they engineer sophisticated workarounds by building custom abstractions and utilizing external precompilers. They approach this video game modification platform with striking professional rigor, often applying formal methodologies like Agile, writing pseudocode, and actively rejecting artificial intelligence in favor of reliable, accurate third party tools. However, this ambition is frequently coupled with persistent frustration regarding software maintenance, as they constantly battle structural disorganization, cross-version or backwards incompatibility, and the need to write repetitive boilerplate code.
 
 #figure(
   image("process/survey_averages.png"),
   caption: [Average response to questions that use a linear scale. We can see how users under the age of 18 are more reliant on external libraries and rely more on LLMs. They also indicated their experience in computer programming and datapack development to be less, compared to the other age groups. They are also the ones that comment code the less, probably because they are unaware of the benefits of commenting in the long term. It's also interesting to notice how the younger group is the one that develops datapacks for compensation the most. This perhaps could be related to the fact that they are looking for a small source of income, whereas older developers with a steady source of income develop datapacks purely as a hobby.],
 )
 
+=== Conclusion
 
+The survey captures a largely "hardcore" and dedicated user base, primarily composed of experienced hobbyists.
+
+Because the game's DSL lacks standard structural features, developers organically adapt by utilizing modern programming tools and informal community standards.
+
+Ultimately, the datapack community operates similarly to unstructured open-source or indie game development spaces. While they lack rigid management frameworks, these developers are highly technically proficient, relying heavily on modern coding environments and advanced abstractions to bypass or make sense of the strict limitations of the minecraft engine.
 
 == Threats to Validity
 This section discusses potential validity threats to
@@ -426,7 +454,7 @@ this study and how they will be mitigated.
 
 *Internal Validity*. To ensure internal validity
 the following measures have been taken:
-- Insufficient knowledge for young developers. 23.9% of the respondents stated that they are 18 years or younger. It's very unlikely for people at that age to be familiar with software development or project management concepts, which are usually learnt in higher education or trough work experience.
+- Insufficient knowledge for young developers. 23.9% of the respondents stated to be 18 years or younger. It's very unlikely for people at that age to be familiar with software development or project management concepts, which are usually learnt in higher education or trough work experience.
 - To reduce the amount of data processing after gathering the results, many questions asked participants to select from predefined choices rather than writing open ended answers. However, they still had the option to type a custom response if their preferred answer was not listed.
 - In Q23, three participants commented that they would have liked more questions to be checkboxes rather than multiple choice, since not always one option excluded the others. However, this doesn't mean that the data gathered for these users is wrong or unusable, just incomplete.
 - Social Desirability Bias: Developers know they should comment their code, use Git, and adhere to coding conventions#footnote[Additionally, the use of LLMs to generate code is seen as bad practice since it doesn't produce valid syntax and takes the fun out of what is generally seen as a passion project.]. Therefore, it is likely that Q11, Q13, Q16 and Q21 are skewed towards the "good" choices since the participants want to appear professional.
