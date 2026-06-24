@@ -15,7 +15,7 @@
     author(
       "Nanni Alessandro",
       insts: (inst_twente),
-      oicd: "0000-1111-2222-3333",
+      //oicd: "0000-1111-2222-3333",
     ),
   ),
   abstract: [
