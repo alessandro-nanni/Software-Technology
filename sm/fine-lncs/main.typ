@@ -23,10 +23,12 @@
   ],
   keywords: ("Datapack", "Mcfunction", "Software Management", "Development Processes"),
   acknowledgements: [
-    #todo
+    I would like to thank the domain experts who participated in the pilot phase of this study for their invaluable feedback in refining the survey questions. I also extend my gratitude to the members of the minecraft datapack development community who generously volunteered their time to participate in this research.
+
+    Generative AI (Gemini) was used to generate python scripts that allowed to visualize gathered data and explain it. Specifically @avg-responses, @dp-distr. It was used as well to rewrite sections of the paper to give it a more academic tone.
   ],
   interests: [
-    #todo
+    I am an active participant in the Minecraft datapack community. However, this affiliation did not influence the data collection or analysis processes. I declare no competing financial interests.
   ],
   bibliography: bibliography("refs.bib"),
   // optional configuration of page (takes all page parameter)
@@ -205,8 +207,15 @@ In conclusion, simply working in a separate folder isn't enough to guarantee com
 
 = Related Works
 
-Given the lack of scientific paper is this field of study, to establish a robust methodology for analyzing minecraft datapack development, I have aligned my survey preparation process with established empirical studies spanning DSLs @KOSAR201677 @ALBUQUERQUE2015, video game development @musil2010, and cross domain software engineering @viggiato2022.
+== Selection and Overview of Reference Literature
 
+Due to the absence of prior scientific literature focusing specifically on minecraft datapack development, reference papers were systematically selected from broader software engineering research areas. The selection criteria targeted three key thematic pillars to construct a comprehensive methodological framework:
+
+1. *Domain-Specific Languages (DSLs) Usability and Mapping*: Papers addressing DSL usability measurement frameworks, industry practices, success factors, and systematic mapping studies were selected. This includes the works of Kosar et al. @KOSAR201677, Albuquerque et al. @ALBUQUERQUE2015, and Hermans et al. @hermans2009.
+2. *Video Game Development and Quality Assurance*: Research evaluating development processes, testing practices, and cross-domain engineering practices in the video game sector (specifically independent development) was chosen. This category includes the publications of Musil et al. @musil2010, Cho et al. @cho2023, and Viggiato et al. @viggiato2022.
+3. *End-User Software Engineering (EUSE) and Project Management*: Studies analyzing how non-professional programmers build software, how Agile methodologies and Continuous Integration (CI) are adapted, and how metrics are applied in open-source and corporate contexts. This includes studies by Ko et al. @ko_state_2011, Burnett et al. @burnett_2004, Noteboom et al. @noteboom_agile_2021, Chen et al. @chen_continuous_2025, Banker et al. @banker_software_1998, McGuire @mcguire1996, and Canedo et al. @canedo2019.
+
+A total of thirteen core papers from these domains were selected from digital databases (such as ACM Digital Library, IEEE Xplore, ScienceDirect, and SpringerLink) based on their relevance to survey design, software metrics, and hobbyist/non-contractual development paradigms.
 == Empirical Survey Methodologies in Related Literature
 
 In designing my survey, I analyzed how other researchers evaluate software engineering in niche or creative domains. To ensure my data serves a measurable purpose, I am adopting the Goal-Question-Metric (GQM) framework, a structured approach that prevents the collection of irrelevant data by mapping every question to a specific objective. This methodology was successfully used by Musil et al. to assess the state of the practice and identify ad-hoc processes in the video game industry @musil2010.
@@ -287,8 +296,8 @@ On average, respondents reported releasing $M=7.85$ datapacks ($"SD"=12.59$). Ho
 
 #figure(
   image("process/stats_plot.png"),
-  caption: [Distribution of the number of released Minecraft datapacks among surveyed developers (N=97). (A) Histogram with a Kernel Density Estimate (KDE) overlay showing response frequency. (B) Boxplot illustrating the median, interquartile range, and extreme outliers.],
-)
+  caption: [Distribution of the number of released Minecraft datapacks among surveyed developers (N=97). (A) Histogram showing response frequency. (B) Boxplot illustrating the median, interquartile range, and extreme outliers.],
+) <dp-distr>
 
 In response to Q7, almost $90%$ of the participants have claimed to use Visual Studio Code with datapack specific extensions#footnote[#link("https://marketplace.visualstudio.com/items?itemName=SPGoding.datapack-language-server")]. This is an expected outcome since it's the tool that most closely resembles an IDE for datapack development, with Q10 highlighting that all of its core features are used.
 
@@ -362,7 +371,7 @@ To analyze the open-ended feedback from Q23 and Q24, I employed Reflexive Themat
     table.hline(),
     [1], [Uses multiple namespaces to reduce nesting levels.],
     table.hline(),
-    [1], [Uses fail fast methodology: quick testing and iteration of ideas to rapidly determine their viability.],
+    [1], [Uses fail fast methodology#footnote[the fail fast methodology is a philosophy focused on rapid experimentation to minimize wasted time, effort, and resources. It operates on the premise that discovering a flaw or an unviable idea as early as possible is a successful outcome.]: quick testing and iteration of ideas to rapidly determine their viability.],
     table.hline(),
     [1], [Premature optimization is pointless, will make code more unredable.],
     table.hline(),
@@ -438,7 +447,7 @@ Based on their reported methodologies and frustrations with the system, the typi
 #figure(
   image("process/survey_averages.png"),
   caption: [Average response to questions that use a linear scale. We can see how users under the age of 18 are more reliant on external libraries and rely more on LLMs. They also indicated their experience in computer programming and datapack development to be less, compared to the other age groups. They are also the ones that comment code the less, probably because they are unaware of the benefits of commenting in the long term. It's also interesting to notice how the younger group is the one that develops datapacks for compensation the most. This perhaps could be related to the fact that they are looking for a small source of income, whereas older developers with a steady source of income develop datapacks purely as a hobby.],
-)
+) <avg-responses>
 
 === Conclusion
 
@@ -465,9 +474,39 @@ the following measures have been taken:
 - Selection Bias: The people who choose to voluntarily fill out this specific type of survey are different from those who ignore it. The datapack community has people ranging from 12 year old newcomers, to 30 year olds that do this type of development professionally. Our results are heavily skewed toward the "hardcore," professional side of the community. Therefore, your findings will have high external validity for dedicated datapack developers. However, this can be considered beneficial for the survey since it will include substantial answers from people with a significative amount of experience in the field.
 - Temporal Validity: The syntax and capabilities of the _mcfunction_ DSL are constantly changing. It may very well be that in the upcoming years most of the complaints, tools and processes will change based on the language's updates.
 
-// what information does the survey give us (profiles, techniques,...), result description
 = Discussion <discussion_ch>
-// results contextualized with other papers
-= Conclusion
-// including future developments
 
+This chapter contrasts the software engineering practices observed among minecraft datapack developers with established paradigms in professional GPL environments and standard End-User Software Engineering (EUSE)#footnote[EUSE is a software engineering paradigm designed specifically for individuals who write code primarily to achieve a personal task or to support their own domain of expertise, rather than to produce software for public or commercial distribution.]. While datapack creation is fundamentally a hobbyist endeavor, the severe structural constraints of the minecraft DSL force developers to adopt surprisingly sophisticated, albeit customized, engineering strategies.
+
+== Requirements, Design, and Agile Adaptation
+In professional software development, project management frequently relies on formalized Agile methodologies. These environments emphasize structured, self contained teams, strict acceptance criteria, and critical management influence to adapt to rapidly changing requirements @noteboom_agile_2021. Furthermore, professional GPL development incorporates explicit design specifications and systematic requirement collecting phases @ko_state_2011.
+
+Conversely, datapack developers operate without formal organizational hierarchies. Their requirements tend to be opportunistic and emergent, bearing a strong resemblance to standard EUSE paradigms where the programmer's intent is primarily for personal or community use rather than commercial deployment @ko_state_2011. 
+Despite this lack of formal structure, survey results indicate that datapack creators organically replicate several Agile principles. For instance, many rely on iterative release cycles, "fail fast" methodologies, and rapid viability testing via pseudocode.
+In contrast to professional Agile project management, which requires daily meetings, divided tasks, and strictly scheduled development cycles @noteboom_agile_2021, datapack developers collaborate at their own pace using informal communication platforms such as Discord and GitHub issues.  
+
+== Complexity and the Role of Code Generators
+A major distinction between standard GPL programming and datapack development lies in how language constraints are managed. Professional developers often utilize code generators and third party software to improve productivity and manage component complexity. 
+While code generators save time by handling repetitive boilerplate, research warns that they frequently complicate the program's underlying control flow. Developers must rely on complex conditional statements to trigger their unique custom code, creating a tangled web of logic (or "decision volatility") that makes debugging and long-term maintenance much more difficult @banker_software_1998.
+
+Datapack developers encounter a more extreme version of this phenomenon. Due to the lack of the previously described programming features, datapack developers cannot simply write standard procedural code.
+Instead, they rely heavily on third-party precompilers, metacompilation, and external scripts to generate the necessary boilerplates. While these tools allow developers to bypass the DSL's assembly-like limitations, they introduce significant maintenance overhead.
+Similar to the findings in traditional commercial environments @banker_software_1998, these abstractions can obscure the underlying logic, creating a steep learning curve and resulting in codebases that are exceptionally difficult to debug and maintain across continuous game version updates.
+
+== Testing, Integration, and Quality Assurance
+In modern professional GPL development, Continuous Integration (CI) is a foundational practice.
+CI environments rely on automated build processes, robust version control, and comprehensive testing frameworks (unit, integration, and security testing) to detect defects early and increase deployment reliability @chen_continuous_2025. This systematic approach is driven by the need to support large teams, scale complex infrastructure, and actively reduce software fault rates.
+
+In contrast, standard end user programmers tend to be overconfident in their code and debug opportunistically rather than systematically. They often benefit most from integrated visual feedback tools or "What You See Is What You Test" methodologies rather than separate testing pipelines @burnett_2004 @ko_state_2011. Datapack developers occupy a middle ground between these two extremes. While they exhibit high technical proficiency, with a vast majority utilizing formal version control systems, only a small fraction (around 25%) implement formal CI/CD pipelines. Because establishing robust CI infrastructure requires high initial costs and architectural planning @chen_continuous_2025, datapack quality assurance processes instead depend heavily on manual beta testing and informal community feedback rather than the automated test suites utilized in professional ecosystems.
+
+== Summary
+Ultimately, the datapack community demonstrates a unique blend of practices. They confront the informal challenges that arise from the DSL limiations, but tackle them using simplified versions of professional GPL methodologies. By adapting version control, code generation workarounds, and iterative agile feedback loops to fit a highly restricted DSL, datapack developers prove that rigorous software engineering principles can organically emerge and thrive even in entirely decentralized, hobbyist domains.
+
+= Conclusion
+This study investigated the software engineering practices and project management methodologies adopted by the Minecraft datapack community.
+Despite operating within a DSL characterized by severe structural limitations, datapack developers exhibit a remarkably high degree of technical proficiency. 
+The survey results demonstrate that these creators organically compensate for the engine's constraints by adopting sophisticated, almost professional workarounds, such as relying on third-party precompilers, utilizing version control systems, and adapting Agile methodologies. 
+Ultimately, this research highlights a unique intersection between End-User Software Engineering (EUSE) and professional development paradigms. 
+The datapack ecosystem proves that rigorous software engineering principles, such as iterative feedback loops and abstracted code generation, can successfully emerge and thrive even in decentralized, non-contractual hobbyist domains.
+While this primary study establishes a qualitative baseline of developer behavior, there remains a significant gap regarding objective code analysis. 
+Future research could employ Mining Software Repositories (MSR) techniques to empirically analyze publicly available datapack codebases. By programmatically evaluating these projects, researchers could quantitatively assess code quality, size and identify common structural anti-patterns, such as inefficient execution loops or namespace collisions, that qualitative survey data may not fully capture.
