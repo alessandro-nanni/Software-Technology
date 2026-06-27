@@ -25,14 +25,12 @@
   acknowledgements: [
     I would like to thank the domain experts who participated in the pilot phase of this study for their invaluable feedback in refining the survey questions. I also extend my gratitude to the members of the Minecraft datapack development community who generously volunteered their time to participate in this research.
 
-    Generative AI (Gemini) was used to generate python scripts that allowed to visualize gathered data and explain it. Specifically @avg-responses, @dp-distr. It was used as well to rewrite sections of the paper to give it a more academic tone.
+    Generative AI (Gemini 3.5) was used to generate python scripts that when ran allowed to visualize gathered data. Specifically @avg-responses, @dp-distr, and the hypothesis testing figures (@h1-techniques, @h2-zero-released, @h3-released-experience, @h4-commenting, @h5-refactor-cycle, @h6-experience-abstraction, @h7-compensation). It was used as well to rewrite sections of the paper to give it a more academic tone.
   ],
   interests: [
     I am an active participant in the Minecraft datapack community. However, this affiliation did not influence the data collection or analysis processes. I declare no competing financial interests.
   ],
   bibliography: bibliography("refs.bib"),
-  // optional configuration of page (takes all page parameter)
-  // page_config: (paper: "a4")
 )
 
 #show "minecraft": [_Minecraft_]
@@ -502,6 +500,75 @@ In modern professional GPL development, Continuous Integration (CI) is a foundat
 CI environments rely on automated build processes, robust version control, and comprehensive testing frameworks (unit, integration, and security testing) to detect defects early and increase deployment reliability @chen_continuous_2025. This systematic approach is driven by the need to support large teams, scale complex infrastructure, and actively reduce software fault rates.
 
 In contrast, standard end-user programmers tend to be overconfident in their code and debug opportunistically rather than systematically. They often benefit most from integrated visual feedback tools or "What You See Is What You Test" methodologies rather than separate testing pipelines @burnett_2004 @ko_state_2011. Datapack developers occupy a middle ground between these two extremes. While they exhibit high technical proficiency, with a vast majority utilizing formal version control systems, only a small fraction (around 25%) implement formal CI/CD pipelines. Because establishing robust CI infrastructure requires high initial costs and architectural planning @chen_continuous_2025, datapack quality assurance processes instead depend heavily on manual beta testing and informal community feedback rather than the automated test suites utilized in professional ecosystems.
+
+== Quantitative Analysis of Specific Survey Hypotheses
+
+To verify and expand upon these general observations, I conducted a targeted quantitative analysis of seven specific hypotheses formulated during the study preparation based on the gathered survey data.
+
+=== A Brief Overview of Statistical Measures
+Before presenting the quantitative findings, I outline the statistical metrics used in this analysis:
+- *Spearman's Rank Correlation Coefficient ($rho$)*: Measures how well two variables move together in a consistent trend, even if the relationship is not a straight line. It works by ranking the values, making it robust to outliers and ideal for analyzing rating scales (1-7). Values range from $-1.0$ (perfect opposite trend) to $+1.0$ (perfect matching trend), with $0.0$ showing no relationship.
+- *The $p$-value (Probability Value)*: Indicates whether a finding is likely a real pattern or just random chance. It represents the probability that the observed relationship occurred purely by accident. By scientific convention, a $p$-value below $0.05$ ($p < 0.05$) is considered statistically significant, meaning there is less than a 5% chance the pattern is an accident.
+- *Descriptive Averages and Variation*: To describe central tendencies, I report the mean ($M$, the arithmetic average) and the median ($"Mdn"$, the middle value of the ordered dataset). To measure the dispersion or spread of responses, I report the standard deviation ($"SD"$), which quantifies how much individual data points vary from the mean.
+
+=== Demographic Verification (Hypotheses 1 & 2)
+To validate the reliability of the survey responses, I categorized the participants into three age groups: G1 (ages 18 or younger, representing developers who typically lack formal higher education or professional experience; $N = 13$), G2 (university students aged 19-23; $N = 42$), and G3 (mature developers aged 24 or older; $N = 21$). 
+
+I hypothesized that developers who had released fewer datapacks would match G1, implying that the answers of G2 and G3 are backed by more practical experience. As shown in @h2-zero-released, the data supports this trend: G1 has the highest percentage of zero-release developers (23.1%), followed by G2 (16.7%), and G3 (4.8%). This validates my analytical focus on the G2 and G3 groups. However, G1 also contains prolific developers (with up to 68 releases), indicating that youth does not strictly equate to lack of experience.
+
+#figure(
+  image("process/h2_zero_released.png",),
+  caption: [Percentage and counts of developers within each age group who have released zero datapacks.],
+) <h2-zero-released>
+
+Additionally, @h1-techniques compares the adoption of software engineering techniques across these groups. While version control (Git) usage is high across all groups (ranging from 69.2% in G1 to 85.7% in G3), mature developers (G3) show a higher adoption of precompilers and external scripts (52.4% vs. 30.8% in G1), formal coding conventions (85.7% vs. 61.5% in G1), and frequent code commenting (61.9% vs. 38.5% in G1). This suggests that technical knowledge acquired in university or professional settings (G2/G3) correlates with more structured development habits.
+
+#figure(
+  image("process/h1_techniques.png"),
+  caption: [Adoption rates of software engineering techniques by age group.],
+) <h1-techniques>
+
+=== Developer Experience and Project Output (Hypothesis 3)
+I analyzed the correlation for G2 and G3 between the number of datapacks released and their perceived knowledge. As illustrated in @h3-released-experience, I observed a moderate positive correlation (Spearman's $rho = 0.468$, $p < 0.001$), showing that developers' self-assessed experience aligns with their historical project output.
+
+#figure(
+  image("process/h3_released_vs_experience.png"),
+  caption: [Correlation between perceived experience and number of datapacks released for G2 & G3 (with jitter on X-axis).],
+) <h3-released-experience>
+
+=== Team Collaboration and Documentation (Hypothesis 4)
+I investigated if working in a team increases the frequency and depth of code commenting. As shown in @h4-commenting, developers working in teams report significantly higher comment frequency (5.10 vs. 3.79) and commenting quantity (3.88 vs. 3.31). This confirms that team collaboration shifts developer behavior toward more professional documentation practices to facilitate integration.
+
+#figure(
+  image("process/h4_commenting.png"),
+  caption: [Comparison of average comment frequency and quantity between solo and team developers.],
+) <h4-commenting>
+
+=== Refactoring and Release Cycle Frequency (Hypothesis 5)
+I tested the hypothesis that a higher percentage of development time spent optimizing or refactoring correlates with more frequent, iterative release cycles. As shown in @h5-refactor-cycle, the Spearman correlation is virtually zero ($rho = 0.017$, $p = 0.896$). This indicates that refactoring effort is independent of release agility in the datapack ecosystem.
+
+#figure(
+  image("process/h5_refactor_vs_cycle.png"),
+  caption: [Scatter plot of refactoring effort vs. release cycle frequency for G2 & G3.],
+) <h5-refactor-cycle>
+
+=== Experience and Levels of Abstraction (Hypothesis 6)
+I examined the relationship between experience and the level of code abstraction (Plain mcfunction #sym.arrow Custom scripts #sym.arrow Precompilers). As illustrated in @h6-experience-abstraction, experience correlates positively with abstraction level (Spearman's $rho = 0.400$, $p < 0.001$). The median experience rises from $"Mdn" = 4.0$ for plain mcfunction users to $"Mdn" = 6.0$ for precompiler users, showing that advanced workarounds are primarily adopted by more experienced creators.
+
+#figure(
+  image("process/h6_experience_vs_abstraction.png"),
+  caption: [Distribution of perceived datapack experience across levels of code abstraction.],
+) <h6-experience-abstraction>
+
+=== Commercial Motivation and Code Quality (Hypothesis 7)
+Lastly, I compared developers who mostly work for financial compensation ($N = 10$) with those who develop purely as a hobby ($N = 87$). I hypothesized that paid developers would write disposable "S-type" code with lower maintenance focus, fewer releases, and minimal comments. 
+
+However, the empirical data in @h7-compensation strongly refutes this hypothesis. Paid developers spend more time refactoring (40.0% vs. 30.4%), release more datapacks (13.2 vs. 7.2), and comment their code more frequently (5.20 vs. 4.24). This indicates that financial incentives encourage more professional, contract-oriented behaviors rather than quick, dirty and disposable code.
+
+#figure(
+  image("process/h7_compensation.png"),
+  caption: [Comparison of refactoring effort, released datapacks, and comment frequency between hobbyist and paid developers.],
+) <h7-compensation>
 
 == Summary
 Ultimately, the datapack community demonstrates a unique blend of practices. They confront the informal challenges that arise from the DSL limitations, but tackle them using simplified versions of professional GPL methodologies. By adapting version control, code generation workarounds, and iterative agile feedback loops to fit a highly restricted DSL, datapack developers prove that rigorous software engineering principles can organically emerge and thrive even in entirely decentralized, hobbyist domains.

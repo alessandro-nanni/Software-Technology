@@ -1,0 +1,20 @@
+What i want to see: what techniques experienced datapack developers use. More particularly, if they reflect the ones they learn at university/software-related job.
+
+To test this first off I want to create 3 groups. One for people 18 or older that cannot know software techniques which are usually thought in higher level education or in professional environments (G1).
+Another for university students (ages 19-23) (G2), and another for people that should have acquired the technical knowledge at this point (24+) (G3). We can say that most of the participants work in the field of cs since 53.6% consider themselves very familiar in the field of CS.
+
+To strengthen the validity of the gathered data, I want to see if the people that said that they released 0 datapacks match with G1. This would imply that the answers from G2 and G3 are more valid, since we know they actually have the practical experience to back their statements. 
+
+Afterwards, I want see the correlation for G2 and G3 between the number of datapacks released and their perceived knowledge in datapack development. Does more experience = more datapacks or the opposite?
+
+
+I also want to see if there is a correlation between frequency/quantity of comments, and people that work alone vs in teams. 
+
+In terms of project management, I want to see how much G2 and G3 spend on avarage optimizing/refactoring their datapacks, and see if that reflects in their release cycles. More frequent optimizations = more frequent iterative releases?
+
+I want to see if there is a correlation between experience and level of abstraction on their code, where 0 = plain mcfunction, 1 = some scripts to generate repetitive code, and 2 = use of preprocessors.
+
+Although they are few, I want to see if there is a correlation between the people that mostly work for compensation and 
+- how much they spend on code quality (maintenance, refactoring...)
+- how many datapacks they've released (should be low, since they make them for others)
+- how much they comment, since its likely S-type program: once its completed, it doesn't evolve. It's immediately done, used once and never again.
