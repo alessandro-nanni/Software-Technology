@@ -1,11 +1,8 @@
-#import "@preview/fine-lncs:0.6.4": author, institute, lncs, proof, theorem
+#import "@preview/fine-lncs:0.6.4": author, institute, lncs
 #let inst_twente = institute(
   "Twente University",
   addr: "Drienerlolaan 5, 7522 NB Enschede, Netherlands",
 )
-
-#let todo = align(center, text(size: 20pt, fill: red)[*TODO*])
-
 
 #show: lncs.with(
   title: "Project Management and Software Development Techniques in Minecraft Datapack Development",
@@ -66,7 +63,7 @@ A function is a file with the `.mcfunction` extension, which contains one comman
 
 A datapack is a directory containing functions and related developmental resources. Because the game engine is capable of natively loading and executing datapacks from compressed archives, this format serves as the ideal medium for sharing and distributing completed packages.
 
-A function has it's own resource location within a datapack.
+A function has its own resource location within a datapack.
 #figure(
   ```
   my_datapack/data/my_namespace/function/my_function.mcfunction
@@ -80,7 +77,9 @@ When mapped to conventional Java development paradigms, this directory hierarchy
 Because the _mcfunction_ DSL was not initially conceived as a Turing-complete language, it still carries some limitations from its original design as a simple way to bypass gameplay obstacles.
 At first, each command was designed to give users advantages in a specific domain of the game, unrelated to the others. For this reason, to this day, each command is strongly decoupled from the next, there is no proper way to carry context over without relying on an external data source.
 
-This design philosophy can be seen in the command in charge of math operations, `scoreboard`. Not only is it limited to performing only the 4 basic arithmetic operations on integers, it also cannot singlehandedly compute operations that involve more than two values. In addition to that, division and multiplication don't natively support constants, so they have to be declared as variables before being used. An example that illustrates how `int x = (y*2)/4-2` is calculated in _mcfunction_ can be seen in @scoreboard_set_const.
+To precisely characterize these limitations, the remainder of this section borrows terminology from the Cognitive Dimensions of Notations (CDN) framework, which Albuquerque et al. instantiated into a quantitative metric suite for evaluating DSL usability during software maintenance @ALBUQUERQUE2015.
+
+This design philosophy can be seen in the command in charge of math operations, `scoreboard`. Not only is it limited to performing only the 4 basic arithmetic operations on integers, it also cannot singlehandedly compute operations that involve more than two values. In addition to that, division and multiplication don't natively support constants, so they have to be declared as variables before being used. This is a clear case of high Viscosity, the resistance a notation offers to small changes, since altering a single constant requires editing multiple statements spread across the file rather than a single value @ALBUQUERQUE2015. An example that illustrates how `int x = (y*2)/4-2` is calculated in _mcfunction_ can be seen in @scoreboard_set_const.
 #figure(
   ```
   # data initalization
@@ -111,7 +110,7 @@ This is unusual for modern DSLs, since they are defined by having a significant 
   caption: [Assignment and operations in Assembly x86.],
 )<asm-ex>
 
-As previously mentioned, the _mcfunction_ DSL lacks traditional local variables, so developers must utilize external data sources to pass information between commands. These sources can either be tangible, world-specific objects like blocks and entities#footnote[Entities refer to any moving or dynamic object not restricted to the block grid (https://minecraft.wiki/w/Entity).], or purely virtual data structures maintained entirely in the game's memory. In either case, the data is structured as Named Binary Tags (NBT#footnote[https://minecraft.wiki/w/NBT_format]). This type of data can be stringified and manually edited by developers as SNBT. Its structure is quite similar to that of a JSON object, albeit without double quotes surrounding the keys.
+As previously mentioned, the _mcfunction_ DSL lacks traditional local variables, so developers must utilize external data sources to pass information between commands. These sources can either be tangible, world-specific objects like blocks and entities#footnote[Entities refer to any moving or dynamic object not restricted to the block grid (https://minecraft.wiki/w/Entity).], or purely virtual data structures maintained entirely in the game's memory. In either case, the data is structured as Named Binary Tags (NBT#footnote[https://minecraft.wiki/w/NBT_format]). This type of data can be stringified and manually edited by developers as SNBT. Its structure is quite similar to that of a JSON object, but without double quotes surrounding the keys. Because context is carried through blocks, entities, or scoreboards rather than through the command sequence itself, the relations between a command and the state it depends on are not visible in the code, an example of Hidden Dependencies @ALBUQUERQUE2015.
 
 #figure(
   grid(
@@ -174,7 +173,7 @@ At the time of writing, the Minecraft DSL lacks native support for traditional b
 
 
 While the example in @recursion-ex illustrates a basic loop, real-world scenarios usually involve additional commands that run before or after the loop and must not be repeated. For this reason, the iterative block must be extracted into an entirely separate function file. This necessity severely complicates the development experience. Given how fundamental iteration is for tasks like traversing arrays or implementing function approximation algorithms, having to create a new physical file every single time a loop is required adds massive management overhead to the project.
-Furthermore, each individual branch of an `if-else` construct must reside in its own distinct function file. This is because the `execute if` command only supports the conditional execution of a single instruction. Therefore, if developers need to run multiple commands under the same condition, those commands must be grouped together and called via a separate function.
+Furthermore, each individual branch of an `if-else` construct must reside in its own distinct function file. This is because the `execute if` command only supports the conditional execution of a single instruction. Therefore, if developers need to run multiple commands under the same condition, those commands must be grouped together and called via a separate function. This forced fragmentation exemplifies Diffuseness, since expressing a single logical unit, whether a loop or a conditional branch, demands far more symbols and physical files than an equivalent construct in a GPL with native control flow @ALBUQUERQUE2015.
 
 == High Risk of Incompatibility
 
@@ -184,7 +183,7 @@ Previously namespaces were mentioned as a means to avoid naming collisions. Howe
   attribution: [Nathan Adams#footnote[Minecraft developer, part of the team that develops datapack related features.]],
   [This isn't a new concept, but I thought I should reiterate what a "namespace" is. Most things in the game has a namespace, so that if we add `something` and a mod (or map, or whatever) adds `something`, they're both different `something`s. Whenever you're asked to name something, for example a loot table, you're expected to also provide what namespace that thing comes from. If you don't specify the namespace, we default to `minecraft`. This means that `something` and `minecraft:something` are the same thing.],
 )
-Since there is no datapack specific or local scope for variables (`scoreboard`s), every defined `scoreboard` must be declared with a namespace prefix (i.e. `foo.math`), to prevent collisions with other scoreboards called `math`. The same concept applies to `tag`s, which are a means to identify a game entity or item as "belonging" or "being used" by a certain datapack.
+Since there is no datapack specific or local scope for variables (`scoreboard`s), every defined `scoreboard` must be declared with a namespace prefix (e.g. `foo.math`), to prevent collisions with other scoreboards called `math`. The same concept applies to `tag`s, which are a means to identify a game entity or item as "belonging" or "being used" by a certain datapack.
 #figure(
   ```
   # datapack foo:
@@ -202,7 +201,7 @@ In conclusion, simply working in a separate folder isn't enough to guarantee com
 
 == Selection and Overview of Reference Literature
 
-Due to the complete absence of prior scientific literature focusing specifically on Minecraft datapack development, reference papers were systematically selected from broader software engineering research areas. To ensure a reproducible and unbiased selection process, a search was conducted across digital databases (including the ACM Digital Library, IEEE Xplore, ScienceDirect, and SpringerLink) using combinations of search terms such as: "DSL usability evaluation", "indie game QA practices", "end-user programming", "hobbyist developer productivity", and terms targeting empirical "surveys" or "primary studies". 
+Due to the complete absence of prior scientific literature focusing specifically on Minecraft datapack development, reference papers were systematically selected from broader software engineering research areas. To ensure a reproducible and unbiased selection process, a search was conducted across digital databases (including Google Scholar, the ACM Digital Library, IEEE Xplore, ScienceDirect, and SpringerLink) using combinations of search terms such as: "DSL usability evaluation", "indie game QA practices", "end-user programming", "hobbyist developer productivity", and terms targeting empirical "surveys" or "primary studies". 
  
 I selected papers that met two key criteria to establish a rigorous empirical foundation for my study.
 
@@ -215,7 +214,7 @@ Conversely, studies focusing solely on compiler construction, formal grammar the
 Applying these criteria yielded a final group of thirteen core papers, structured around three thematic pillars to establish my methodological framework:
 
 1. *Domain-Specific Languages (DSLs) Usability and Mapping*: Because Minecraft's `mcfunction` is an internal DSL embedded within a game engine, I required frameworks to evaluate how its severe language constraints impact developer experience. Papers addressing DSL usability measurement, success factors, and mapping studies were selected. Specifically, Kosar et al. @KOSAR201677 is used to address the literature gap regarding empirical DSL evaluation; Albuquerque et al. @ALBUQUERQUE2015 provides a framework for quantifying usability and maintainability; and Hermans et al. @hermans2009 provides a model for mapping survey questions to subjective success factors.
-2. *Video Game Development and Quality Assurance*: Datapack development is inherently a creative, game-centric endeavor. Thus, I selected research focusing on indie and non-traditional game development environments, which often suffer from unstructured processes and ad-hoc testing. Musil et al. @musil2010 provides a baseline for evaluating the state of practice in video games; Cho et al. @cho2023 offers validated methodologies for studying quality assurance in indie/hobbyist contexts; and Viggiato et al. @viggiato2022 helps analyze how development and integration practices vary across creative domains.
+2. *Video Game Development and Quality Assurance*: Datapack development is inherently a creative, game-centric endeavor. Thus, I selected research focusing on indie and non-traditional game development environments, which often suffer from unstructured processes and ad-hoc testing. Musil et al. @musil2010 provides a baseline for evaluating the state of practice in video games; Cho et al. @cho2023 offers validated methodologies for studying quality assurance in indie/hobbyist contexts; and Viggiato et al. @viggiato2019 helps analyze how development and integration practices vary across creative domains.
 3. *End-User Software Engineering (EUSE) and Project Management*: Since most datapack developers are hobbyists without formal programming training or corporate contracts, I must model their work using paradigms tailored to informal environments. I selected studies on how non-professional programmers build and debug software (Ko et al. @ko_state_2011, Burnett et al. @burnett_2004), how Agile and Continuous Integration (CI) scale down to small or hobbyist teams (Noteboom et al. @noteboom_agile_2021, Chen et al. @chen_continuous_2025, Banker et al. @banker_software_1998), and how metrics apply to corporate versus open-source environments (McGuire @mcguire1996, Canedo et al. @canedo2019).
 
 == Empirical Survey Methodologies in Related Literature
@@ -223,7 +222,7 @@ Applying these criteria yielded a final group of thirteen core papers, structure
 In designing my survey, I analyzed how other researchers evaluate software engineering in niche or creative domains. To ensure my data serves a measurable purpose, I am adopting the Goal-Question-Metric (GQM) framework, a structured approach that prevents the collection of irrelevant data by mapping every question to a specific objective. This methodology was successfully used by Musil et al. to assess the state of the practice and identify ad-hoc processes in the video game industry @musil2010.
 
 When constructing survey instruments, researchers carefully utilize targeted metrics. For instance, Hermans et al. evaluated a commercial DSL by mapping survey questions directly to DSL success factors using 5-point Likert scales @hermans2009. Similarly, Cho et al. utilized Likert-like prompts combined with qualitative free-text questions to identify differences between indie and non-indie game testing practices, noting that indie developers often lack formal testing plans @cho2023. // do something similar for developers with releases and not?
-Viggiato et al. expanded on cross-domain surveying by conducting interviews and web surveys to discover that development practices are highly context-dependent; for example, financial and e-commerce domains frequently interrupt Continuous Integration (CI) during critical periods like Black Friday @viggiato2022.
+Viggiato et al. expanded on cross-domain surveying by conducting interviews and web surveys to discover that development practices are highly context-dependent; for example, financial and e-commerce domains frequently interrupt Continuous Integration (CI) during critical periods like Black Friday @viggiato2019.
 
 Finally, deploying an effective survey requires a rigorous validation phase. Cho et al. pre-tested their survey with diverse game developers and conducted debriefing interviews to refine the flow and phrasing before wide deployment @cho2023.
 
@@ -247,7 +246,7 @@ By combining the maturity metrics used by McGuire to evaluate professional softw
 Drawing from these established methodologies, I have designed a survey preparation process tailored specifically to the Minecraft datapack community:
 
 / Phase 1: Defining Goals via GQM. I established four primary goals for my research: (G1) characterizing the demographic profile of the developers, (G2) assessing software development processes and tooling, (G3) evaluating project management techniques, and (G4) analyzing quality assurance practices.
-/ Phase 2: Adapting DSL and Game Dev Metrics. To capture the unique constraints of the `mcfunction` DSL, I incorporated metrics based on known DSL success factors, such as the usability of external tooling and the expressiveness of the code @hermans2009. Because datapack creation shares similarities with the chaotic, unstructured testing approaches commonly seen in independent game development @cho2023, relying solely on predefined checkboxes and linear scales is insufficient. To capture the highly unconventional and ad-hoc practices of these creative environments, the survey incorporates an "Other" field into these questions. This ensures that respondents have the option to write in a custom response if their specific methods are not available in the predefined choices.
+/ Phase 2: Adapting DSL and Game Dev Metrics. To capture the unique constraints of the `mcfunction` DSL, I incorporated metrics based on known DSL success factors, such as the usability of external tooling @hermans2009 and the expressiveness and conciseness of the code, the two usability characteristics Albuquerque et al. identify as central to a DSL's design @ALBUQUERQUE2015. Because datapack creation shares similarities with the chaotic, unstructured testing approaches commonly seen in independent game development @cho2023, relying solely on predefined checkboxes and linear scales is insufficient. To capture the highly unconventional and ad-hoc practices of these creative environments, the survey incorporates an "Other" field into these questions. This ensures that respondents have the option to write in a custom response if their specific methods are not available in the predefined choices.
 / Phase 3: Testing and Piloting. Inspired by empirical practices, my questionnaire underwent a review and piloting phase. This ensured that questions regarding tools and standard practices were interpreted correctly by the respondents @cho2023. Before making the survey public, a small group of domain experts completed the survey and provided feedback that helped make the questions clearer for a broader audience.
 / Phase 4: Execution and Community Targeting. I distributed the survey within specialized online datapack communities. While this introduces a selection bias toward more "hardcore" or professional hobbyists, it ensures high external validity, providing me with substantial answers from dedicated developers who actively interact with the DSL's limitations and workarounds.
 
@@ -255,17 +254,17 @@ Drawing from these established methodologies, I have designed a survey preparati
 _G1: Get background context for those who typically develop datapacks._\
 Q1: How old are you (optional)? #sym.arrow Short answer.\
 Q2: Indicate your level of experience in the domain of datapack development. #sym.arrow Linear scale.\
-Q3: How many datapacks have you released? #sym.arrow  Short Answer.\
-Q4: Indicate your familiarity with computer programming outside of Minecraft datapacks. #sym.arrow Linear Scale.\
-Q5: How often do you develop datapacks as a hobby (with no financial compensation)? #sym.arrow Linear Scale.\
-Q6: How often do you develop datapacks for financial compensation (for other people)? #sym.arrow Linear Scale.
+Q3: How many datapacks have you released? #sym.arrow Short answer.\
+Q4: Indicate your familiarity with computer programming outside of Minecraft datapacks. #sym.arrow Linear scale.\
+Q5: How often do you develop datapacks as a hobby (with no financial compensation)? #sym.arrow Linear scale.\
+Q6: How often do you develop datapacks for financial compensation (for other people)? #sym.arrow Linear scale.
 
 _G2: Identify software development processes and tools datapack developers utilize._\
 Q7: Which code editor(s) do you use? (select all that apply) #sym.arrow Checkbox.\
 Q8: Which productivity features from your code editor do you value? (select all that apply and are present in your code editor) #sym.arrow Checkbox.\
-Q9: Do you use a precompiler or external scripts to automate file generation? #sym.arrow Multiple Choice.\
-Q10: How often do you rely on libraries (player motion, string uuid, floating point math...) written by others? #sym.arrow Linear Scale.\
-Q11: How often do you use LLMs (AI chatbots, agentic coding) to write datapack code? #sym.arrow Linear Scale.
+Q9: Do you use a precompiler or external scripts to automate file generation? #sym.arrow Multiple choice.\
+Q10: How often do you rely on libraries (player motion, string uuid, floating point math...) written by others? #sym.arrow Linear scale.\
+Q11: How often do you use LLMs (AI chatbots, agentic coding) to write datapack code? #sym.arrow Linear scale.
 
 _G3: Assess which software project management techniques are applied by datapack developers._\
 Q12: How many people do you usually work with in datapack development (excluding yourself)? #sym.arrow Short answer.\
@@ -275,11 +274,11 @@ Q15: If you work in a group, what type of software development process do you us
 
 _G4: Assess if datapack developers focus on code quality and project maintainability._\
 Q16: How often do you comment your code? #sym.arrow Linear scale. \
-Q17: If you comment, how much do you comment your code? #sym.arrow.\
+Q17: If you comment, how much do you comment your code? #sym.arrow Linear scale.\
 Q18: How many beta testers test your code quality and project functionality before release? #sym.arrow Short answer.\
 Q19: On average, how long do you spend maintaining a datapack (fixing bugs, updating to new Minecraft versions) after its initial release? #sym.arrow Multiple choice.\
 Q20: Estimate the percentage of time optimization/refactoring consumes in your overall datapack development process. #sym.arrow Short answer.\
-Q21: To which coding conventions do you adhere to? (select all that apply) #sym.arrow Checkbox\
+Q21: To which coding conventions do you adhere to? (select all that apply) #sym.arrow Checkbox.\
 Q22: How do you track and manage bugs or feature requests from your users (e.g., GitHub Issues, Discord channels, informal feedback)? #sym.arrow Multiple choice.
 
 Two optional open questions were made available.\
@@ -290,7 +289,7 @@ Q24: Open space for comments on what aspect of developing datapacks you dislike 
 
 Before interpreting the implications of the survey responses, it is standard empirical practice to first conduct a basic evaluation using descriptive statistics to present the most interesting aspects of the dataset @musil2010. In this section, my main objective is to report the gathered data exactly as it is, establishing a clear, factual foundation of the datapack community's demographics, habits, and methodologies.
 
-Following the structured methodologies seen in related DSL and software engineering studies, this section is dedicated to presenting the quantitative and qualitative data obtained from the respondents. Therefore, I will not be making cross-domain evaluations here. Instead, the comparative analysis where I contextualize these findings against the established literature on general-purpose languages, independent game development, and formal DSL practices will be entirely delegated to the subsequent discussion chapter @discussion_ch @ALBUQUERQUE2015 @cho2023.
+Following the structured methodologies seen in related DSL and software engineering studies, this section is dedicated to presenting the quantitative and qualitative data obtained from the respondents. Therefore, I will not be making cross-domain evaluations here. Instead, the comparative analysis where I contextualize these findings against the established literature on general-purpose languages, independent game development, and formal DSL practices will be entirely delegated to the subsequent @discussion_ch @ALBUQUERQUE2015 @cho2023.
 
 It's immediately noticeable how most of the respondents consider themselves very experienced in both datapack and broader computer programming (Q2 & Q4). This helps guarantee the overall validity of the survey, since the answers provided will be backed up by concrete experience within the domain of the Minecraft DSL as well as other GPLs.
 
@@ -301,7 +300,7 @@ On average, respondents reported releasing $M=7.85$ datapacks ($"SD"=12.59$). Ho
   caption: [Distribution of the number of released Minecraft datapacks among surveyed developers (N=97). (A) Histogram showing response frequency. (B) Boxplot illustrating the median, interquartile range, and extreme outliers.],
 ) <dp-distr>
 
-In response to Q7, almost 90% of the participants have claimed to use Visual Studio Code with datapack specific extensions#footnote[#link("https://marketplace.visualstudio.com/items?itemName=SPGoding.datapack-language-server")]. This is an expected outcome since it's the tool that most closely resembles an IDE for datapack development, with Q10 highlighting that all of its core features are used.
+In response to Q7, almost 90% of the participants have claimed to use Visual Studio Code with datapack specific extensions#footnote[#link("https://marketplace.visualstudio.com/items?itemName=SPGoding.datapack-language-server")]. This is an expected outcome since it's the tool that most closely resembles an IDE for datapack development, with Q8 highlighting that all of its core features are used.
 
 #figure(
   table(
@@ -314,7 +313,7 @@ In response to Q7, almost 90% of the participants have claimed to use Visual Stu
     [40.2%], [Missing resource creation], table.hline(),
     [3%], [Resource jumping#footnote[The ability to press `ctrl+click` to open in a new tab the used resource as if it were a hyperlink.]], table.hline(),
   ),
-  caption: [The most reported valued code editor functionalities (Q10).
+  caption: [The most reported valued code editor functionalities (Q8).
   ],
 )
 
@@ -426,7 +425,7 @@ To analyze the open-ended feedback from Q23 and Q24, I employed Reflexive Themat
     [3], [High risk of incompatibility across datapacks.],
     table.hline(),
     [2],
-    [Sometimes not even precompilers can overcome the innate limitations of mcfunction, certain things are just unfeasible (i.e. RSA algorithm).],
+    [Sometimes not even precompilers can overcome the innate limitations of mcfunction, certain things are just unfeasible (e.g. RSA algorithm).],
     table.hline(),
     [2],
     [Struggle with keeping code functional across different Minecraft versions, barely doable with different branches.],
@@ -467,7 +466,7 @@ Ultimately, the datapack community operates similarly to unstructured open-sourc
 This section outlines the study's methodological design choices, participant demographics, and potential threats to validity. Internal validity concerns the structure of the survey and the reliability of the collected responses. External validity addresses the generalizability of these findings to the broader developer community and their longevity over time.
 
 === Internal Validity
-- Insufficient knowledge for young developers. 23.9% of the respondents stated to be 18 years or younger. It's very unlikely for people at that age to be familiar with software development or project management concepts, which are usually learned in higher education or through work experience.
+- Insufficient knowledge for young developers. 13.4% of the respondents are either 18 years or younger. It's very unlikely for people at that age to be familiar with software development or project management concepts, which are usually learnt in higher education or through work experience.
 - To reduce the amount of data processing after gathering the results, many questions asked participants to select from predefined choices rather than writing open ended answers. However, they still had the option to type a custom response if their preferred answer was not listed.
 - In Q23, three participants commented that they would have liked more questions to be checkboxes rather than multiple choice, since not always one option excluded the others. However, this doesn't mean that the data gathered for these users is wrong or unusable, just incomplete.
 - Social Desirability Bias: Developers know they should comment their code, use Git, and adhere to coding conventions#footnote[Additionally, the use of LLMs to generate code is seen as bad practice since it doesn't produce valid syntax and takes the fun out of what is generally seen as a passion project.]. Therefore, it is likely that Q11, Q13, Q16 and Q21 are skewed towards the "good" choices since the participants want to appear professional.
@@ -505,6 +504,8 @@ In contrast, standard end-user programmers tend to be overconfident in their cod
 
 Datapack developers occupy a middle ground between these two extremes. While they exhibit high technical proficiency, with a vast majority utilizing formal version control systems, only a small fraction (around 25%) implement formal CI/CD pipelines. Because establishing robust CI infrastructure requires high initial costs and architectural planning @chen_continuous_2025, datapack quality assurance processes instead depend heavily on manual beta testing and informal community feedback. They do not have access to automated fault localization capabilities that visually prioritize which suspicious code snippet to investigate first @burnett_2004. Furthermore, because the environment lacks "Help-Me-Test" algorithms to analyze command structures (such as `execute if` conditions) and automatically simulate test scenarios, developers must manually open the game, set up complex entity states or scoreboards, and verify every edge case individually.
 
+This low CI/CD adoption rate should not be read purely as a symptom of insufficient resources or technical maturity. Viggiato et al. found that CI is not adopted as a rigid, universal practice even within professional, well-resourced organizations: developers in the banking and e-commerce domains deliberately interrupt their CI pipelines during critical commerce periods, such as Black Friday, the weeks before the new year, and salary payment cycles, to avoid the risk of introducing bugs when reliability matters most @viggiato2019. This validated, cross-domain finding shows that even mature corporate environments calibrate CI adoption against real external risk rather than applying it uniformly. More broadly, the same study found that a company's policy and culture, rather than the intrinsic technical demands of a domain, are what most strongly shape which development practices get adopted and how @viggiato2019. Applying this lens to datapack development, the community's informal and inconsistent use of CI/CD can be read less as a maturity deficit and more as a rational adaptation: lacking both a company-level policy structure and any external commercial risk to hedge against, datapack developers have little structural pressure to adopt the standardized pipelines seen in industry.
+
 To improve the testing and QA practices of the datapack community, future tooling could benefit from the "Surprise-Explain-Reward" strategy. It's a cognitive tutoring framework designed to encourage end-user programmers (who are usually focused on getting their code to work rather than writing clean tests) to adopt good software engineering habits @burnett_2004. An example can be seen in editors that underline code detected as deprecated, improvable or unsafe#footnote[This is already partly implemented in the Spyglass VSCode extension when using expensive selectors. Warnings are raised when inefficient, broad selections (or queries) are used.]. Since it is unreasonable to expect hobbyists to actively seek out formal testing frameworks, this strategy gently attempts to interest end users in appropriate software engineering behaviors at suitable moments @burnett_2004.
 
 == Quantitative Analysis of Specific Survey Hypotheses
@@ -518,7 +519,7 @@ Before presenting the quantitative findings, I outline the statistical metrics u
 - *Descriptive Averages and Variation*: To describe central tendencies, I report the mean ($M$, the arithmetic average) and the median ($"Mdn"$, the middle value of the ordered dataset). To measure the dispersion or spread of responses, I report the standard deviation ($"SD"$), which quantifies how much individual data points vary from the mean.
 
 === Demographic Verification (Hypotheses 1 & 2)
-To validate the reliability of the survey responses, I categorized the participants into three age groups: G1 (ages 18 or younger, representing developers who typically lack formal higher education or professional experience; $N = 13$), G2 (university students aged 19-23; $N = 42$), and G3 (mature developers aged 24 or older; $N = 21$). 
+To validate the reliability of the survey responses, I categorized the participants into three age groups: G1 (ages 18 or younger, representing developers who typically lack formal higher education or professional experience; $N = 13$), G2 (university students aged 19-23; $N = 42$), and G3 (mature developers aged 24 or older; $N = 21$). Since Q1 was optional, the remaining 21 respondents did not disclose their age and are therefore excluded from this and the following age-based analyses.
 
 I hypothesized that developers who had released fewer datapacks would match G1, implying that the answers of G2 and G3 are backed by more practical experience. As shown in @h2-zero-released, the data supports this trend: G1 has the highest percentage of developers with no releases (23.1%), followed by G2 (16.7%), and G3 (4.8%). This validates my analytical focus on the G2 and G3 groups. However, G1 also contains prolific developers (with up to 68 releases), indicating that youth does not strictly equate to lack of experience.
 
@@ -586,4 +587,4 @@ The survey results demonstrate that these creators organically compensate for th
 Ultimately, this research highlights a unique intersection between End-User Software Engineering (EUSE) and professional development paradigms. 
 The datapack ecosystem proves that rigorous software engineering principles, such as iterative feedback loops and abstracted code generation, can successfully emerge and thrive even in self-organized, non commercial hobbyist domains.
 While this primary study establishes a qualitative baseline of developer behavior, there remains a significant gap regarding objective code analysis. 
-Future research could employ Mining Software Repositories (MSR) techniques to empirically analyze publicly available datapack codebases. By analyzing the code directly, researchers can measure its size and quality, and spot common coding mistakes (i.e. slow loops, missing namespaces,...) that survey answers might miss.
+Future research could employ Mining Software Repositories (MSR) techniques to empirically analyze publicly available datapack codebases. By analyzing the code directly, researchers can measure its size and quality, and spot common coding mistakes (e.g. slow loops, missing namespaces,...) that survey answers might miss.
