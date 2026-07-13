@@ -52,7 +52,7 @@ When evaluating a DSL in practice, researchers look at specific success factors:
 
 == Definitions
 
-A *command* is the basic instruction that is capable of modifying a part of game behavior. The most powerful ones, that more closely resemble typical programming elements are:
+A *command* is the basic instruction that is capable of modifying a part of game behavior. The most powerful ones, which more closely resemble typical programming elements, are:
 - `scoreboard`: allows to perform arithmetic operations;
 - `data`: allows to manipulate data structures;
 - `execute`: allows conditional execution of commands.
@@ -93,7 +93,7 @@ This decoupled design philosophy can be seen in the command in charge of math op
   caption: [Example with $y=10$],
 )<scoreboard_set_const>
 
-This is unusual for modern DSLs, since they are defined by having a significant amount of abstractions and high level constructs. Five participants specifically mentioned how instead it feels like they are writing an assembly level language, such as the snippet reported in @asm-ex.
+This is unusual for modern DSLs, since they are characterized by a significant number of abstractions and high level constructs. Five participants specifically mentioned how instead it feels like they are writing an assembly level language, such as the snippet reported in @asm-ex.
 #figure(
   ```asm
   mov eax, 10  ; eax = 10
@@ -214,7 +214,7 @@ Applying these criteria yielded a final group of thirteen core papers, structure
 
 == Empirical Survey Methodologies in Related Literature <survey>
 
-To design my survey, I am adopting the Goal-Question-Metric (GQM) framework, a structured approach that prevents the collection of irrelevant data by mapping every question to a specific objective. This methodology was successfully used by Musil et al. to assess the state of the practice and identify ad-hoc processes in the video game industry @musil2010.
+To design my survey, I adopted the Goal-Question-Metric (GQM) framework, a structured approach that prevents the collection of irrelevant data by mapping every question to a specific objective. This methodology was successfully used by Musil et al. to assess the state of the practice and identify ad-hoc processes in the video game industry @musil2010.
 
 When constructing survey instruments, researchers carefully utilize targeted metrics. For instance, Hermans et al. evaluated a commercial DSL by mapping survey questions directly to DSL success factors using 5-point Likert scales @hermans2009. Similarly, Cho et al. utilized Likert scale prompts combined with qualitative open ended questions to identify differences between indie and non indie game testing practices, noting that indie developers often lack formal testing plans @cho2023. 
 I apply this same principle in my primary study, using a 7-point linear scale on select questions, opting for finer granularity than McGuire's 5-point scale.
@@ -355,7 +355,7 @@ To analyze the open ended feedback from Q23 and Q24, I employed Reflexive Themat
     [*Occurrences*], [*Concept*],
     table.hline(),
     [6],
-    [Add lots of abstractions with precompilers as to write as little raw mcfunction as possible, while using design patterns.],
+    [Add lots of abstractions with precompilers as so to write as little raw mcfunction as possible, while using design patterns.],
     table.hline(),
     [3],
     [Uses website code generators (developed by 3rd parties), also because LLMs are terrible at generating datapack code.],
@@ -364,7 +364,7 @@ To analyze the open ended feedback from Q23 and Q24, I employed Reflexive Themat
     [Makes content that will only be viewable on youtube, so they do not care about testing/efficiency as long as it works and looks good.],
     table.hline(),
     table.hline(),
-    [2], [Agile methodology: planning, conceptualization, refining code, quality check, big testing, feedback, repeat.],
+    [2], [Agile methodology: planning, conceptualization, refining code, quality check, bug testing, feedback, repeat.],
     table.hline(),
     [2], [Precompilers have high entry barrier, low documentation, not always updated.],
     table.hline(),
@@ -412,7 +412,7 @@ To analyze the open ended feedback from Q23 and Q24, I employed Reflexive Themat
     [7], [Not possible to define multiple resources in a single file.],
     table.hline(),
     [5],
-    [Despite being a DSL, mcfunction feels similar to a low level language (C/assembly), feels very repetitive to write.],
+    [Despite being a DSL, mcfunction feels similar to a low level language (C/assembly) and is very repetitive to write.],
     table.hline(),
     [5], [Lack of control flow.],
     table.hline(),
@@ -425,7 +425,7 @@ To analyze the open ended feedback from Q23 and Q24, I employed Reflexive Themat
     [3], [High risk of incompatibility across datapacks.],
     table.hline(),
     [2],
-    [Sometimes not even precompilers can overcome the innate limitations of mcfunction, certain things are just unfeasible (e.g. RSA algorithm).],
+    [Sometimes not even precompilers can overcome the innate limitations of mcfunction; certain things are just unfeasible (e.g. RSA algorithm).],
     table.hline(),
     [2],
     [Struggle with keeping code functional across different Minecraft versions, barely doable with different branches.],
