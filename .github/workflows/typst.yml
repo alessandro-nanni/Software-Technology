@@ -20,25 +20,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@main
 
-      - name: Install dependencies
-        run: |
-          apk add python3 py3-pip
-          pip install pyyaml --break-system-packages
-
-      - name: Generate Typst course files
-        run: |
-          python3 .github/build.py
-
       - name: Compile Typst to PDFs
         run: |
           mkdir -p build/notes
-          for course_dir in ./*; do
-            if [ -d "$course_dir" ]; then
-              course_name=$(basename "$course_dir")
-              typ_file="$course_dir/notes/$course_name.typ"
-              if [ -f "$typ_file" ]; then
-                typst compile --root ../ "$typ_file" "build/notes/${course_name}.pdf"
-              fi
+          for typ_file in */*.typ; do
+            if grep -q '#import "../mono.typ"' "$typ_file"; then
+              course_name=$(dirname "$typ_file")
+              typst compile --root . "$typ_file" "build/notes/${course_name}.pdf"
             fi
           done
 
