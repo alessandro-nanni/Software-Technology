@@ -116,7 +116,6 @@
 }))
 
 // shortcuts
-#let h(content) = highlight(content)
 #let u(content) = underline(content)
 #let i(content) = important(content)
 #let n(supplement: none, title, body) = note(supplement: supplement, title, body)

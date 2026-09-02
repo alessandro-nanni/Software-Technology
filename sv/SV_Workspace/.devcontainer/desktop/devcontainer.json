@@ -1,0 +1,34 @@
+// Container with lightweight desktop-environment that can be accessed on port
+// 6080 using noVNC.
+{
+    "build": {
+        "dockerfile": "../Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools-extension-pack"
+            ]
+        }
+    },
+    // To avoid having to run eval $(opam env) in every session to access frama-c
+    // (the node feature below already installs yarn, so no need to do it again here)
+    "postCreateCommand": "echo 'eval $(opam env)' >> ~/.bashrc",
+
+    // Desktop-light for the Frama-C GUI, plus Node 24+ and yarn required by Ivette
+    "features": {
+        "ghcr.io/devcontainers/features/desktop-lite:1": {},
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "24"
+        }
+    },
+
+    "forwardPorts": [
+        6080 // NoVNC port for desktop-light
+    ],
+    "portsAttributes": {
+        "6080": {
+            "label": "Desktop-Light",
+        }
+    }
+}

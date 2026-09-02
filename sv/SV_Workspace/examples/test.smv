@@ -1,0 +1,17 @@
+MODULE main
+VAR
+  reset : boolean;
+  c : counter(reset);
+
+
+MODULE counter(reset)
+VAR
+  state : {zero, one, two};
+ASSIGN
+  init(state) := zero;
+  next(state) := case
+    reset | two = state : zero;
+    state = zero : one;
+    state = one : two;
+    state = two : zero;
+  esac;

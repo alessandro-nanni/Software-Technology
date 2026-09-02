@@ -1,0 +1,22 @@
+// Basic container without desktop-environment.
+{
+    "build": {
+        "dockerfile": "../Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools-extension-pack"
+            ]
+        }
+    },
+    // Node 24+ and yarn are required by Frama-C's Ivette GUI
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "24"
+        }
+    },
+    // To avoid having to run eval $(opam env) in every session to access frama-c
+    // (the node feature below already installs yarn, so no need to do it again here)
+    "postCreateCommand": "echo 'eval $(opam env)' >> ~/.bashrc"
+}
