@@ -465,7 +465,7 @@ A schema is a structure of metadata that describes how data (instances) can be s
   - Taxonomy-based: consider only specialisation/generalization relation
   - Model-based: take into account semantic interpretation of the ontologies, assumption: if two entities are the same then they share the same interpretation
   - Instance-based: use individual representation of classes, i e., classes are considered similar if they share many instances
-/ Value oriented techniques: the similarity level of two records (entities) can be derived by matching the values of their comparable attributes. #h[Strong focus on similarity of string attributes].
+/ Value oriented techniques: the similarity level of two records (entities) can be derived by matching the values of their comparable attributes. #highlight[Strong focus on similarity of string attributes].
 
 === Classification of matching vs non-matching
 
