@@ -1,6 +1,7 @@
 #import "../mono.typ": *
 #show: template.with(blue, red, [System Validation])
 
+#align(center,text(fill:red, size:20pt)[! Unlike other PDFs, this is AI generated !\ #text(fill:red, size:12pt)[It's a summary of questions I asked Claude, formatted as a cheat sheet.]])
 
 = Propositional Logic --- Implication
 
