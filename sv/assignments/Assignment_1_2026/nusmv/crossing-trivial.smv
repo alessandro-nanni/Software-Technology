@@ -1,0 +1,5 @@
+#include "crossing-environment-trivial.smv"
+#include "crossing-interlocking-trivial.smv"
+#include "crossing-main.smv"
+#include "crossing-props.smv"
+

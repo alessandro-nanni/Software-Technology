@@ -1,0 +1,5 @@
+-- True is always true
+LTLSPEC G TRUE
+
+-- It is possible to eventually reach a state where false is not true
+SPEC EF !FALSE

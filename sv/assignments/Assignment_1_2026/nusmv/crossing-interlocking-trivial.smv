@@ -1,0 +1,34 @@
+MODULE Interlocking(
+                     T1_occupied,T2_occupied,T3_occupied,
+                     S1_red,S1_green,
+                     S4_red,S4_green,
+                     B1_open,B1_closed,
+                     B2_open,B2_closed)
+  VAR
+    S2_red : boolean;
+    S2_green : boolean;
+    S3_red : boolean;
+    S3_green : boolean;
+    B1_request : boolean;
+    B2_request : boolean;
+    W1_active  : boolean;
+    W2_active  : boolean;
+  ASSIGN
+    init(S2_red)        := TRUE;
+    init(S2_green)      := FALSE;
+    init(S3_red)        := TRUE;
+    init(S3_green)      := FALSE;
+    init(B1_request)    := FALSE;
+    init(B2_request)    := FALSE;
+    init(W1_active)     := FALSE;
+    init(W2_active)     := FALSE;
+    next(S2_red)        := TRUE;
+    next(S2_green)      := FALSE;
+    next(S3_red)        := TRUE;
+    next(S3_green)      := FALSE;
+    next(B1_request)    := FALSE;
+    next(B2_request)    := FALSE;
+    next(W1_active)     := FALSE;
+    next(W2_active)     := FALSE;
+    
+

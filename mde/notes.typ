@@ -148,7 +148,7 @@ A model is an instance of a meta-model, because it can only use elements defined
 
 There are different (language-specific) `instanceOf` relations. It allows to interpret a metamodel formally (systematically). 
 
-== Metalevels1
+== Metalevels
 Hierarchy of metamodels, can be infinite ($cal(L)$). In practice, we stop at level 3. There are two ways to stop the recursive tower.
 + Assume that some language is just given (i.e. XML)
 + Model the top language in itself (most popular)#footnote[For example, you use UML to specify UML.].
@@ -160,3 +160,74 @@ Metadata management framework, data about data. The idea was to have a language 
 
 Ecore is used in Eclipse, and is compatible with MOF 1.x, and allows EMOF metamodels to be imported via XMI. Ecore is a metamodelling language. You can specify classes of objects, its attributes, relationships and operations, simple constraints (essentially a subset of the UML class diagram).
 
+
+= Object Constraint Language
+Used to define DSLs.
+
+== Why OCL
+Many modelling languages require an extra notation to express all the constraints over its sentences (models).
+
+Graphical specification languages such as UML often allow users to describe partial aspects of a system. OCL used to be part of UML but they are detached now. 
+
+Formal languages/mathematical interpretations are preferred (set theory over UML objects or semantics)#footnote[I.e. no "Please no underaged employees".].
+
+#i[The original purpose of OCL was to provide formal, precise and unambiguous specification of constraints over models. 
+
+It was also meant to be usable by a large number of users. ]
+
+OCL is a declarative language, not a programming language (its not executable): it defines constraints, conditions. 
+
+#i[An ocl constraint limits the set of valid models.]
+
+- It also has no side effects in the functional style. The evaulation of OCL expression returns a value, while the model remains unchanged.
+- OCL is also not a programming language, there is no control flow. It only has queries.
+- OCL is a typed language. Each OCL expression has a type, and OCL includes a set of predefined types.
+- The evaluation of OCL expressions is instant. The states of objects cannot change during execution (?? slide 7).
+== Applications
+Original application was to specify constraints for model elements in UML and MOF models (Invariants, Pre and post conditions, initial or derived values).
+
+It can also be a query language to obtain values from models. 
+
+Navigation language in model transformation languages like Xpath for XML documents.
+
+`context Employee inv: self.age >= 18`
+
+`inv` invariant constraint must be true for all instances of the constrained type.
+
+`pre` and `post` conditions must be true before and after the execution of an operation#footnote[This refers to the real code, not the OCL model].
+
+== OCL Metamodel
+A metamodel defines the abstract syntax of a language.
+
+OCL has primitives, collections, let-in expression allows to define a variable to be used in one constraint. If-then-else (implication)
+
+#figure(
+```
+context Employee inv:
+let annualIncome : Integer = wage * 12 in
+  if self.isUnemployed then
+    annualIncome < 5000
+  else 
+    annualIncome >= 5000
+  endif
+```)
+
+Accessing objects and properties: `self.age`, `self.getWage()`. `Enumeration`s are accessed with `::`.
+
+Navigation: going from one class to another trough a relation. If the numeration is $>=1$, the association ends are an ordered set.
+
+`->size()` means applying a function/transformation to a collection.
+
+== Iterations on collections
+
+- `select` and `reject` create a subset of a collection based on a boolean condition.
+- `collect` specifies a collection that is derived from some other collection. Generates a bag of `A` where `A` is the type of the attribute that you are collecting by.
+- `forall` specifies a boolean condition that  must hold for all objects in a collection. `forall` operations can be nested#footnote[
+  `forall(e | e.age >= 18)` can be considered a lambda in java like `forAll(e->e.age >=18)`, where the type of `e` is inferred from the collection. 
+].
+- `exists` returns `true` if the expression is true for at least one element of the collection.
+
+== Predefined Operations
+- `oclIsTypeOf(t: OclType): Boolean`. Result is `true` if `t` is either the direct type or one of the supertypes of the object.
+- `oclAsType(t: OclType):T` similar to casting in programming language.
+- `allInstances()` get the collection of all instances of that type that exist at the time when the expression is evaluated.

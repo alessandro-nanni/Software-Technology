@@ -1,0 +1,37 @@
+MODULE main
+VAR
+	bridge : { open, closing, closed, opening, opensoon };
+	boat : { wait, move, none };
+	car : { wait, move, none };
+ASSIGN
+	init(bridge) := closed;
+	init(boat) := none;
+	init(car) := none;
+
+	next(boat) := case
+		boat = none : { none, wait }; -- can still be no boat, or could arrive one and wait
+		boat = wait & bridge = open : move;
+		boat = wait : wait; -- waiting and bridge not open
+		boat = move : { move, none }; -- can move out of the bridge
+	esac;
+
+	next(car) := case
+		car = none : { none, wait };
+		car = wait & bridge = closed : move;
+		car = wait : wait;
+		car = move : { move, none };
+	esac;
+	
+	next(bridge) := case
+		bridge = closed & boat = wait : opensoon;
+		bridge = opensoon & (car = none | car = wait) : opening;
+		bridge = opensoon : opensoon;
+		bridge = opening : { open, opening }; -- bridge could be stuck opening
+		bridge = open & (boat = none | boat = wait) : closing;
+		bridge = open : open;
+		bridge = closing : { closing, closed}; -- bridge could be stuck closing
+		bridge = closed : closed;
+	esac;
+		 
+
+

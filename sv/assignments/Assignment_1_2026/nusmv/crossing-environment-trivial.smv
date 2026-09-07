@@ -1,0 +1,44 @@
+MODULE Environment(
+                     S2_red,S2_green,
+                     S3_red,S3_green,
+                     W1_active,W2_active,
+                     B1_request,B2_request)
+  VAR
+    T1_occupied : boolean;
+    T2_occupied : boolean;
+    T3_occupied : boolean;
+    cars_crossing : boolean;
+    S1_red : boolean;
+    S1_green : boolean;
+    S4_red : boolean;
+    S4_green : boolean;
+    B1_open : boolean;
+    B1_closed : boolean;
+    B2_open : boolean;
+    B2_closed : boolean;
+  ASSIGN
+    init(T1_occupied)   := FALSE;
+    init(T2_occupied)   := FALSE;
+    init(T3_occupied)   := FALSE;
+    init(cars_crossing) := FALSE;
+    init(S1_red)        := TRUE;
+    init(S1_green)      := FALSE;
+    init(S4_red)        := TRUE;
+    init(S4_green)      := FALSE;
+    init(B1_open)       := TRUE;
+    init(B1_closed)     := FALSE;
+    init(B2_open)       := TRUE;
+    init(B2_closed)     := FALSE;
+    next(T1_occupied)   := FALSE;
+    next(T2_occupied)   := FALSE;
+    next(T3_occupied)   := FALSE;
+    next(cars_crossing) := FALSE;
+    next(S1_red)        := TRUE;
+    next(S1_green)      := FALSE;
+    next(S4_red)        := TRUE;
+    next(S4_green)      := FALSE;
+    next(B1_open)       := TRUE;
+    next(B1_closed)     := FALSE;
+    next(B2_open)       := TRUE;
+    next(B2_closed)     := FALSE;
+

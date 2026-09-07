@@ -1,0 +1,209 @@
+-- Flattened FSM model generated from stdin
+-- Dumped layers are: model 
+
+MODULE main
+-- Input variables from layer 'model'
+-- State variables from layer 'model'
+VAR
+__expr_0 : boolean;
+__expr_1 : boolean;
+__expr_2 : boolean;
+__expr_3 : boolean;
+__expr_4 : boolean;
+__expr_31 : {T00, T0, T1, T2, T3, T4};
+__expr_35 : {T00, T0, T1, T2, T3, T4};
+__expr_7 : boolean;
+__expr_8 : boolean;
+__expr_27 : boolean;
+__expr_10 : boolean;
+
+-- Frozen variables from layer 'model'
+-- Defines from layer 'model'
+DEFINE
+B2_request := __expr_27;
+B2_closed := __expr_4;
+B2_open := __expr_3;
+B1_request := __expr_27;
+B1_closed := __expr_2;
+B1_open := __expr_1;
+W2_active := __expr_10;
+W1_active := __expr_10;
+S4_green := !__expr_17;
+S4_red := __expr0;
+S3_green := __expr1;
+S3_red := __expr_8;
+S2_green := __expr2;
+S2_red := __expr_7;
+S1_green := !__expr_19;
+S1_red := __expr3;
+cars_crossing := __expr_0;
+T3_occupied := __expr4;
+T2_occupied := __expr5;
+T1_occupied := __expr6;
+__expr_11 := __expr0;
+__expr_12 := __expr4;
+__expr_13 := __expr5;
+__expr_14 := __expr6;
+__expr_15 := __expr3;
+__expr_16 := !__expr_17;
+__expr_17 := __expr0;
+__expr_18 := !__expr_19;
+__expr_19 := __expr3;
+__expr_20 := __expr_10;
+__expr_21 := __expr_10;
+__expr_22 := __expr_27;
+__expr_23 := __expr_27;
+__expr_24 := __expr1;
+__expr_25 := __expr2;
+
+CONSTANTS
+ T00, T0, T1, T2, T3, T4 ;
+
+-- Assignments from layer 'model'
+ASSIGN
+init(__expr_0) := FALSE;
+next(__expr_0) := case
+(__expr7 | __expr7) : !__expr_0;
+TRUE : FALSE;
+esac;
+
+ASSIGN
+init(__expr_1) := TRUE;
+next(__expr_1) := case
+__expr_27 : FALSE;
+(__expr8 & !__expr_2) : TRUE;
+TRUE : __expr_1;
+esac;
+
+ASSIGN
+init(__expr_2) := FALSE;
+next(__expr_2) := case
+(__expr_27 & !__expr_1) : TRUE;
+TRUE : __expr9;
+esac;
+
+ASSIGN
+init(__expr_3) := TRUE;
+next(__expr_3) := case
+__expr_27 : FALSE;
+(__expr8 & !__expr_4) : TRUE;
+TRUE : __expr_3;
+esac;
+
+ASSIGN
+init(__expr_4) := FALSE;
+next(__expr_4) := case
+(__expr_27 & !__expr_3) : TRUE;
+TRUE : __expr9;
+esac;
+
+ASSIGN
+init(__expr_31) := T00;
+next(__expr_31) := case
+__expr_31 = T00 : T00 union T0;
+__expr_31 = T0 : T1;
+(__expr_31 = T1 & __expr2) : T2;
+__expr_31 = T2 : T3;
+(__expr_31 = T3 & !__expr_17) : T4;
+__expr_31 = T4 : T00;
+TRUE : __expr_31;
+esac;
+
+ASSIGN
+init(__expr_35) := T00;
+next(__expr_35) := case
+__expr_35 = T00 : T00 union T4;
+__expr_35 = T4 : T3;
+(__expr_35 = T3 & __expr1) : T2;
+__expr_35 = T2 : T1;
+(__expr_35 = T1 & !__expr_19) : T0;
+__expr_35 = T0 : T00;
+TRUE : __expr_35;
+esac;
+
+ASSIGN
+init(__expr_7) := TRUE;
+next(__expr_7) := case
+(next(__expr5) | next(__expr4)) : TRUE;
+__expr10 : TRUE;
+TRUE : FALSE;
+esac;
+
+ASSIGN
+init(__expr_8) := TRUE;
+next(__expr_8) := case
+__expr11 : TRUE;
+__expr10 : TRUE;
+TRUE : FALSE;
+esac;
+
+ASSIGN
+init(__expr_27) := FALSE;
+next(__expr_27) := case
+(__expr12 & __expr_10) : TRUE;
+!__expr12 : FALSE;
+TRUE : __expr_27;
+esac;
+
+ASSIGN
+init(__expr_10) := FALSE;
+next(__expr_10) := case
+((next(__expr6) & next(__expr4)) & __expr7) : FALSE;
+(next(__expr6) | next(__expr4)) : TRUE;
+(__expr_10 & ((next(__expr5) | !next(__expr_1)) | !next(__expr_3))) : TRUE;
+TRUE : FALSE;
+esac;
+
+
+TRANS
+ ((__expr_31 = T00 & __expr_35 != T00) -> next(__expr_31) = T00)
+
+TRANS
+ ((__expr_35 = T00 & __expr_31 != T00) -> next(__expr_35) = T00)
+
+
+FAIRNESS
+ (__expr_1 | __expr_27)
+
+
+FAIRNESS
+ (__expr_2 | __expr8)
+
+
+FAIRNESS
+ (__expr_3 | __expr_27)
+
+
+FAIRNESS
+ (__expr_4 | __expr8)
+
+
+-- Symbols introduced by the dumper:
+DEFINE __expr0 := (__expr_31 = T4 | __expr_35 = T4) ;
+
+DEFINE __expr8 := !__expr_27 ;
+
+DEFINE __expr11 := (next(__expr6) | next(__expr5)) ;
+
+DEFINE __expr12 := (__expr11 | next(__expr4)) ;
+
+DEFINE __expr4 := (__expr_31 = T3 | __expr_35 = T3) ;
+
+DEFINE __expr2 := !__expr_7 ;
+
+DEFINE __expr7 := !__expr_10 ;
+
+DEFINE __expr6 := (__expr_31 = T1 | __expr_35 = T1) ;
+
+DEFINE __expr9 := case
+TRUE : FALSE;
+esac ;
+
+DEFINE __expr1 := !__expr_8 ;
+
+DEFINE __expr3 := (__expr_31 = T0 | __expr_35 = T0) ;
+
+DEFINE __expr10 := (!next(__expr_2) | !next(__expr_4)) ;
+
+DEFINE __expr5 := (__expr_31 = T2 | __expr_35 = T2) ;
+

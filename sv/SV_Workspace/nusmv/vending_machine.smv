@@ -1,0 +1,15 @@
+MODULE main
+VAR
+	v: vending_machine;
+
+MODULE vending_machine
+VAR
+	state: {no_coins, one_coin, making_coffee};
+ASSIGN
+	init(state):= no_coins;
+	next(state):= case
+		state = no_coins: one_coin;
+		state = one_coin: making_coffee;
+		state = making_coffee: no_coins;
+	esac;
+

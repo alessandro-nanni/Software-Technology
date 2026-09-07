@@ -1,0 +1,37 @@
+How BDDs evolve over time.
+
+Supervisory controllers are very complex. Control software is hard to develop. 
+
+BDDs help develop the controllers.
+
+Design requrements, make the software, do verification. this is done with requirements. Formalize the requirements for formal verification/model checking
+
+Synthesis: model based requirements. Controller design is computed in conformity with the design
+
+Improve BDDs to improve scalability. 
+
+Graph searching to eliminate states that violate the requirements (Synthesis)
+
+SIF to BDD 
+
+fixed variable order, affects efficiency
+
+how efficiently can you represent and update the BDDs
+
+What affects synthesis efficiency?
+
+eclipse escet
+
+adapter for JavaDD since its being actively worked on?
+
+visualize inefficiencies in the BDD representations
+
+support different types of decision diagrams? polymorphism for BDD at least?
+
+GENERIC implementations for all types of DD, focus on javaDD DD.java
+
+The user provides the transformations or do we? Visualize step by step with forwards/back buttons from ui
+
+no reachability operation.
+
+JavaFx application able to load the DD (in memory/as java classes) no textual. Classpath api to run it?

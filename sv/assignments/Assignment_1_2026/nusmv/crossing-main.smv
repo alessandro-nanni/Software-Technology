@@ -1,0 +1,39 @@
+    
+MODULE main
+  DEFINE
+    T1_occupied := environment.T1_occupied ;
+    T2_occupied := environment.T2_occupied ;
+    T3_occupied := environment.T3_occupied ;
+    cars_crossing := environment.cars_crossing ;
+    S1_red   := environment.S1_red ;
+    S1_green := environment.S1_green ;
+    S2_red   := interlocking.S2_red ;
+    S2_green := interlocking.S2_green ;
+    S3_red   := interlocking.S3_red ;
+    S3_green := interlocking.S3_green ;
+    S4_red   := environment.S4_red ;
+    S4_green := environment.S4_green ;
+    W1_active  := interlocking.W1_active ;
+    W2_active  := interlocking.W2_active ;
+    B1_open    := environment.B1_open ;
+    B1_closed  := environment.B1_closed ;
+    B1_request := interlocking.B1_request ;
+    B2_open    := environment.B2_open ;
+    B2_closed  := environment.B2_closed ;
+    B2_request := interlocking.B2_request ;
+  VAR
+    environment  : Environment(
+                     S2_red,S2_green,
+                     S3_red,S3_green,
+                     W1_active,W2_active,
+                     B1_request,B2_request
+                   );
+    interlocking : Interlocking(
+                     next(T1_occupied),next(T2_occupied),next(T3_occupied),
+                     next(S1_red),next(S1_green),
+                     next(S4_red),next(S4_green),
+                     next(B1_open),next(B1_closed),
+                     next(B2_open),next(B2_closed)
+                   );
+
+

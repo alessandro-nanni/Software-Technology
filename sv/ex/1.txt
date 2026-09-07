@@ -1,0 +1,3 @@
+2. Nondet given by light = red : { red, green };
+3. Remove the current color from the possible next state
+4. 

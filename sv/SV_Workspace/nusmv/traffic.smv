@@ -1,0 +1,25 @@
+MODULE main
+VAR
+	turn: boolean;
+	t1: light(t2.can_pass,turn);
+	t2: light(t1.can_pass,!turn);
+ASSIGN
+	next(turn) := !turn;	
+
+LTLSPEC G !(t1.is_orange & t2.is_orange)
+
+MODULE light(other_passable, my_turn)
+VAR
+	light : { green, orange, red};
+ASSIGN
+	init(light) := red;
+	next(light) := case
+		other_passable: red;
+		light = red & my_turn : { red, green };
+    	light = red : red;    
+		light = green  : { green, orange };
+		light = orange: { orange, red };
+	esac;
+DEFINE
+	can_pass:= light = green | light = orange;
+	is_orange:= light = orange;
