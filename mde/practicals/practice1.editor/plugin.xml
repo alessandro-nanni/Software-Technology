@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated practice1 -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="practice1.presentation.Practice1ModelWizardID"
+            name="%_UI_Practice1ModelWizard_label"
+            class="practice1.presentation.Practice1ModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/Practice1ModelFile.gif">
+         <description>%_UI_Practice1ModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated practice1 -->
+      <editor
+            id="practice1.presentation.Practice1EditorID"
+            name="%_UI_Practice1Editor_label"
+            icon="icons/full/obj16/Practice1ModelFile.gif"
+            extensions="practice1"
+            class="practice1.presentation.Practice1Editor"
+            contributorClass="practice1.presentation.Practice1ActionBarContributor">
+      </editor>
+   </extension>
+
+</plugin>

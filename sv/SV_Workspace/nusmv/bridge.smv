@@ -33,5 +33,6 @@ ASSIGN
 		bridge = closed : closed;
 	esac;
 		 
-
+FAIRNESS
+	(boat=move)->next(boat) != move
 

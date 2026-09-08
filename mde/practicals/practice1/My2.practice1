@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<practice1:Select xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:practice1="http://www.example.org/practice1">
+  <selections xsi:type="practice1:AllColumnsSelection"/>
+  <tables name="users" alias="u"/>
+</practice1:Select>

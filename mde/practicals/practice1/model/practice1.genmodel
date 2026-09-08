@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    modelDirectory="/practice1/src-gen" creationIcons="false" editDirectory="/practice1.edit/src-gen"
+    editorDirectory="/practice1.editor/src-gen" modelPluginID="practice1" modelName="Practice1"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" codeFormatting="true"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="21.0" copyrightFields="false"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>practice1.ecore</foreignModel>
+  <testsDirectory xsi:nil="true"/>
+  <genPackages prefix="Practice1" disposableProviderFactory="true" ecorePackage="practice1.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="practice1.ecore#//ComparisonOp">
+      <genEnumLiterals ecoreEnumLiteral="practice1.ecore#//ComparisonOp/EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="practice1.ecore#//ComparisonOp/LESS"/>
+      <genEnumLiterals ecoreEnumLiteral="practice1.ecore#//ComparisonOp/GREATER"/>
+      <genEnumLiterals ecoreEnumLiteral="practice1.ecore#//ComparisonOp/NOT_EQUAL"/>
+    </genEnums>
+    <genClasses ecoreClass="practice1.ecore#//Query"/>
+    <genClasses ecoreClass="practice1.ecore#//Select">
+      <genFeatures children="true" notify="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//Select/selections"/>
+      <genFeatures children="true" notify="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//Select/tables"/>
+      <genFeatures children="true" notify="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//Select/condition"/>
+    </genClasses>
+    <genClasses ecoreClass="practice1.ecore#//Union">
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//Union/left"/>
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//Union/right"/>
+    </genClasses>
+    <genClasses ecoreClass="practice1.ecore#//Selection"/>
+    <genClasses ecoreClass="practice1.ecore#//TableReference">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practice1.ecore#//TableReference/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practice1.ecore#//TableReference/alias"/>
+    </genClasses>
+    <genClasses ecoreClass="practice1.ecore#//Condition"/>
+    <genClasses ecoreClass="practice1.ecore#//ColumnSelection">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practice1.ecore#//ColumnSelection/attribute"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practice1.ecore#//ColumnSelection/alias"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//ColumnSelection/table"/>
+    </genClasses>
+    <genClasses ecoreClass="practice1.ecore#//AllColumnsSelection">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//AllColumnsSelection/table"/>
+    </genClasses>
+    <genClasses ecoreClass="practice1.ecore#//Comparison">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//Comparison/left"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//Comparison/right"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practice1.ecore#//Comparison/operator"/>
+    </genClasses>
+    <genClasses ecoreClass="practice1.ecore#//AND">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//AND/left"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//AND/right"/>
+    </genClasses>
+    <genClasses ecoreClass="practice1.ecore#//OR">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//OR/left"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//OR/right"/>
+    </genClasses>
+    <genClasses ecoreClass="practice1.ecore#//NOT">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//NOT/condition"/>
+    </genClasses>
+    <genClasses ecoreClass="practice1.ecore#//EXIST">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//EXIST/query"/>
+    </genClasses>
+    <genClasses ecoreClass="practice1.ecore#//Value"/>
+    <genClasses ecoreClass="practice1.ecore#//AttributeReference">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practice1.ecore#//AttributeReference/attribute"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference practice1.ecore#//AttributeReference/table"/>
+    </genClasses>
+    <genClasses ecoreClass="practice1.ecore#//Literal">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practice1.ecore#//Literal/value"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

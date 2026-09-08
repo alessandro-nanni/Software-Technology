@@ -1,0 +1,56 @@
+MODULE main
+
+DEFINE 
+    capacity := 4;
+    is_full  := (boats = capacity);
+
+VAR
+    boats: 0..capacity;
+    turn: {left, right};
+    
+    -- Pass a boolean indicating if it's this door's turn
+    d1: door(d2.is_open, turn = left);
+    d2: door(d1.is_open, turn = right);
+
+ASSIGN
+    init(boats) := 0;
+    
+    -- Boats only change if a door is open
+    next(boats) := case
+        !(d1.is_open | d2.is_open) : boats; -- Both doors closed: no change
+        (d1.is_open | d2.is_open) : case
+            boats = 0        : {0, 1};                  -- Empty: can only enter or stay empty
+            boats = capacity : {capacity, capacity - 1}; -- Full: can only leave or stay full
+            TRUE             : {boats - 1, boats, boats + 1}; -- Otherwise: enter, leave, or stay
+        esac;
+        TRUE : boats;
+    esac;
+
+    -- Alternating turn logic: if a door is open, set turn to the other door.
+    init(turn) := left;
+    next(turn) := case
+        d1.is_open : right;
+        d2.is_open : left;
+        TRUE       : turn;
+    esac;
+
+
+MODULE door(other_is_open, my_turn)
+VAR
+    open: boolean;
+
+ASSIGN
+    init(open) := FALSE;
+    next(open) := case
+        -- If open, it can non-deterministically stay open or close
+        open : {TRUE, FALSE}; 
+        
+        -- If closed, and the other is closed, and it's my turn: non-deterministically open or stay closed
+        !open & !other_is_open & my_turn : {TRUE, FALSE}; 
+        
+        -- Default: stay closed / force close
+        TRUE : FALSE; 
+    esac;
+
+DEFINE
+    is_open := open;
