@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ex:Computer xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ex="http://www.example.org/examples/example.ecore">
+  <motherboard powerConsumption="3" chipset="example chipset">
+    <ports>HDMI</ports>
+    <ports>Ethernet</ports>
+    <ports>USB</ports>
+  </motherboard>
+  <processor powerConsumption="67" model="example model" cores="4"/>
+  <graphicsCard powerConsumption="30" model="example model" vramGB="4"/>
+  <memory powerConsumption="53" capacityGB="4"/>
+  <memory powerConsumption="5" capacityGB="56"/>
+  <memory powerConsumption="5" capacityGB="540"/>
+  <hardDisks powerConsumption="342" capacityGB="45"/>
+  <cdDrive powerConsumption="5"/>
+  <peripherals xsi:type="ex:Monitor" powerConsumption="53"/>
+  <peripherals xsi:type="ex:Keyboard" powerConsumption="110"/>
+  <peripherals xsi:type="ex:Mouse" powerConsumption="10"/>
+  <powerSupply capacityWatts="35" efficiency="Titanium"/>
+</ex:Computer>

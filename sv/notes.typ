@@ -120,6 +120,63 @@ $lambda(s)$ is *not* global --- recomputed per state; the same proposition can b
 
 `DEFINE` is the concrete NuSMV mechanism that supplies $lambda$'s rule: #raw("even := state=zero | state=two") says exactly when $"even" in lambda(s)$.
 
+= Safety vs. Liveness --- §4.2
+
+#strong[Safety] ("nothing bad happens"): counter-example is always *finite* --- a path prefix that reaches the bad state. \
+#strong[Liveness] ("something good eventually happens"): counter-example is always *infinite* --- a whole path along which the good thing never occurs.
+
+#i[Test: can a violation be witnessed by a finite trace? Yes $arrow.r$ safety. If disproof needs "...and it simply never happens, ever" $arrow.r$ liveness.]
+
+- #strong[Bounded liveness] ("closed within 10 steps") is secretly safety --- the deadline makes the counter-example finite again.
+- #strong[Deadlock absence] counts as safety: the counter-example is the finite path ending in the stuck state --- even though the deadlock itself then blocks all future good things.
+
+= Linear Temporal Logic --- §4.4
+
+$ phi ::= p | not phi | phi and phi | phi or phi | G phi | F phi | X phi | phi U phi | phi W phi $
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [$G phi$], [globally --- $phi$ holds at *every* position from here on],
+  [$F phi$], [eventually --- $phi$ holds at *some* position from here on (now included)],
+  [$X phi$], [next --- $phi$ holds at exactly the *next* position],
+  [$phi_1 U phi_2$], [until --- $phi_2$ *must* eventually hold; $phi_1$ holds at every position before that],
+  [$phi_1 W phi_2$], [weak until --- like $U$, but $phi_2$ is never guaranteed: $phi_1$ may just hold forever instead],
+)
+
+#strong[Core LTL] ($X$, $U$ suffice --- everything else derives):
+$ G phi equiv not F not phi quad quad F phi equiv "true" U phi $
+$ phi_1 W phi_2 equiv (phi_1 U phi_2) or G phi_1 quad quad phi_1 U phi_2 equiv F phi_2 and (phi_1 W phi_2) $
+
+== Strictness ladder for $G (p_1 arrow.r ...)$
+
+Given $p_1$ holds at position $i$, when must $p_2$ hold?
+
+#table(
+  columns: (1fr, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [$G (p_1 arrow.r p_2)$], [exactly at $i$, same instant --- strongest],
+  [$G (p_1 arrow.r X p_2)$], [exactly at $i+1$, one step later, no more no less],
+  [$G (p_1 arrow.r X F p_2)$], [anywhere from $i+1$ on --- strictly after, unbounded],
+  [$G (p_1 arrow.r F p_2)$], [anywhere from $i$ on --- now or later, weakest],
+)
+
+Each row strictly implies the one below it. #strong[Bare] $p_1 arrow.r p_2$ (no $G$) is a different animal: LTL evaluates a naked formula only at position $0$ of the path, so it constrains nothing but the *initial* state --- incomparable to the ladder above.
+
+#i[$X$ is a plain one-step shift, so it *commutes* with $F$, $G$, $U$: $X F p equiv F X p$ (both just mean "$p$ holds at some position $>= 1$"). This does *not* extend to $F$ and $G$ commuting with each other: $G F p$ ("$p$ infinitely often", gaps allowed) and $F G p$ ("$p$ eventually holds forever") are genuinely different --- $F G p arrow.r G F p$ but never the reverse.]
+
+== Tool syntax
+
+#table(
+  columns: (auto, auto, auto),
+  stroke: 0.4pt, inset: 4pt,
+  [], [*NuSMV*], [*Promela*],
+  [section], [`LTLSPEC`], [`ltl name { ... }`],
+  [$G$ / $F$], [`G` / `F`], [`[]` / `<>`],
+  [$X$], [`X`], [not supported],
+  [$U$ / $W$], [`U` / (derive via $G,U$)], [`U` / `W`],
+)
+
 = Fairness --- §4.5
 
 #strong[Problem:] some legal-but-unrealistic infinite paths (e.g. resetting forever) can make an otherwise-true liveness property look false.
@@ -140,4 +197,60 @@ Fairness filters *which infinite paths are considered* --- it never edits $arrow
 #strong[Keep non-determinism (+ fairness) when] it's a genuine abstraction (real detail deliberately omitted) or real uncertainty, verifying under it covers *every* concrete resolution at once, and the only excluded case is a physically-impossible infinite idealization.
 
 #strong[Remove non-determinism when] you actually know/want the specific rule, fairness would have to do so much work the non-determinism added no value, or the "bad" pattern might be a *real* risk --- fairness would then hide a bug rather than exclude a fiction.
+
+= Computation Tree Logic --- §4.7
+
+Two levels, always alternating: #strong[state formulas] $Phi$ (true *at* a state) and #strong[path formulas] $phi$ (true *along* a path).
+
+$ Phi ::= p | not Phi | Phi and Phi | Phi or Phi | A phi | E phi $
+$ phi ::= G Phi | F Phi | Phi U Phi | X Phi $
+
+$s$ satisfies $A phi$ iff *every* path $pi$ starting at $s$ satisfies $phi$; $s$ satisfies $E phi$ iff *some* path starting at $s$ satisfies $phi$.
+
+#i[$A$/$E$ answer *which path* --- they resolve non-determinism by picking a branch out of the tree rooted at the state. $G$/$F$/$X$/$U$ answer *where in time*, once a branch is already fixed. That's why the grammar forces alternation: bare $A p$ or bare $G p$ is meaningless alone --- "for all paths, $p$" doesn't say *when*, and "always $p$" doesn't say *for which futures*.]
+
+#strong[Example] --- a state with a black-forever loop *and* a white-forever loop as its two options: $E G "black"$ is true (the black branch exists), but $A G "black"$ is false (the white branch breaks it). Same $G$-property, different quantifier $arrow.r$ different verdict.
+
+== Common patterns
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [$A G p$], [$p$ holds forever, no matter how execution unfolds --- true invariant],
+  [$E G p$], [*some* execution keeps $p$ forever],
+  [$E F p$], [*some* execution reaches $p$],
+  [$A F p$], [$p$ is unavoidable, on every execution],
+  [$A G (E F p)$], [no matter what happens, it's always still *possible* to get back to $p$],
+)
+
+== Dualities \& core set
+
+$ A G Phi equiv not E F not Phi quad quad A F Phi equiv not E G not Phi quad quad A X Phi equiv not E X not Phi $
+
+Core CTL (used by the Ch. 5 model-checking algorithm) is just three operators --- $E X$, $E U$, $A F$ --- everything else reduces to these.
+
+`SPEC` in NuSMV; combined syntax `AG AF AX AU EG EF EX EU`. #strong[Spin has no CTL support] --- LTL only.
+
+== Fairness and CTL --- §4.8
+
+Fairness can't be written as a CTL formula at all --- it would need a connective like $arrow.r$ *inside* a path formula, which the grammar forbids. NuSMV's `FAIRNESS`/`COMPASSION` sidestep this by changing the *semantics* of $A$/$E$ to quantify only over fair paths, instead of adding a formula.
+
+= LTL vs. CTL --- §4.9
+
+Incomparable expressive power:
+
+- #strong[CTL-only] --- anything using $E$ ("there exists a path such that..."). LTL is always implicitly "for all paths" --- no syntax to assert path *existence*.
+- #strong[LTL-only] --- $F G p$ ("eventually stabilizes forever") has *no* CTL equivalent: $A F A G p$ is too strong (stabilization on literally every branch, no escape ever), $A F E G p$ is too weak (only demands the *option* exists somewhere).
+
+CTL\* (Emerson \& Halpern) subsumes both by dropping the alternation restriction --- theoretical interest only, no tool support here.
+
+== When to prefer which
+
+- #strong[Property needs "there's a way to…"] ($E$) $arrow.r$ *CTL*.
+- #strong[Persistence / stabilization / fairness-shaped pattern] on a single trace $arrow.r$ *LTL*.
+- #strong[Checked at runtime] against one observed trace $arrow.r$ *LTL* --- a single trace is linear; $E$/$A$ need the full branching structure, unobservable from one run.
+- #strong[Tool is Spin] $arrow.r$ *LTL* (forced, no CTL support).
+- #strong[Expressible in both, check-time efficiency matters] $arrow.r$ *CTL* --- linear in $|K| times |phi|$, vs. LTL's Büchi-automaton construction, exponential in $|phi|$.
+
+#i[No universal winner --- match the logic to how you're actually thinking about the property: "what happens as this runs" $arrow.r$ LTL; "what remains reachable / possible" $arrow.r$ CTL.]
 

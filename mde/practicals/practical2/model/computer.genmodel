@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/practical2/src" modelPluginID="practical2" modelName="Computer"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="21.0" copyrightFields="false" operationReflection="true" importOrganizing="true">
+  <foreignModel>practical.ecore</foreignModel>
+  <genPackages prefix="Computer" disposableProviderFactory="true" ecorePackage="practical.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="practical.ecore#//CPUSocket">
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//CPUSocket/AM4"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//CPUSocket/AM5"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//CPUSocket/LGA1200"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//CPUSocket/LGA1700"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="practical.ecore#//PortType">
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//PortType/USB"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//PortType/PS2"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//PortType/HDMI"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//PortType/DisplayPort"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//PortType/VGA"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//PortType/Ethernet"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//PortType/Audio"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="practical.ecore#//MotherboardType">
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//MotherboardType/ATX"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//MotherboardType/MicroATX"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//MotherboardType/MiniITX"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="practical.ecore#//MemoryType">
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//MemoryType/DDR4"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//MemoryType/DDR5"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="practical.ecore#//StorageType">
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//StorageType/HDD"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//StorageType/SSD"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="practical.ecore#//CDDriveType">
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//CDDriveType/CD_ROM"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//CDDriveType/CD_R"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//CDDriveType/CD_RW"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//CDDriveType/DVD_ROM"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//CDDriveType/Blu_Ray"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="practical.ecore#//Efficiency">
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//Efficiency/Bronze"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//Efficiency/Silver"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//Efficiency/Gold"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//Efficiency/Platinum"/>
+      <genEnumLiterals ecoreEnumLiteral="practical.ecore#//Efficiency/Titanium"/>
+    </genEnums>
+    <genClasses image="false" ecoreClass="practical.ecore#//Component">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//Component/powerConsumption"/>
+    </genClasses>
+    <genClasses ecoreClass="practical.ecore#//Motherboard">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//Motherboard/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//Motherboard/chipset"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//Motherboard/socket"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//Motherboard/ports"/>
+    </genClasses>
+    <genClasses ecoreClass="practical.ecore#//Processor">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//Processor/model"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//Processor/socket"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//Processor/cores"/>
+    </genClasses>
+    <genClasses ecoreClass="practical.ecore#//GraphicsCard">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//GraphicsCard/model"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//GraphicsCard/vramGB"/>
+    </genClasses>
+    <genClasses ecoreClass="practical.ecore#//Memory">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//Memory/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//Memory/capacityGB"/>
+    </genClasses>
+    <genClasses ecoreClass="practical.ecore#//HardDisk">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//HardDisk/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//HardDisk/capacityGB"/>
+    </genClasses>
+    <genClasses ecoreClass="practical.ecore#//CDDrive">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//CDDrive/type"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="practical.ecore#//Peripheral">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//Peripheral/requiredPort"/>
+    </genClasses>
+    <genClasses ecoreClass="practical.ecore#//Monitor"/>
+    <genClasses ecoreClass="practical.ecore#//Keyboard"/>
+    <genClasses ecoreClass="practical.ecore#//Mouse"/>
+    <genClasses ecoreClass="practical.ecore#//Printer"/>
+    <genClasses ecoreClass="practical.ecore#//PowerSupply">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//PowerSupply/capacityWatts"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute practical.ecore#//PowerSupply/efficiency"/>
+    </genClasses>
+    <genClasses ecoreClass="practical.ecore#//Computer">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference practical.ecore#//Computer/motherboard"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference practical.ecore#//Computer/processor"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference practical.ecore#//Computer/graphicsCard"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference practical.ecore#//Computer/memory"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference practical.ecore#//Computer/hardDisks"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference practical.ecore#//Computer/cdDrive"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference practical.ecore#//Computer/peripherals"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference practical.ecore#//Computer/powerSupply"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
