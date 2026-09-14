@@ -1,5 +1,5 @@
 #import "../mono.typ": *
-#show: template.with(blue, red, [Model Driven Engineering])
+#show: template.with(blue, purple, [Model Driven Engineering])
 
 = Introduction
 == Why model driven engineering
@@ -165,7 +165,7 @@ Ecore is used in Eclipse, and is compatible with MOF 1.x, and allows EMOF metamo
 Used to define DSLs.
 
 == Why OCL
-Many modelling languages require an extra notation to express all the constraints over its sentences (models).
+Many modelling languages require an extra notation to express all the constraints over its sentences (models). For example in XML. 
 
 Graphical specification languages such as UML often allow users to describe partial aspects of a system. OCL used to be part of UML but they are detached now. 
 
@@ -177,12 +177,12 @@ It was also meant to be usable by a large number of users. ]
 
 OCL is a declarative language, not a programming language (its not executable): it defines constraints, conditions. 
 
-#i[An ocl constraint limits the set of valid models.]
+#i[An OCL constraint limits the set of valid models.]
 
 - It also has no side effects in the functional style. The evaulation of OCL expression returns a value, while the model remains unchanged.
 - OCL is also not a programming language, there is no control flow. It only has queries.
 - OCL is a typed language. Each OCL expression has a type, and OCL includes a set of predefined types.
-- The evaluation of OCL expressions is instant. The states of objects cannot change during execution (?? slide 7).
+- The evaluation of OCL expressions is instant. The states of objects cannot change during execution.
 == Applications
 Original application was to specify constraints for model elements in UML and MOF models (Invariants, Pre and post conditions, initial or derived values).
 
@@ -231,3 +231,72 @@ Navigation: going from one class to another trough a relation. If the numeration
 - `oclIsTypeOf(t: OclType): Boolean`. Result is `true` if `t` is either the direct type or one of the supertypes of the object.
 - `oclAsType(t: OclType):T` similar to casting in programming language.
 - `allInstances()` get the collection of all instances of that type that exist at the time when the expression is evaluated.
+
+= DSLs and XTEXT
+
+We want to automate some problem domain with a computer system. But there is an abstraction gap between the computation domain and the problem domain.
+
+To reduce the abstraction gap you can make a computational model closer to the problem domain. To increase the implementation gap you can distance yourself from the executable domain process (but is familiar for domain experts).
+
+There is a tradeoff: you offer something to the domain experts, but increase the effort needed to translate the executable domain.
+
+UML was an effort to have higher level abstraction.
+
+What is the purpose of these languages?
+
+/ Java: is a general-purpose programming language (GPL) 
+/ UML: is a general-purpose modelling language (GPML)
+  - More abstract than Java
+  - Generally not executable
+  - Allows modelling in any domain
+  - Still does not talk in a domain language
+
+DSLs are highly expressive for a specific domain. It is familiar for the domain experts, there is no (or a small) abstraction gap.
+
+Often, domains have intersections, or interact at some point. 
+
+*How do you execute a model?* Depends on the type of model, usually it is executed by a model interpreter. A model is a sentence in a modelling language.
+
+Compiling a model means transforming it (in MDE), for example model-to-text. 
+
+The details of model-to-text and model-to-model transformation make it possible to provide the information necessary to perform code execution.
+
+*Defining DSMLs* --- Components
+/ Abstract Syntax: #m(page:18)
+
+== Language Metamodel
+
+For the concrete syntax, there is GMF (Graphical Modeling Framework, deprecated), and Sirius.
+
+Textual Concrete syntax: allows to define how a model can be defined in a textual way. With XTEXT you can generate a parser and an editor.
+
+#i[*Concrete Syntax as Model*
+
+Concrete Syntax is a template that maps the metamodel classes to textual syntax (.cs file)]
+
+== XText
+XText is a set of DSLs and modern APIs to describe the different aspects of a language. It is useful to define DSLs. It allows language designers to define the concrete syntax of their languages in the way they prefer. 
+
+Its the most popular environment for DSL development.
+
+It can generate a parser, an abstract syntax tree, a serializer and code formatter. It provides scoping, linking, compiler checks and static analysis (validation), and code generator or interpreter.
+
+You can start development from the grammar, but also from a metamodel.
+
+It is composed of a grammar language and a Modeling Workflow Language 2 (MWL 2).
+
+*Workflow*
++ Create Xtext project 
++ Get default grammar
++ Edit default grammar
++ Run MWE 2 workflow
++ Get language artifacts
+
+*Workflow wtth Ecore model*
++ Ecore project must be converted to Xtext project
++ Ecore model, genmodel and model code
++ Generated grammar
++ Adjust generated grammar
++ Language grammar
++ Run MWE 2 Workflow
++ Get language artifacts
