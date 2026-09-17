@@ -1,0 +1,41 @@
+Computer {
+    motherboard Motherboard {
+        powerConsumption 30
+        type ATX
+        chipset "B650"
+        socket AM5
+        ports { USB, HDMI, Ethernet }
+    }
+    processor Processor {
+        powerConsumption 65
+        model "Ryzen 5 7600"
+        socket AM5
+        cores 6
+    }
+    graphicsCard GraphicsCard {
+        powerConsumption 150
+        model "RTX 4060"
+        vramGB 8
+    }
+    memory {
+        Memory { powerConsumption 5 type DDR5 capacityGB 16 },
+        Memory { powerConsumption 5 type DDR5 capacityGB 16 }
+    }
+    hardDisks {
+        HardDisk { powerConsumption 8 type SSD capacityGB 1000 }
+    }
+    cdDrive CDDrive {
+        powerConsumption 20
+        type DVD_ROM
+    }
+    peripherals {
+        Monitor { powerConsumption 25 requiredPort HDMI },
+        Keyboard { powerConsumption 2 requiredPort USB },
+        Mouse { powerConsumption 1 requiredPort USB }
+    }
+    powerSupply PowerSupply {
+        capacityWatts 650
+        efficiency Gold
+    }
+    
+}
