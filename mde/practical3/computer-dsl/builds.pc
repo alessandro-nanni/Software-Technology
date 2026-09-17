@@ -1,0 +1,17 @@
+// builds.pc
+
+package my.shop.builds {
+
+    import my.shop.parts.*
+
+    computer GamingPC {
+        motherboard AsusB650
+        processor Ryzen5
+        graphics Rtx4060
+        memory Ddr5Kit16, Ddr5Kit16
+        storage NvmeSsd1TB
+        drive DvdDrive
+        peripherals my.shop.devices.Dell24, my.shop.devices.LogiKeyboard, my.shop.devices.LogiMouse
+        psu Corsair650
+    }
+}

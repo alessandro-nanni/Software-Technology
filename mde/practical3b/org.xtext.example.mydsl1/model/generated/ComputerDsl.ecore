@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="computerDsl" nsURI="http://www.xtext.org/example/computer/ComputerDsl"
+    nsPrefix="computerDsl">
+  <eClassifiers xsi:type="ecore:EClass" name="Model">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="elements" upperBound="-1"
+        eType="#//AbstractElement" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractElement"/>
+  <eClassifiers xsi:type="ecore:EClass" name="PackageDeclaration" eSuperTypes="#//AbstractElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="elements" upperBound="-1"
+        eType="#//AbstractElement" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Import" eSuperTypes="#//AbstractElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="importedNamespace" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Computer" eSuperTypes="#//AbstractElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="motherboard" eType="#//Motherboard"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="processor" eType="#//Processor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="graphicsCard" eType="#//GraphicsCard"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="memory" unique="false"
+        upperBound="-1" eType="#//Memory"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="storage" unique="false"
+        upperBound="-1" eType="#//Storage"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="drive" eType="#//Drive"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="peripherals" unique="false"
+        upperBound="-1" eType="#//Peripheral"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="powerSupply" eType="#//PowerSupply"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Part" eSuperTypes="#//AbstractElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Motherboard" eSuperTypes="#//Part">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="power" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//MotherboardType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="chipset" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="socket" eType="#//Socket"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="ports" unique="false" upperBound="-1"
+        eType="#//Port"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Processor" eSuperTypes="#//Part">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="power" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="model" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="socket" eType="#//Socket"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="cores" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GraphicsCard" eSuperTypes="#//Part">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="power" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="model" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="vram" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Memory" eSuperTypes="#//Part">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="power" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//MemoryType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="capacity" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Storage" eSuperTypes="#//Part">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="power" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//StorageType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="capacity" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Drive" eSuperTypes="#//Part">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="power" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//DriveType"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Peripheral" eSuperTypes="#//Part">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" eType="#//PeripheralKind"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="power" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="port" eType="#//Port"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PowerSupply" eSuperTypes="#//Part">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="capacity" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rating" eType="#//Rating"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="PeripheralKind">
+    <eLiterals name="MONITOR" literal="monitor"/>
+    <eLiterals name="KEYBOARD" value="1" literal="keyboard"/>
+    <eLiterals name="MOUSE" value="2" literal="mouse"/>
+    <eLiterals name="PRINTER" value="3" literal="printer"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="MotherboardType">
+    <eLiterals name="ATX" literal="ATX"/>
+    <eLiterals name="MicroATX" value="1" literal="MicroATX"/>
+    <eLiterals name="MiniITX" value="2" literal="MiniITX"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Socket">
+    <eLiterals name="AM4" literal="AM4"/>
+    <eLiterals name="AM5" value="1" literal="AM5"/>
+    <eLiterals name="LGA1200" value="2" literal="LGA1200"/>
+    <eLiterals name="LGA1700" value="3" literal="LGA1700"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Port">
+    <eLiterals name="USB" literal="USB"/>
+    <eLiterals name="PS2" value="1" literal="PS2"/>
+    <eLiterals name="HDMI" value="2" literal="HDMI"/>
+    <eLiterals name="DisplayPort" value="3" literal="DisplayPort"/>
+    <eLiterals name="VGA" value="4" literal="VGA"/>
+    <eLiterals name="Ethernet" value="5" literal="Ethernet"/>
+    <eLiterals name="Audio" value="6" literal="Audio"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="MemoryType">
+    <eLiterals name="DDR4" literal="DDR4"/>
+    <eLiterals name="DDR5" value="1" literal="DDR5"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="StorageType">
+    <eLiterals name="HDD" literal="HDD"/>
+    <eLiterals name="SSD" value="1" literal="SSD"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="DriveType">
+    <eLiterals name="CD_ROM" literal="CD_ROM"/>
+    <eLiterals name="CD_R" value="1" literal="CD_R"/>
+    <eLiterals name="CD_RW" value="2" literal="CD_RW"/>
+    <eLiterals name="DVD_ROM" value="3" literal="DVD_ROM"/>
+    <eLiterals name="BluRay" value="4" literal="BluRay"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Rating">
+    <eLiterals name="Bronze" literal="Bronze"/>
+    <eLiterals name="Silver" value="1" literal="Silver"/>
+    <eLiterals name="Gold" value="2" literal="Gold"/>
+    <eLiterals name="Platinum" value="3" literal="Platinum"/>
+    <eLiterals name="Titanium" value="4" literal="Titanium"/>
+  </eClassifiers>
+</ecore:EPackage>

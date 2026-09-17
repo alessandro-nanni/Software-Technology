@@ -1,0 +1,119 @@
+grammar org.xtext.example.computer.ComputerDsl with org.eclipse.xtext.common.Terminals
+
+generate computerDsl "http://www.xtext.org/example/computer/ComputerDsl"
+
+Model:
+	(elements+=AbstractElement)*;
+
+AbstractElement:
+	PackageDeclaration | Import | Part | Computer;
+
+PackageDeclaration:
+	'package' name=QualifiedName '{'
+		(elements+=AbstractElement)*
+	'}';
+
+Import:
+	'import' importedNamespace=QualifiedNameWithWildcard;
+
+QualifiedName:
+	ID ('.' ID)*;
+
+QualifiedNameWithWildcard:
+	QualifiedName '.*'?;
+
+Computer:
+	'computer' name=ID '{'
+		'motherboard' motherboard=[Motherboard|QualifiedName]
+		'processor' processor=[Processor|QualifiedName]
+		('graphics' graphicsCard=[GraphicsCard|QualifiedName])?
+		'memory' memory+=[Memory|QualifiedName] (',' memory+=[Memory|QualifiedName])*
+		'storage' storage+=[Storage|QualifiedName] (',' storage+=[Storage|QualifiedName])*
+		('drive' drive=[Drive|QualifiedName])?
+		('peripherals' peripherals+=[Peripheral|QualifiedName] (',' peripherals+=[Peripheral|QualifiedName])*)?
+		'psu' powerSupply=[PowerSupply|QualifiedName]
+	'}';
+
+Part:
+	Motherboard | Processor | GraphicsCard | Memory | Storage | Drive | Peripheral | PowerSupply;
+
+Motherboard:
+	'motherboard' name=ID '{'
+		'power' power=INT
+		'type' type=MotherboardType
+		'chipset' chipset=STRING
+		'socket' socket=Socket
+		('ports' ports+=Port (',' ports+=Port)*)?
+	'}';
+
+Processor:
+	'processor' name=ID '{'
+		'power' power=INT
+		('model' model=STRING)?
+		'socket' socket=Socket
+		'cores' cores=INT
+	'}';
+
+GraphicsCard:
+	'graphics' name=ID '{'
+		'power' power=INT
+		('model' model=STRING)?
+		'vram' vram=INT
+	'}';
+
+Memory:
+	'memory' name=ID '{'
+		'power' power=INT
+		'type' type=MemoryType
+		'capacity' capacity=INT
+	'}';
+
+Storage:
+	'storage' name=ID '{'
+		'power' power=INT
+		'type' type=StorageType
+		'capacity' capacity=INT
+	'}';
+
+Drive:
+	'drive' name=ID '{'
+		'power' power=INT
+		'type' type=DriveType
+	'}';
+
+// Monitor, Keyboard, Mouse and Printer only differ by kind, so they share one rule
+Peripheral:
+	kind=PeripheralKind name=ID '{'
+		'power' power=INT
+		'port' port=Port
+	'}';
+
+PowerSupply:
+	'psu' name=ID '{'
+		'capacity' capacity=INT
+		'rating' rating=Rating
+	'}';
+
+enum PeripheralKind:
+	MONITOR='monitor' | KEYBOARD='keyboard' | MOUSE='mouse' | PRINTER='printer';
+
+enum MotherboardType:
+	ATX | MicroATX | MiniITX;
+
+enum Socket:
+	AM4 | AM5 | LGA1200 | LGA1700;
+
+enum Port:
+	USB | PS2 | HDMI | DisplayPort | VGA | Ethernet | Audio;
+
+enum MemoryType:
+	DDR4 | DDR5;
+
+enum StorageType:
+	HDD | SSD;
+
+enum DriveType:
+	CD_ROM | CD_R | CD_RW | DVD_ROM | BluRay;
+
+enum Rating:
+	Bronze | Silver | Gold | Platinum | Titanium;

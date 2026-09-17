@@ -1,0 +1,19 @@
+// devices.pc
+
+package my.shop.devices {
+
+    monitor Dell24 {
+        power 25
+        port HDMI
+    }
+
+    keyboard LogiKeyboard {
+        power 2
+        port USB
+    }
+
+    mouse LogiMouse {
+        power 1
+        port USB
+    }
+}

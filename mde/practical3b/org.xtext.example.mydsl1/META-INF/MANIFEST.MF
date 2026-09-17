@@ -1,0 +1,28 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.xtext.example.mydsl1
+Bundle-ManifestVersion: 2
+Bundle-Name: org.xtext.example.mydsl1
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: org.xtext.example.mydsl1; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.19.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.44.0",
+ org.eclipse.emf.common,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
+Bundle-RequiredExecutionEnvironment: JavaSE-25
+Export-Package: org.xtext.example.computer.parser.antlr,
+ org.xtext.example.computer.services,
+ org.xtext.example.computer.validation,
+ org.xtext.example.computer.computerDsl.impl,
+ org.xtext.example.computer.serializer,
+ org.xtext.example.computer.computerDsl,
+ org.xtext.example.computer,
+ org.xtext.example.computer.computerDsl.util,
+ org.xtext.example.computer.parser.antlr.internal,
+ org.xtext.example.computer.scoping,
+ org.xtext.example.computer.generator
+Import-Package: org.apache.log4j
