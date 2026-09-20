@@ -261,42 +261,107 @@ Compiling a model means transforming it (in MDE), for example model-to-text.
 
 The details of model-to-text and model-to-model transformation make it possible to provide the information necessary to perform code execution.
 
-*Defining DSMLs* --- Components
-/ Abstract Syntax: #m(page:18)
+
+== Domain-Specific Modelling Language (DSML) 
+Domain-Specific Language (DSL)
+
+DSL components (like in any language)
+- Abstract syntax (metamodel)
+- Several concrete syntaxes (typically textual or diagrammatical)
+- Diagrammatical = Visual, Graphical
+Semantics: All components of a DSL are models!
 
 == Language Metamodel
+The language metamodel plays a central role: a DSL is a coordinated set of models built around it.
 
-For the concrete syntax, there is GMF (Graphical Modeling Framework, deprecated), and Sirius.
+What we know so far:
+- Models are abstractions
+- Models are symbolic entities expressed in a language
+- The metamodel is the core of the language definition
+  - It defines the abstract syntax (the main concepts)
+  - It does *not* define the concrete representation
+- Models are depicted with symbols: text, diagrams, audio, etc.
 
-Textual Concrete syntax: allows to define how a model can be defined in a textual way. With XTEXT you can generate a parser and an editor.
+=== Concrete Syntax
+*Graphical* concrete syntax: takes the form of diagrams. Eclipse offers frameworks for defining the syntax and generating graphical syntax editors: GMF (Graphical Modeling Framework, deprecated), Graphiti and Sirius.
 
-#i[*Concrete Syntax as Model*
+*Textual* concrete syntax: defines how a model is textually serialised. The modeller defines the syntax, and a parser and an editor are generated. Examples: EMFText (University of Dresden) and XTEXT.
 
-Concrete Syntax is a template that maps the metamodel classes to textual syntax (.cs file)]
+#i[*Concrete Syntax as Model* (in EMFText)
+
+Concrete Syntax is a template that maps the metamodel classes to textual syntax (.cs file). The metamodel is an Ecore metamodel, possibly defined with the EMFText Ecore editor.]
+
+=== Semantics
+Semantics is a crucial component for any language:
+- It allows building interpreters/compilers
+- It allows reasoning and proving properties on models
+- It allows simulating and debugging models
+
+Semantics definition remains an interesting topic in MDE!
+
+=== Take-home messages (DSLs)
+- Raising the level of abstraction helps developers and domain experts, but increases the implementation gap
+- Model transformations can be used to bridge this gap
+- A DSL is a powerful tool, but it is limited to a certain domain
+- Language infrastructure is important!
+- Multiple DSLs may be needed to describe a system
+  - Risk: language cacophony, "Babel tower" of languages
 
 == XText
 XText is a set of DSLs and modern APIs to describe the different aspects of a language. It is useful to define DSLs. It allows language designers to define the concrete syntax of their languages in the way they prefer. 
 
 Its the most popular environment for DSL development.
 
-It can generate a parser, an abstract syntax tree, a serializer and code formatter. It provides scoping, linking, compiler checks and static analysis (validation), and code generator or interpreter.
+It can generate a parser, a type-safe abstract syntax tree (AST), a serializer and code formatter. It provides scoping, linking, compiler checks and static analysis (validation), and code generator or interpreter.
 
-You can start development from the grammar, but also from a metamodel.
+It also provides a runtime architecture and a full-blown Eclipse IDE specifically tailored for the language being designed.
+
+You can start development from the grammar (originally designed for this), but also from a metamodel.
 
 It is composed of a grammar language and a Modeling Workflow Language 2 (MWL 2).
 
-*Workflow*
-+ Create Xtext project 
+*Workflow (default)* --- the one used in the tutorials
++ Create Xtext project (comes with a default grammar and a default MWE2 workflow)
 + Get default grammar
 + Edit default grammar
 + Run MWE 2 workflow
-+ Get language artifacts
++ Get language artifacts: parser, validator, editor, etc. *and an Ecore metamodel*!
 
-*Workflow wtth Ecore model*
-+ Ecore project must be converted to Xtext project
+*Workflow with Ecore model*
++ Ecore project must be converted to Xtext project (right-click #sym.arrow Configure #sym.arrow Convert to Xtext project)
 + Ecore model, genmodel and model code
 + Generated grammar
-+ Adjust generated grammar
++ Adjust generated grammar (optional)
 + Language grammar
 + Run MWE 2 Workflow
-+ Get language artifacts
++ Get language artifacts: parser, validator, editor, etc.
+
+=== Concrete syntax of an Ecore metamodel
+Procedure to define the concrete syntax of an Ecore metamodel (example: an `Sql` metamodel):
++ Convert the EMF project to an Xtext project (with Configure...) and generate the genmodel
++ Run the wizard to create an Xtext project from the metamodel, choosing a class as root (e.g. `Sql`)
+  - It generates a default grammar (`.xtext` file) and a default workflow (`.mwe2` file)
+  - In the `.xtext` file, all concrete metaclasses have a textual representation, and abstract classes (inheritance) are used as choices
+
+=== Grammar elements
+In the default grammar:
+- A rule creates an object of the corresponding metaclass (e.g. the `Sql` rule creates an `Sql` object)
+- Keywords are the literal strings that appear in the text
+- Alternative (0 or 1): optional element
+- Multiple (0 or \*): repeated element
+- Choice: one among several alternatives (used for abstract classes)
+- Attribute value: the text is assigned to an attribute of the created object
+- Reference: a link to another element, e.g. a `Type`, via its name
+
+*Modifying the grammar*: after modifying the grammar, run the default workflow (`.mwe2` file) as an MWE2 Workflow to generate the editor.
+
+More information on the language: #link("https://www.eclipse.org/Xtext/documentation/301_grammarlanguage.html")[Xtext Grammar Language documentation].
+
+*Running the editor*: run the Xtext project as an Eclipse Application, create a project and inside this project create a file with the language extension (e.g. `.sql`).
+
+=== Take-home messages (Xtext)
+- Xtext allows fast definition of concrete syntax
+- Xtext generates the required tools
+- Xtext can start both from a grammar or from a metamodel
+  - Metamodel or syntax (or both) reengineering may be needed
+- EMFText is a more "metamodel-based" alternative, but it is not properly supported any more
