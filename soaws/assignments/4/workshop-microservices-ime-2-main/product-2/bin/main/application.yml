@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: productApp
+  cloud:
+    consul:
+      host: consul # modified to use docker-compose
+      port: 8500
+      discovery:
+        healthCheckInterval: 1s
+        healthCheckPath: ${server.servlet.context-path}/actuator/health
+        instance-id: ${spring.application.name}:${random.value}
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+  datasource:
+      url: jdbc:h2:mem:productsdb
+  h2:
+      console: enabled
+server:
+   servlet:
+      context-path: /product-service
+   port: 8090
+  
+name: Reading from file

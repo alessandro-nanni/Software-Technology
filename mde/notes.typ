@@ -365,3 +365,68 @@ More information on the language: #link("https://www.eclipse.org/Xtext/documenta
 - Xtext can start both from a grammar or from a metamodel
   - Metamodel or syntax (or both) reengineering may be needed
 - EMFText is a more "metamodel-based" alternative, but it is not properly supported any more
+
+= Model Transformations / Atlas Transformation Language
+
+== Model Transformations
+
+#def[Model Transformation][Produce different models or artifacts from a model based on a transformation pattern. --- MDA Guide]
+
+We use a more concrete and general definition
+
+#def[Model Transformation][Process trough which target models are automatically generated from source models, according to a transformation definition expressed in a model transformation language.]
+
+Multiple target models don't have to be of the same system. (main system + testing system).
+
+#merge[Source models][Transformation][Target model]
+
+Transformation definition is based on the metamodel of the target and source. Target and source metamodel are instances of the metametamodel.
+
+== Approaches for writing transformation definitions.
++ Trough a GPL 
++ In a domain specific transformation language
+
+The OMG approach was to have a domain specific transformation language (ATL & QVT). 
+
+== Features of Model Transformation Languages
+- Programming Style:
+  - Declarative specification: specify the relations between models elements without a specific execution ordered
+  - Imperative: specifies an explicit sequence of steps that produce the result.
+  - Hybrid: a mix of declarative and imperative constructs.
+- Transformation direction can be mono or bidirectional
+
+#m(page:8)
+
+Each transformation refines the input model (applies patterns, adds platform specific details). These are vertical transformations: each step moves to a lower level of abstraction (details are added).
+
+Model composition is used to combine different models. 
+
+#i[How is the transformation chain defined?]
+
+Both source and target models may evolve, changes can propagate in both directions. 
+
+In refactoring the models can be instance of the same metamodel.
+
+The MDE platform provides a metamodelling language and at least one transformation language. 
+
+EMF has software for developing open source transformation languages (model to model, m2m), and model to text transformation (m2t).
+
+
+== Atlas Transformation Language
+
+#i[For the project we can choose between ATL and QVT (preferred).]
+
+ATL Characteristics
+/ Distinct source and target models: source models are read only (can only be navigated), and target models are write only (cnnot be navigated).
+/ Hybrid language: declarative & imperative.
+/ Declarative: you look for patterns in the source metamodels, recognize them and then know how to generate the corresponding pattern in the target metamodel.
+/ Imperative: called rules and action blocks. 
+
+#i[ACL data types are similar to OCL but are not exactly the same.]
+
+#i[Recommended Style: declarative]
+
+A declarative rule specifies a source pattern to be matched in the source models and a target pattern to be created in the target models for each match during rule application.
+
+An imperative rule is a procedure called by name. #m(page:26)
+
