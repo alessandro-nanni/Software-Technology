@@ -394,8 +394,7 @@ The OMG approach was to have a domain specific transformation language (ATL & QV
   - Imperative: specifies an explicit sequence of steps that produce the result.
   - Hybrid: a mix of declarative and imperative constructs.
 - Transformation direction can be mono or bidirectional
-
-#m(page:8)
+- Input and Output Cardinalities: 1-1, 1-N, N-1, M-N
 
 Each transformation refines the input model (applies patterns, adds platform specific details). These are vertical transformations: each step moves to a lower level of abstraction (details are added).
 
@@ -428,5 +427,49 @@ ATL Characteristics
 
 A declarative rule specifies a source pattern to be matched in the source models and a target pattern to be created in the target models for each match during rule application.
 
-An imperative rule is a procedure called by name. #m(page:26)
+An imperative rule is a procedure called by name, possibly with arguments. It consists of a declarative target pattern and/or an action block (a sequence of statements).
 
+=== Transformation Rules
+
+Rule `Class2Table`
+- Table is created from each class;
+- Column corresponding to the key of the table is created
+- Columns of the table correspond to the single-valued attributes of the class
+- Rule `SingleValuedAttribute2Column`: Column is created from each single-valued attribute
+- ...
+
+=== Declarative Rules
+
+Source pattern consists of 
+- Labeled set of types from the source metamodels
+- Guard (boolean expr) used to filter matches
+Match holds for touple of elements from the source model that matches the types specified in the source pattern (one element of each type).
+
+#i[Attributes are resolved into columns by the automatic
+traceability support!]
+
+#i[`objectId` needs a type and this is defined based on `Integer`, assuming this type is defined in the source model Officially an attribute helper that defines a constant value (is computed only once) with default context (the whole transformation).]
+
+=== Types of ATL rules
+
+/ Matched rules: applied once for each match. A given set of elements may only be matched by one matched rule
+/ Lazy rules: applied as many times for each match as it is referred to from other rules (possibly never for some matches)
+/ Unique lazy rules: applied at most once for each match (return always the same target element) and only if it is referred to from other rules
+/ Called rules: do not have a matching (from clause) and must be called in order to be executed.
+
+Unique lazy rules only execute once.
+
+=== Execution order of declarative rules
+
+- Declarative ATL frees the developer from specifying execution order.
+- Order in which rules are matched and applied is not specified (non-deterministic)
+- Match of (unique) lazy rule must be referred to before rule is applied
+- Order in which bindings are applied is not specified (non-deterministic)
+- Execution of a rule cannot change source models → cannot change a match
+- Target elements are not navigable → execution of a binding cannot change the value of another
+
+Declarative ATL frees the developer from specifying execution order, the execution is non-deterministic, you won't know the order
+
+Called/imperative rules have the same structure as declarative rules, but without a from clause and possibly with an imperative code section (do)
+
+#i[*Rule inheritance*: helps structure transformation and reuse rules. Child rule matches a subset of what its parent rule matches. Child rule specializes target elements of its parent rule.]

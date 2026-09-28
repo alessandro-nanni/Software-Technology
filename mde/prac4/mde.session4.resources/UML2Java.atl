@@ -1,0 +1,90 @@
+module UML2Java;
+create OUT : Java from IN : UML;
+
+helper context String def: toUpperFirst() : String =
+    self.substring(1, 1).toUpper() + self.substring(2, self.size());
+
+rule Package2Package {
+    from
+        p : UML!Package
+    to
+        out : Java!Package (
+            name    <- p.name,
+            content <- p.elements->select(e | e.oclIsKindOf(UML!Class))
+        )
+}
+
+rule PrimitiveDataType2PrimitiveType {
+    from
+        p : UML!PrimitiveDataType
+    to
+        out : Java!PrimitiveType (
+            name <- p.name
+        )
+}
+
+rule Class2Class {
+    from
+        c : UML!Class
+    to
+        out : Java!Class (
+            name       <- c.name,
+            isPublic   <- true,
+            isStatic   <- false,
+            -- assume single inheritance
+            superclass <- if c.extend->isEmpty() then OclUndefined else c.extend->first() endif,
+            field      <- c.attribute,
+            method     <- c.attribute->collect(a | thisModule.resolveTemp(a, 'getter'))
+                            ->union(c.attribute->collect(a | thisModule.resolveTemp(a, 'setter')))
+        )
+}
+
+rule Attribute2Field {
+    from
+        a : UML!Attribute
+    to
+        field : Java!Field (
+            name        <- a.name,
+            type        <- a.type,
+            isPrivate   <- true,
+            isPublic    <- false,
+            isProtected <- false,
+            isStatic    <- false,
+            owner       <- a.owner
+        ),
+        getter : Java!Method (
+            name        <- 'get' + a.name.toUpperFirst(),
+            isPublic    <- true,
+            isProtected <- false,
+            isPrivate   <- false,
+            isStatic    <- false,
+            returnType  <- a.type,
+            owner       <- a.owner,
+            statements  <- Sequence { ret }
+        ),
+        ret : Java!Return (
+            objectId  <- 'this',
+            fieldName <- a.name
+        ),
+        setter : Java!Method (
+            name        <- 'set' + a.name.toUpperFirst(),
+            isPublic    <- true,
+            isProtected <- false,
+            isPrivate   <- false,
+            isStatic    <- false,
+            returnType  <- voidType,
+            owner       <- a.owner,
+            parameters  <- Sequence { param },
+            statements  <- Sequence { assign }
+        ),
+        voidType : Java!VoidType (),
+        param : Java!Parameter (
+            name <- a.name,
+            type <- a.type
+        ),
+        assign : Java!Assignment (
+            objectId     <- 'this',
+            fieldName    <- a.name,
+            variableExpr <- a.name
+        )
+}

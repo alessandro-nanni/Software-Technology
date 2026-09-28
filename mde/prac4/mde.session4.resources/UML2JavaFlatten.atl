@@ -1,0 +1,113 @@
+module UML2JavaFlatten;
+create OUT : Java from IN : UML;
+
+helper context String def: toUpperFirst() : String =
+    self.substring(1, 1).toUpper() + self.substring(2, self.size());
+
+helper context UML!Class def: allAttributes : Sequence(UML!Attribute) =
+    if self.extend->isEmpty() then
+        self.attribute->asSequence()
+    else
+        self.attribute->asSequence()->union(self.extend->first().allAttributes)
+    endif;
+
+rule Package2Package {
+    from
+        p : UML!Package
+    to
+        out : Java!Package (
+            name    <- p.name,
+            content <- p.elements->select(e | e.oclIsKindOf(UML!Class))
+                                  ->select(e | e.extendedBy->isEmpty())
+        )
+}
+
+rule PrimitiveDataType2PrimitiveType {
+    from
+        p : UML!PrimitiveDataType
+    to
+        out : Java!PrimitiveType (
+            name <- p.name
+        )
+}
+
+
+rule LeafClass2Class {
+    from
+        c : UML!Class (c.extendedBy->isEmpty())
+    to
+        out : Java!Class (
+            name     <- c.name,
+            isPublic <- true,
+            isStatic <- false,
+            field    <- c.allAttributes->collect(a | thisModule.Attribute2Field(a, c)),
+            method   <- c.allAttributes->collect(a | thisModule.Attribute2Getter(a, c))
+                          ->union(c.allAttributes->collect(a | thisModule.Attribute2Setter(a, c)))
+        )
+}
+
+
+unique lazy rule Attribute2Field {
+    from
+        a : UML!Attribute,
+        c : UML!Class
+    to
+        field : Java!Field (
+            name        <- a.name,
+            type        <- a.type,
+            isPrivate   <- true,
+            isPublic    <- false,
+            isProtected <- false,
+            isStatic    <- false,
+            owner       <- c
+        )
+}
+
+unique lazy rule Attribute2Getter {
+    from
+        a : UML!Attribute,
+        c : UML!Class
+    to
+        getter : Java!Method (
+            name        <- 'get' + a.name.toUpperFirst(),
+            isPublic    <- true,
+            isProtected <- false,
+            isPrivate   <- false,
+            isStatic    <- false,
+            returnType  <- a.type,
+            owner       <- c,
+            statements  <- Sequence { ret }
+        ),
+        ret : Java!Return (
+            objectId  <- 'this',
+            fieldName <- a.name
+        )
+}
+
+unique lazy rule Attribute2Setter {
+    from
+        a : UML!Attribute,
+        c : UML!Class
+    to
+        setter : Java!Method (
+            name        <- 'set' + a.name.toUpperFirst(),
+            isPublic    <- true,
+            isProtected <- false,
+            isPrivate   <- false,
+            isStatic    <- false,
+            returnType  <- voidType,
+            owner       <- c,
+            parameters  <- Sequence { param },
+            statements  <- Sequence { assign }
+        ),
+        voidType : Java!VoidType (),
+        param : Java!Parameter (
+            name <- a.name,
+            type <- a.type
+        ),
+        assign : Java!Assignment (
+            objectId     <- 'this',
+            fieldName    <- a.name,
+            variableExpr <- a.name
+        )
+}
