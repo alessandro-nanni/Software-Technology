@@ -1,0 +1,627 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trace:Trace xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:trace="http:///www.eclipse.org/m2m/qvt/operational/trace.ecore">
+  <traceRecords>
+    <mappingOperation name="leafClass2Class" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.6"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.0"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="leafClass2Class" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.7"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.1"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="leafClass2Class" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.8"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.2"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="leafClass2Class" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.9"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.3"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="leafClass2Class" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.12"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.4"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="leafClass2Class" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.13"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.5"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="copyprimitive" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="PrimitiveType">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.5"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="PrimitiveType">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.6"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="copyAssociation" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Association">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.10"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="sourceClass" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.6"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Association">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.7"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="copyAssociation" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Association">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.15"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="sourceClass" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.7"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Association">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.8"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="copyAssociation" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Association">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.14"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="sourceClass" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.7"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Association">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.9"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="copyAssociation" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Association">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.11"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="sourceClass" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.7"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Association">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.10"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="copyAssociation" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Association">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.14"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="sourceClass" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.8"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Association">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.11"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="model2flattenmodel" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="Model">
+        <value>
+          <modelElement href="flattened.simpleuml#/"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="assignProperties" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.6"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.0"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="property2property" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Property">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.0/@attributes.0"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="Property">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.1/@attributes.0"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="property2property" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Property">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.0/@attributes.1"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="Property">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.2/@attributes.1"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="property2property" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Property">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.1/@attributes.0"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="Property">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.1/@attributes.1"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="assignProperties" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.7"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.1"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="property2property" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Property">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.8/@attributes.0"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="Property">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.2/@attributes.0"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="property2property" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Property">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.2/@attributes.0"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="Property">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.2/@attributes.2"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="assignProperties" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.8"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.2"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="property2property" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Property">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.9/@attributes.0"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="Property">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.3/@attributes.0"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="property2property" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Property">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.9/@attributes.1"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="Property">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.3/@attributes.1"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="assignProperties" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.9"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.3"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="property2property" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Property">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.12/@attributes.0"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="Property">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.4/@attributes.0"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="assignProperties" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.12"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.4"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="property2property" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Property">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.13/@attributes.0"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="Property">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.5/@attributes.0"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="property2property" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Property">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.13/@attributes.1"/>
+        </value>
+      </context>
+    </context>
+    <parameters/>
+    <result>
+      <result kind="OUT" name="result" type="Property">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.5/@attributes.1"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+  <traceRecords>
+    <mappingOperation name="assignProperties" package="flattening" module="flattening"/>
+    <context>
+      <context name="self" type="Class">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#//@ownedElements.13"/>
+        </value>
+      </context>
+    </context>
+    <parameters>
+      <parameters name="model" type="Model">
+        <value>
+          <modelElement href="pim_stereotyped.simpleuml#/"/>
+        </value>
+      </parameters>
+    </parameters>
+    <result>
+      <result kind="OUT" name="result" type="Class">
+        <value>
+          <modelElement href="flattened.simpleuml#//@ownedElements.5"/>
+        </value>
+      </result>
+    </result>
+  </traceRecords>
+</trace:Trace>

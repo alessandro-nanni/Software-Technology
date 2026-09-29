@@ -1,0 +1,177 @@
+modeltype UML uses 'http://www.eclipse.org/qvt/1.0.0/Operational/examples/simpleuml';
+
+transformation stereotype2pattern(in uml : UML, out UML);
+
+property mvcStereotype : String = 'MVC';
+property observableStereotype : String = 'Observable';
+
+main() {
+	uml.rootObjects()[UML::Model]->asOrderedSet()->first().map model2model();
+}
+
+
+mapping UML::Model::model2model() : UML::Model {
+	init {
+		var classes : OrderedSet(UML::Class) := self.ownedElements[UML::Class]->asOrderedSet();
+		var mvcClasses : OrderedSet(UML::Class) := classes->select(c | c.isMVC());
+		var observableClasses : OrderedSet(UML::Class) := classes->select(c | c.isObservable());
+		var plainClasses : OrderedSet(UML::Class) := classes->select(c | c.isUnmarked());
+	}
+
+	name := self.name;
+
+	ownedElements += self.map createObservable();
+	ownedElements += self.map createObserver();
+	ownedElements += mvcClasses->map mvc2model();
+	ownedElements += mvcClasses->map mvc2view();
+	ownedElements += mvcClasses->map mvc2controller();
+	ownedElements += observableClasses->map observable2class();
+	ownedElements += plainClasses->map class2class();
+	ownedElements += self.ownedElements[UML::PrimitiveType]->map copyPrimitive();
+	ownedElements += self.ownedElements[UML::Enumeration]->map copyEnumeration();
+
+	ownedElements += self.map createObserversAssociation();
+	ownedElements += mvcClasses->map mvc2controllerAssociation();
+	ownedElements += self.ownedElements[UML::Association]->map copyAssociation();
+
+	end {
+		classes->map completeClass();
+	}
+}
+
+
+query UML::Class::isMVC() : Boolean {
+	return self.stereotype->includes(mvcStereotype);
+}
+
+query UML::Class::isObservable() : Boolean {
+	return self.stereotype->includes(observableStereotype) and not self.isMVC();
+}
+
+query UML::Class::isUnmarked() : Boolean {
+	return not self.isMVC() and not self.isObservable();
+}
+
+
+helper theModel() : UML::Model {
+	return uml.rootObjects()[UML::Model]->asOrderedSet()->first();
+}
+
+helper observable() : UML::Class {
+	return theModel().map createObservable();
+}
+
+helper observer() : UML::Class {
+	return theModel().map createObserver();
+}
+
+mapping UML::Model::createObservable() : UML::Class {
+	name := 'Observable';
+	_'abstract' := true;
+}
+
+mapping UML::Model::createObserver() : UML::Class {
+	name := 'Observer';
+	_'abstract' := true;
+}
+
+mapping UML::Model::createObserversAssociation() : UML::Association {
+	name := 'observers';
+	source := self.map createObservable();
+	target := self.map createObserver();
+}
+
+
+mapping UML::Class::mvc2model() : UML::Class {
+	name := 'Model' + self.name;
+	_'abstract' := self._'abstract';
+	generalizations += object UML::Generalization { general := observable(); };
+}
+
+mapping UML::Class::mvc2view() : UML::Class {
+	name := 'View' + self.name;
+	generalizations += object UML::Generalization { general := observer(); };
+}
+
+mapping UML::Class::mvc2controller() : UML::Class {
+	name := 'Controller' + self.name;
+	generalizations += object UML::Generalization { general := observer(); };
+}
+
+mapping UML::Class::mvc2controllerAssociation() : UML::Association {
+	name := 'controller';
+	source := self.resolveoneIn(UML::Class::mvc2view, UML::Class);
+	target := self.resolveoneIn(UML::Class::mvc2controller, UML::Class);
+}
+
+
+mapping UML::Class::observable2class() : UML::Class {
+	name := self.name;
+	_'abstract' := self._'abstract';
+	generalizations += object UML::Generalization { general := observable(); };
+}
+
+
+mapping UML::Class::class2class() : UML::Class {
+	name := self.name;
+	_'abstract' := self._'abstract';
+}
+
+mapping UML::PrimitiveType::copyPrimitive() : UML::PrimitiveType {
+	name := self.name;
+}
+
+mapping UML::Enumeration::copyEnumeration() : UML::Enumeration {
+	name := self.name;
+	ownedLiteral := self.ownedLiteral->map copyLiteral();
+}
+
+mapping UML::EnumerationLiteral::copyLiteral() : UML::EnumerationLiteral {
+	name := self.name;
+}
+
+mapping UML::Association::copyAssociation() : UML::Association {
+	name := self.name;
+	source := self.source.refined();
+	target := self.target.refined();
+}
+
+mapping UML::Property::copyProperty() : UML::Property {
+	name := self.name;
+	type := self.type.refinedType();
+}
+
+mapping UML::Generalization::copyGeneralization() : UML::Generalization {
+	general := self.general.refined();
+	isSubstitutable := self.isSubstitutable;
+}
+
+mapping UML::Class::completeClass() : UML::Class {
+	init {
+		var targetClass : UML::Class := self.refined();
+		targetClass.attributes += self.attributes->map copyProperty();
+		targetClass.generalizations += self.generalizations->map copyGeneralization();
+		result := targetClass;
+	}
+}
+
+
+helper UML::Class::refined() : UML::Class {
+	return if self.isMVC() then
+		self.resolveoneIn(UML::Class::mvc2model, UML::Class)
+	else if self.isObservable() then
+		self.resolveoneIn(UML::Class::observable2class, UML::Class)
+	else
+		self.resolveoneIn(UML::Class::class2class, UML::Class)
+	endif endif;
+}
+
+helper UML::Type::refinedType() : UML::Type {
+	return if self.oclIsKindOf(UML::Class) then
+		self.oclAsType(UML::Class).refined()
+	else if self.oclIsKindOf(UML::PrimitiveType) then
+		self.resolveoneIn(UML::PrimitiveType::copyPrimitive, UML::PrimitiveType)
+	else
+		self.resolveoneIn(UML::Enumeration::copyEnumeration, UML::Enumeration)
+	endif endif;
+}

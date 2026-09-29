@@ -6,8 +6,8 @@
     <attributes name="school" type="//@ownedElements.6"/>
   </ownedElements>
   <ownedElements xsi:type="uml:Class" name="Professor">
-    <attributes name="name" type="//@ownedElements.3"/>
     <attributes name="ssn" type="//@ownedElements.6"/>
+    <attributes name="name" type="//@ownedElements.3"/>
     <attributes name="organizationName" type="//@ownedElements.6"/>
   </ownedElements>
   <ownedElements xsi:type="uml:Class" name="FullName">
@@ -23,8 +23,8 @@
   </ownedElements>
   <ownedElements xsi:type="uml:PrimitiveType" name="String"/>
   <ownedElements xsi:type="uml:Association" name="carOwnership" source="//@ownedElements.0" target="//@ownedElements.2"/>
-  <ownedElements xsi:type="uml:Association" name="attends" source="//@ownedElements.1" target="//@ownedElements.4"/>
   <ownedElements xsi:type="uml:Association" name="residesAt" source="//@ownedElements.1" target="//@ownedElements.5"/>
+  <ownedElements xsi:type="uml:Association" name="attends" source="//@ownedElements.1" target="//@ownedElements.4"/>
   <ownedElements xsi:type="uml:Association" name="supervisor" source="//@ownedElements.1" target="//@ownedElements.2"/>
   <ownedElements xsi:type="uml:Association" name="residesAt" source="//@ownedElements.2" target="//@ownedElements.5"/>
 </uml:Model>
