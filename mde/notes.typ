@@ -473,3 +473,77 @@ Declarative ATL frees the developer from specifying execution order, the executi
 Called/imperative rules have the same structure as declarative rules, but without a from clause and possibly with an imperative code section (do)
 
 #i[*Rule inheritance*: helps structure transformation and reuse rules. Child rule matches a subset of what its parent rule matches. Child rule specializes target elements of its parent rule.]
+
+= QVT Transformation language & Java Transformations
+== QVT Terminology
+#def[Query][Expression that is evaluated over a model. The result of a query is one ore more model elements, which are instances of types defined in the source model, or defined by the query language.]
+
+#def[View][Model completely derived from another model (the base model). A live connection exists between the view and the base mdoel.]
+
+#def[Transformation][Process of automatic generation of a target model from a source model #m(page:3)]
+
+The abstract syntax of the QVT language is defined as a MOF 2.0 metamodel. Transformations are defined based on MOF 2.0 metamodels. Transformations are executed on instances of MOF 2.0 metamodels. 
+
+== Original QVT requirements
+/ Mandatory: 
+  - Query language;
+  - Transformation language
+  - Abstract syntax
+  - Paradigm $->$ declarative
+/ Optional:
+  - Bidirectionality
+  - Traceability
+  - Reusability
+  - Model update
+
+#i[Core and relations not relevant.]
+
+#i[Operational mappings extend the relations language with imperative constructs.]
+
+The 3 QVT languages collectively provide one hybrid language. 
+
+In the core language, transformations get very verbose. The relations language is also based on relations of model elements. 
+
+== Relations language
+
+#m(page:10)
+
+== Operational Mappings Language
+Given a source UML model, we want to transform it in another UML model where only the leaf classes remain and the inheritance classes are collapsed.
+
+Rules:
++ Copy the primitive types
++ Copy the leaf classes
++ Include the inherited attributes and associations
++ Attributes with the same name override inherited attributes
+
+== Mapping operation
+Maps one or more source elements into one or more target elements. It's always unidirectional, and selects source elements based on their type and a boolean condition (guard). Executes operations in its body to create target models. May invoke other mapping operations and may be invoked. Mapping operations may be related by inheritance.
+
+`(rname : rType)` is generated.
+- `init{...}` code is executed befoore instantiation of result elements
+- `population{...}` an implicit instantiation section output parameters are created
+- `end{...}` code executed before exiting operation
+
+To transform leaf classes
++ Select only classes without subclasses (not `general` in a `Generalization`).
++ Collects all inherited properties
++ Create a new class in the target model
+`_'abstract' := self._'abstract`: OCL's underscore-prefixed-string-literal-escape, // checks if a class is abstract? 
+
+A helper can be tied to a type and perform navigations over source models. Side-effect free: `query`. 
+
+=== Resolution of object references/transformation of associations
+
+In the target model, an association should relate classe #m(page:23)
+
+
+
+Objects can be created and populated in mapping operations with the object operation. There are also imperative constructs for managing control flow
+
+== Java Transformations
+
+GPL can do transformations aswell (especially for not complex transformations). Pure java implementation with no overhead should theoretically have the the fastest implementation. Based on a `Rule` interface.
+
+Pure java solutions are possible.
+

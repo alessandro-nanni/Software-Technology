@@ -1,0 +1,95 @@
+modeltype UML uses 'http://www.eclipse.org/qvt/1.0.0/Operational/examples/simpleuml';
+
+transformation flattening(in uml : UML, out UML);
+
+main()  {
+  uml.rootObjects()[UML::Model]->asOrderedSet()->first()-> map model2flattenmodel()
+}
+
+mapping UML::Model::model2flattenmodel() : UML::Model {
+ init{
+   	var classes : OrderedSet(UML::Class):= self.getAllClasses()-> 
+   		map leafClass2Class(self)->asOrderedSet(); 
+   	var primitiveTypes : OrderedSet(UML::PrimitiveType):= self.getAllPrimitiveTypes()-> 
+   		map copyprimitive()->asOrderedSet(); 
+   	var associations : OrderedSet(UML::Association):= self.getAssociations();
+   }
+   
+   name:= 'flattened_'+self.name;
+   ownedElements+=classes;
+   ownedElements+=primitiveTypes;
+   ownedElements+=associations;
+   
+   end{
+   	self.getAllClasses()-> map assignProperties(self);
+   }
+}
+
+query UML::Class::derivedAttributes() : OrderedSet(UML::Property){
+  return if self.generalizations->isEmpty() then
+  	self.attributes
+  else
+  	self.generalizations->collect(g |g.general.derivedAttributes()->
+  		select(attr | not self.attributes->exists(att | att.name = attr.name)))->
+  		flatten()->asOrderedSet()->union(self.attributes)->asOrderedSet()
+  endif
+}
+
+query UML::Model::getAssociations() : OrderedSet(UML::Association){
+	return self.getAllClasses()->select(cl | not uml.objectsOfType(UML::Generalization)->
+		exists(g | g.general = cl))->collect(cl | cl.derivedAssociations(self)->
+		map copyAssociation(cl))->flatten()->asOrderedSet();
+}
+
+
+query UML::Class::derivedAssociations( model : UML::Model) : OrderedSet(UML::Association) {
+  
+  return if self.generalizations->isEmpty() then
+  	uml.objectsOfType(UML::Association)->select(assoc | assoc.source = self)->asOrderedSet()
+  else
+  	uml.objectsOfType(UML::Association)->select(assoc | assoc.source = self)->asOrderedSet()->
+  		union(self.generalizations->collect(g | g.general.derivedAssociations(model))->
+  		flatten()->asOrderedSet())->asOrderedSet()
+  endif;
+}
+
+query UML::Model::getAllClasses() : OrderedSet(UML::Class){
+	return self.ownedElements[UML::Class]->asOrderedSet();
+}
+
+query UML::Model::getAllPrimitiveTypes() : OrderedSet(UML::PrimitiveType){
+	return self.ownedElements[UML::PrimitiveType]->asOrderedSet();
+}
+
+mapping UML::Class::leafClass2Class(in model : UML::Model) : UML::Class
+	when {not uml.objectsOfType(UML::Generalization)->exists(g | g.general = self)}
+{
+    name:= self.name;		
+}
+
+mapping UML::Association::copyAssociation(sourceClass : UML::Class) : UML::Association {
+	name:=self.name;
+	source:=sourceClass.resolveIn(UML::Class::leafClass2Class, UML::Class)->asSequence()->first();
+	target:= self.target.resolveIn(UML::Class::leafClass2Class, UML::Class)->asSequence()->first();
+}
+
+mapping UML::Property::property2property() : UML::Property{
+  name:= self.name;
+  type:= if self.type.oclIsTypeOf(UML::PrimitiveType) 
+  			then self.type.resolveIn(UML::PrimitiveType::copyprimitive, UML::PrimitiveType)
+         	else self.type.resolveIn(UML::Class::leafClass2Class, UML::Class) endif -> first();
+}
+
+mapping UML::PrimitiveType::copyprimitive() : UML::PrimitiveType{
+	name:= self.name;
+}
+
+mapping UML::Class::assignProperties(in model : UML::Model) : UML::Class
+	when {not uml.objectsOfType(UML::Generalization)->exists(g | g.general = self)}
+{
+    init{
+    	var targetClass : UML::Class := self.resolveoneIn(UML::Class::leafClass2Class, UML::Class);
+    	targetClass.attributes:= self.derivedAttributes()->map property2property()->asOrderedSet();
+    	result := targetClass;
+    }		
+}

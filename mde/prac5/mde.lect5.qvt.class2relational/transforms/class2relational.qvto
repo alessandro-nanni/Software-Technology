@@ -1,0 +1,109 @@
+modeltype CLASS uses 'http://mde.utwente.nl/Class';
+modeltype RELATIONAL uses 'http://mde.utwente.nl/Relational';
+
+transformation class2relational(in c: CLASS, out r: RELATIONAL);
+
+	property int : CLASS::DataType;
+	
+	// Entry point for the execution of the transformation
+	main() {
+		// Assert the existence of at least one class
+		assert fatal (c.objectsOfType(CLASS::Class)->notEmpty())
+			with log('Expecting at least one Class');
+			
+		// Assert the existence of an Integer data type
+		assert fatal (c.objectsOfType(CLASS::DataType)->select(e | e.name = 'Integer')
+			->asOrderedSet()->notEmpty())
+			with log('Expecting one Integer data type');
+		
+		// create types for data types
+		var datatypes := c.rootObjects()[DataType];
+		datatypes-> map dataType2Type();
+
+		// Create tables for classes
+		var classes := c.rootObjects()[Class];
+		classes-> map class2Table();
+	
+		// Create tables for multi-valued attributes
+		var mvAttributes := c.objectsOfType(CLASS::Class)->getMultiValuedAttributes()
+		->flatten()->asOrderedSet();
+		mvAttributes-> map multiValuedAttribute2Table();
+	}
+
+	mapping CLASS::Class::class2Table(): Table {
+		init{
+				
+			// Look for Integer Data Type
+			int := c.objectsOfType(CLASS::DataType)->select(e | e.name = 'Integer')
+			->asOrderedSet()->first();
+			
+			// Create key column (with objectId)
+			var gen_key : RELATIONAL::Column = object RELATIONAL::Column { 
+				name := 'objectId'; 
+				type := int.resolve()->first().oclAsType(RELATIONAL::Type) };
+			}
+			
+		// Populate the table
+		name:= self.name;
+		col += gen_key;
+		key := gen_key;
+		// Add columns for single valued attributes
+		col += self.attr->select(a |  not a.multiValued) -> map attribute2Column();	
+	}
+
+	// Disjunction of mappings for Data type and Class attributes
+	mapping CLASS::Attribute::attribute2Column(): RELATIONAL::Column 
+		disjuncts CLASS::Attribute::attributeDataType2Column, CLASS::Attribute::attributeClass2Column {}
+
+	mapping CLASS::Attribute::attributeDataType2Column(): RELATIONAL::Column
+		when {self.type.oclIsKindOf(CLASS::DataType)} {
+		name := self.name;
+		type := self.type.oclAsType(CLASS::DataType).map dataType2Type();
+	}
+
+	mapping CLASS::Attribute::attributeClass2Column(): RELATIONAL::Column
+		when {self.type.oclIsKindOf(CLASS::Class)} {
+		name := self.name + 'Id';
+		type := int.resolveone().oclAsType(RELATIONAL::Type);
+	}
+
+	mapping CLASS::DataType::dataType2Type(): RELATIONAL::Type {
+		name := self.name;
+	}
+
+	mapping CLASS::Attribute::multiValuedAttribute2Table(): RELATIONAL::Table 
+		disjuncts CLASS::Attribute::multiValuedDataTypeAttribute2Table, CLASS::Attribute::multiValuedClassAttribute2Table {}
+	
+	mapping CLASS::Attribute::multiValuedDataTypeAttribute2Table(): RELATIONAL::Table 
+		when {self.type.oclIsKindOf(CLASS::DataType)} {
+	init {
+		var id : RELATIONAL::Column = object RELATIONAL::Column { 
+			name := self.owner.name + 'Id'; 
+			type := int.resolveone().oclAsType(RELATIONAL::Type) };
+		var value : RELATIONAL::Column = object RELATIONAL::Column { 
+			name := self.name; 
+			type := self.type.oclAsType(CLASS::DataType).map dataType2Type(); }
+		}
+		name := self.owner.name + '_' + self.name;
+		col += id;
+		col += value;	
+	}
+
+	mapping CLASS::Attribute::multiValuedClassAttribute2Table(): RELATIONAL::Table
+		when {self.type.oclIsKindOf(CLASS::Class)} {
+	init {
+		var id : RELATIONAL::Column = object RELATIONAL::Column { 
+			name := self.owner.name + 'Id'; 
+			type := int.resolveone().oclAsType(RELATIONAL::Type) };
+		var foreignKey : RELATIONAL::Column = object RELATIONAL::Column { 
+			name := self.name + 'Id'; 
+			type := int.resolveone().oclAsType(RELATIONAL::Type) };
+		}
+		name := self.owner.name + '_' + self.name;
+		col += id;
+		col += foreignKey;
+	}
+
+	query CLASS::Class::getMultiValuedAttributes() : OrderedSet(CLASS::Attribute){
+		return self.attr->select(at | at.multiValued)->asOrderedSet();
+	}

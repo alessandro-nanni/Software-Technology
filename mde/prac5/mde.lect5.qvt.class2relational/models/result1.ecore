@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:Relational="http://mde.utwente.nl/Relational" xsi:schemaLocation="http://mde.utwente.nl/Relational /mde.lect5.qvt.class2relational/metamodels/Relational.ecore#/0">
+  <Relational:Type name="String"/>
+  <Relational:Type name="Integer"/>
+  <Relational:Table name="Family" key="#/2/@col.0">
+    <col name="objectId" keyOf="#/2" type="#/1"/>
+    <col name="name" type="#/0"/>
+  </Relational:Table>
+  <Relational:Table name="Person" key="#/3/@col.0">
+    <col name="objectId" keyOf="#/3" type="#/1"/>
+    <col name="firstName" type="#/0"/>
+    <col name="closestFriendId" type="#/1"/>
+  </Relational:Table>
+  <Relational:Table name="Person_emailAddresses">
+    <col name="PersonId" type="#/1"/>
+    <col name="emailAddresses" type="#/0"/>
+  </Relational:Table>
+  <Relational:Table name="Family_members">
+    <col name="FamilyId" type="#/1"/>
+    <col name="membersId" type="#/1"/>
+  </Relational:Table>
+</xmi:XMI>
