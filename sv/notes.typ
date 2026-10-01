@@ -254,3 +254,179 @@ CTL\* (Emerson \& Halpern) subsumes both by dropping the alternation restriction
 
 #i[No universal winner --- match the logic to how you're actually thinking about the property: "what happens as this runs" $arrow.r$ LTL; "what remains reachable / possible" $arrow.r$ CTL.]
 
+#let Sat(x) = $"Sat"_(#x)$
+#let el(x) = $"el"(#x)$
+#let trn(x) = $attach(arrow.r, br: #x)$
+#show table: it => block(breakable: false, it)
+
+= Model Checking Algorithms --- Ch. 5
+
+Both algorithms decide $K tack.r.double phi$ for $K = (S, I, arrow.r, lambda)$ by computing *sets of states*. $Sat(phi)$ is the set of states where $phi$ holds; $"succ"(s) = {s' | s arrow.r s'}$ is never empty ($arrow.r$ is left-total).
+
+#table(
+  columns: (auto, 1fr, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [], [CTL (§5.1)], [LTL (§5.3, tableau)],
+  [Idea], [fill in $"Sat"$ sets bottom-up along the parse tree], [$K tack.r.double psi$ iff *no* path of $K$ satisfies $not psi$: build tableau $T$, product $P = T times K$, look for a *fair* infinite path in $P$],
+  [Verdict], [$K tack.r.double Phi$ iff $I subset.eq Sat(Phi)$], [$K tack.r.double psi$ iff $P$ has *no* fair path from $I_P$],
+)
+
+== CTL --- basic algorithm (§5.1)
+
++ #strong[Convert to core CTL] ($not$, $and$, EX, EU, AF). Replace one operator at a time, outermost first:
+
+  #table(
+    columns: (1fr, 1fr),
+    stroke: 0.4pt, inset: 4pt,
+    [formula], [rewrite as],
+    [$"AG" Phi$], [$not "EF" not Phi equiv not "EU"("true", not Phi)$],
+    [$"EF" Phi$], [$"EU"("true", Phi)$],
+    [$"EG" Phi$], [$not "AF" not Phi$],
+    [$"AX" Phi$], [$not "EX" not Phi$],
+    [$"AU"(Phi_1, Phi_2)$], [$not "EU"(not Phi_2, not (Phi_1 or Phi_2)) and "AF" Phi_2$],
+    [$Phi_1 or Phi_2$], [$not (not Phi_1 and not Phi_2)$],
+    [$Phi_1 => Phi_2$], [$not (Phi_1 and not Phi_2)$],
+  )
+
+  Finish by cancelling double negations ($not not Phi arrow.r Phi$) and, if it shortens things, De Morgan --- as in the exercise.
+
++ #strong[Draw the parse tree.] One node per subformula, root = the whole formula. Children: $not Phi$, EX $Phi$, AF $Phi$ have the child $Phi$; $Phi_1 and Phi_2$ and $"EU"(Phi_1, Phi_2)$ have the children $Phi_1, Phi_2$. Leaves are atomic propositions (and $"true"$). Write a repeated subformula once.
+
++ #strong[Compute $"Sat"$ bottom-up.] Start at the leaves; a node is computed only once all its children are known. Each result is a set of states of $K$:
+
+  #table(
+    columns: (auto, 1fr),
+    stroke: 0.4pt, inset: 4pt,
+    [node], [$"Sat"$],
+    [$p in "AP"$], [${s in S | p in lambda(s)}$ #h(1em) ($"true"$: all of $S$)],
+    [$not Phi_1$], [$S without Sat(Phi_1)$],
+    [$Phi_1 and Phi_2$], [$Sat(Phi_1) inter Sat(Phi_2)$],
+    [$"EX" Phi_1$], [${s | "succ"(s) inter Sat(Phi_1) eq.not emptyset}$ --- some successor in $Sat(Phi_1)$],
+    [$"EU"(Phi_1, Phi_2)$], [iterate, see below],
+    [$"AF" Phi_1$], [iterate, see below],
+  )
+
+  *Iteration scheme (EU and AF).* Both are fixed-point loops with the same skeleton: start with $"Sat" = emptyset$ and $Z$ = a start set. While $Z eq.not emptyset$: add $Z$ to $"Sat"$, then compute the new $Z$ and strip off whatever is already in $"Sat"$. Only the start set and the "new $Z$" rule differ:
+
+  #table(
+    columns: (auto, 1fr, 1fr),
+    stroke: 0.4pt, inset: 4pt,
+    [], [$"EU"(Phi_1, Phi_2)$], [$"AF" Phi_1$],
+    [start $Z$], [$Sat(Phi_2)$], [$Sat(Phi_1)$],
+    [new $Z$], [${s in Sat(Phi_1) | "succ"(s) inter Z eq.not emptyset} without "Sat"$], [${s in S | "succ"(s) subset.eq "Sat"} without "Sat"$],
+    [by hand], [list the *predecessors* of the states in $Z$ (last round only), keep those in $Sat(Phi_1)$], [test *every* state outside $"Sat"$: are *all* its successors in $"Sat"$?],
+    [joins when], [*one* successor is in $Z$ (one route suffices)], [*all* successors are in $"Sat"$ (every route leads there)],
+    [round $N$ =], [length of the *shortest* path to $Phi_2$ through $Phi_1$-states], [length of the *longest* route until $Phi_1$ is forced],
+  )
+
+  Write each loop as a table with columns $N$ | $"Sat"$ | new $Z$ | why. Row 0: $"Sat" = emptyset$, $Z$ = start set. Row $N$: $"Sat"$ = previous $"Sat"$ $union$ previous $Z$; then compute the new $Z$ and note why each candidate joined or was rejected. Stop when $Z = emptyset$; that row's $"Sat"$ is the answer.
+
+  - The "$without "Sat"$" stops a state from joining twice. It is what ends the loop on cycles, and bounds it by $|S|$ rounds.
+  - EU only needs the *previous round's* $Z$: older states already had their predecessors checked. AF must test against the *whole* $"Sat"$: a state needs all its successors in, and they may have joined in different rounds.
+  - Empty start set: the body never runs, $"Sat" = emptyset$.
+  - AF: one arrow to a state that never joins (a self-loop, or a cycle outside $"Sat"$) keeps a state out for good. $arrow.r$ is left-total, so $"succ"(s) eq.not emptyset$ and nothing joins vacuously.
+
++ #strong[Verdict.] $K tack.r.double Phi$ iff $I subset.eq Sat(Phi)$. A state in $I without Sat(Phi)$ shows the violation.
+
+#n(supplement: [example], [EU and AF on the roller coaster])[
+  $s_0$ idle, $s_1$ maintenance, $s_2$ moving, $s_3$ broken; $I = {s_0}$.
+
+  #table(
+    columns: (auto, auto, auto),
+    stroke: 0.4pt, inset: 4pt,
+    [state], [succ], [pred],
+    [$s_0$], [$s_1, s_2$], [$s_1, s_2$],
+    [$s_1$], [$s_0$], [$s_0, s_3$],
+    [$s_2$], [$s_0, s_3$], [$s_0$],
+    [$s_3$], [$s_1$], [$s_2$],
+  )
+
+  *$"EU"("true", "broken")$* (= EF broken). $Sat("true") = S$, so the $Phi_1$ filter removes nothing: plain backward reachability from $Sat("broken") = {s_3}$.
+
+  #table(
+    columns: (auto, auto, auto, 1fr),
+    stroke: 0.4pt, inset: 4pt,
+    [$N$], [$"Sat"$], [new $Z$], [why],
+    [0], [$emptyset$], [${s_3}$], [start],
+    [1], [${s_3}$], [${s_2}$], [pred($s_3$) $= {s_2}$],
+    [2], [${s_2, s_3}$], [${s_0}$], [pred($s_2$) $= {s_0}$],
+    [3], [${s_0, s_2, s_3}$], [${s_1}$], [pred($s_0$) $= {s_1, s_2}$, $s_2$ already in],
+    [4], [$S$], [$emptyset$], [pred($s_1$) $= {s_0, s_3}$, both in: stop],
+  )
+
+  $"Sat" = S$: every state can reach $s_3$.
+
+  *$"AF" "idle"$*. Start $Z = Sat("idle") = {s_0}$. A state joins only when *all* its successors are in $"Sat"$.
+
+  #table(
+    columns: (auto, auto, auto, 1fr),
+    stroke: 0.4pt, inset: 4pt,
+    [$N$], [$"Sat"$], [new $Z$], [why],
+    [0], [$emptyset$], [${s_0}$], [start],
+    [1], [${s_0}$], [${s_1}$], [$s_1$: succ ${s_0}$ ok; $s_2$ lacks $s_3$; $s_3$ lacks $s_1$],
+    [2], [${s_0, s_1}$], [${s_3}$], [$s_3$: succ ${s_1}$ ok; $s_2$ still lacks $s_3$],
+    [3], [${s_0, s_1, s_3}$], [${s_2}$], [$s_2$: succ ${s_0, s_3}$ ok, joins only now],
+    [4], [$S$], [$emptyset$], [stop],
+  )
+
+  $"Sat" = S$. $s_2$ joins last because its worst route is $s_2 arrow.r s_3 arrow.r s_1 arrow.r s_0$ (3 steps).
+]
+
+#i[*Under fairness* (§5.2) the algorithm is unchanged; only the path quantifiers $A$, $E$ range over *fair* paths, i.e. paths that visit every constraint set $F_j subset.eq S$ infinitely often. `JUSTICE` $phi$: $F = Sat(phi)$. `COMPASSION` $(phi, psi)$: visiting $Sat(phi)$ infinitely often requires visiting $Sat(psi)$ infinitely often.]
+
+== LTL --- tableau method (§5.3)
+
+Pipeline: $psi arrow.r$ tableau $T$ $arrow.r$ product $P$ $arrow.r$ fairness constraints $arrow.r$ "does $P$ have a fair path?" (the CTL question $"EG" "true"$ under fairness). The tableau holds every path that could satisfy $not psi$; the product keeps those that $K$ can really perform.
+
++ #strong[Reduce to core LTL] ($not$, $and$, X, U; $or$ may stay, $"true"$ is a constant): $F phi equiv "true" U phi$, #h(0.5em) $G phi equiv not F not phi$, #h(0.5em) $phi_1 W phi_2 equiv (phi_1 U phi_2) or G phi_1$, #h(0.5em) $phi_1 or phi_2 equiv not (not phi_1 and not phi_2)$. Keep $psi$ itself --- the negation only enters at step 6.
+
++ #strong[Elementary subformulae] $el(psi)$ --- only atomic propositions and X-formulas survive:
+
+  #table(
+    columns: (auto, 1fr),
+    stroke: 0.4pt, inset: 4pt,
+    [$phi$], [$el(phi)$],
+    [$p$], [${p}$ #h(1em) ($"true"$: $emptyset$)],
+    [$not phi_1$], [$el(phi_1)$],
+    [$phi_1 and phi_2$, $phi_1 or phi_2$], [$el(phi_1) union el(phi_2)$],
+    [$X phi_1$], [${X phi_1} union el(phi_1)$],
+    [$phi_1 U phi_2$], [${X(phi_1 U phi_2)} union el(phi_1) union el(phi_2)$],
+  )
+
+  Let $n = |el(psi)|$.
+
++ #strong[Tableau states] $S_T$: every subset of $el(psi)$, so $2^n$ states. Write them as a truth table, one column per elementary formula, rows $t_0, dots, t_(2^n - 1)$ (1 = formula is in the state). $lambda_T (t)$ = the atomic propositions in $t$.
+
++ #strong[Sat sets on the tableau.] Compute them for every subformula needed below:
+
+  #table(
+    columns: (auto, 1fr),
+    stroke: 0.4pt, inset: 4pt,
+    [$phi$], [$Sat(phi)$ (subset of $S_T$)],
+    [elementary ($p$ or $X phi_1$)], [states that *contain* $phi$],
+    [$"true"$], [$S_T$],
+    [$not phi_1$], [$S_T without Sat(phi_1)$],
+    [$phi_1 and phi_2$ / $phi_1 or phi_2$], [$Sat(phi_1) inter Sat(phi_2)$ / $Sat(phi_1) union Sat(phi_2)$],
+    [$phi_1 U phi_2$], [$Sat(phi_2) union (Sat(phi_1) inter Sat(X(phi_1 U phi_2)))$],
+  )
+
++ #strong[Tableau transitions.] $t trn(T) t'$ iff for every $X phi in el(psi)$: $X phi in t <=> t' in Sat(phi)$. In words, per $X phi$: a state that *contains* $X phi$ may only go to states in $Sat(phi)$; a state that does *not* contain it may only go to states *outside* $Sat(phi)$. With several X-formulas, intersect the allowed successor sets. Draw every allowed arrow (green $arrow.r$ red, yellow $arrow.r$ white in the exercise). Finally delete states without successors, repeating until none are left --- no infinite path is lost.
+
++ #strong[Initial states] $I_T = Sat(not psi) = S_T without Sat(psi)$ --- we search for paths that *violate* $psi$.
+
++ #strong[Fairness constraints.] Only needed if $psi$ contains $phi_1 U phi_2$. For each such subformula take $F_j = Sat(not (phi_1 U phi_2) or phi_2) = (S_T without Sat(phi_1 U phi_2)) union Sat(phi_2)$. A path is fair if it visits *each* $F_j$ infinitely often; this rules out paths that stay in $X(phi_1 U phi_2)$ forever without $phi_2$ ever happening. No U in $psi$: no constraints.
+
++ #strong[Product] $P = (S_P, I_P, trn(P), lambda_P)$ of $T$ and $K$:
+  - *Restrict labels:* tabulate $lambda(s) inter "AP"_psi$ for every $s in S$ --- atomic propositions not in $psi$ are invisible.
+  - *States:* $S_P = {(t, s) | t in S_T, s in S, lambda(s) inter "AP"_psi = lambda_T (t)}$. Group tableau and model states by label to list the pairs.
+  - *Initial:* $I_P = {(t, s) in S_P | t in I_T and s in I}$.
+  - *Transitions:* $(t, s) trn(P) (t', s')$ iff $t trn(T) t'$ *and* $s arrow.r s'$ (both components move together). $lambda_P ((t, s)) = lambda_T (t)$.
+  - *Clean up:* delete states without successors (repeat) --- $P$ can have them even when $T$ has none; also drop everything not reachable from $I_P$.
+  - *Lift fairness:* $F_j^P = {(t, s) in S_P | t in F_j}$.
+
++ #strong[Decide.] Is there an infinite path from $I_P$ that visits every $F_j^P$ infinitely often (i.e. does $P$ satisfy $"EG" "true"$ under fairness)? By hand: from $I_P$, look for a reachable cycle (strongly connected set with at least one arrow) that contains a state of *every* $F_j^P$.
+  - *Found:* $K tack.r.double.not psi$. Counter-example = path to the cycle, then the cycle forever, read off as the $s$-components.
+  - *None:* $K tack.r.double psi$.
+
+#i[Verdict polarity: CTL says yes when $I subset.eq Sat(Phi)$; LTL says yes when $P$ has *no* fair path. Also: tableau sets live in $S_T$, model sets in $S$ --- never mix them, and all $F_j$ must be visited, not just one.]
+
