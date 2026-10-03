@@ -1,6 +1,0 @@
-digraph _logic_property1 {
-rankdir=LR;
-node [shape = circle]; start;
-node [shape = point]; _s_s;
-_s_s -> start;
-}

@@ -1,6 +1,7 @@
 package larva;
 
 
+import gradeAdministration.*;
 
 import java.util.LinkedHashMap;
 import java.io.PrintWriter;
@@ -24,6 +25,12 @@ _cls_GradeAdministration0_instances.put(root, root);
 }
 
 _cls_GradeAdministration0 parent; //to remain null - this class does not have a parent!
+public static Course c;
+public static Student s;
+public static Student student;
+public static int grade;
+public static int g;
+public static Course course;
 int no_automata = 1;
 
 public static void initialize(){}
@@ -54,7 +61,7 @@ return 0;
 
 public void _call(String _info, int... _event){
 synchronized(_cls_GradeAdministration0_instances){
-_performLogic_property1(_info, _event);
+_performLogic_gradesBetween1And10(_info, _event);
 }
 }
 
@@ -82,24 +89,34 @@ else if (no_automata < 0)
 }catch(Exception ex){ex.printStackTrace();}
 }
 
-int _state_id_property1 = 0;
+int _state_id_gradesBetween1And10 = 1;
 
-public void _performLogic_property1(String _info, int... _event) {
+public void _performLogic_gradesBetween1And10(String _info, int... _event) {
 
-_cls_GradeAdministration0.pw.println("[property1]AUTOMATON::> property1("+") STATE::>"+ _string_property1(_state_id_property1, 0));
+_cls_GradeAdministration0.pw.println("[gradesBetween1And10]AUTOMATON::> gradesBetween1And10("+") STATE::>"+ _string_gradesBetween1And10(_state_id_gradesBetween1And10, 0));
 _cls_GradeAdministration0.pw.flush();
 
 if (0==1){}
+else if (_state_id_gradesBetween1And10==1){
+		if (1==0){}
+		else if ((_occurredEvent(_event,0/*gradeRegistered*/)) && (grade <1 ||grade >10 )){
+		_cls_GradeAdministration0.pw .println ("VIOLATION: grade "+grade +" registered for student "+student +" in course "+course .getCourseCode ());
+
+		_state_id_gradesBetween1And10 = 0;//moving to state invalidGrade
+		_goto_gradesBetween1And10(_info);
+		}
+}
 }
 
-public void _goto_property1(String _info){
-_cls_GradeAdministration0.pw.println("[property1]MOVED ON METHODCALL: "+ _info +" TO STATE::> " + _string_property1(_state_id_property1, 1));
+public void _goto_gradesBetween1And10(String _info){
+_cls_GradeAdministration0.pw.println("[gradesBetween1And10]MOVED ON METHODCALL: "+ _info +" TO STATE::> " + _string_gradesBetween1And10(_state_id_gradesBetween1And10, 1));
 _cls_GradeAdministration0.pw.flush();
 }
 
-public String _string_property1(int _state_id, int _mode){
+public String _string_gradesBetween1And10(int _state_id, int _mode){
 switch(_state_id){
-case 0: if (_mode == 0) return "start"; else return "start";
+case 1: if (_mode == 0) return "start"; else return "start";
+case 0: if (_mode == 0) return "invalidGrade"; else return "!!!SYSTEM REACHED BAD STATE!!! invalidGrade "+new _BadStateExceptionGradeAdministration().toString()+" ";
 default: return "!!!SYSTEM REACHED AN UNKNOWN STATE!!!";
 }
 }

@@ -1,20 +1,33 @@
 IMPORTS{
+	import gradeAdministration.*;
 }
 
 GLOBAL{
 
-	EVENTS{
-		
+	VARIABLES{
 	}
 
-	PROPERTY property1{
+	EVENTS{
+		gradeRegistered(Course course, Student student, int grade) = {Course c.addGrade(Student s, int g)} where {course = c; student = s; grade = g;}
+	}
+
+	PROPERTY gradesBetween1And10{
+
 		STATES{
-			STARTING{start}
+			BAD{
+				invalidGrade
+			}
+
+			STARTING{
+				start
+			}
 		}
 
 		TRANSITIONS{
-
+			start -> invalidGrade [
+				gradeRegistered\
+				grade < 1 || grade > 10\
+				System.out.println("VIOLATION: grade " + grade + " registered for student " + student + " in course " + course.getCourseCode());]
 		}
 	}
-
 }
