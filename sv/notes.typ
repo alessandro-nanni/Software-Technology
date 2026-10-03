@@ -393,22 +393,25 @@ Pipeline: $psi arrow.r$ tableau $T$ $arrow.r$ product $P$ $arrow.r$ fairness con
     [$phi_1 U phi_2$], [${X(phi_1 U phi_2)} union el(phi_1) union el(phi_2)$],
   )
 
-  Let $n = |el(psi)|$.
+  Let $n = |el(psi)|$. #h(0.5em) *Naming:* $psi$ = the whole (core) formula; a subformula $phi_1 U phi_2$ shows up in $el(psi)$ as $X(phi_1 U phi_2)$, and in exercises it is abbreviated $phi := phi_1 U phi_2$, so the elementary formula is $X phi$ (not $X psi$). $psi = phi$ only when the whole formula is a single U, e.g. $F "moving" = "true" U "moving"$.
 
 + #strong[Tableau states] $S_T$: every subset of $el(psi)$, so $2^n$ states. Write them as a truth table, one column per elementary formula, rows $t_0, dots, t_(2^n - 1)$ (1 = formula is in the state). $lambda_T (t)$ = the atomic propositions in $t$.
 
-+ #strong[Sat sets on the tableau.] Compute them for every subformula needed below:
++ #strong[Sat sets on the tableau.] Steps 5--7 need: $Sat(phi)$ for the argument $phi$ of every $X phi in el(psi)$ (transitions), $Sat(psi)$ and its complement (initial states), and $Sat(phi_2)$ and $Sat(phi_1 U phi_2)$ for every U in $psi$ (fairness). Compute them bottom-up along the parse tree of $psi$; elementary formulas are read straight off the state table, everything else is built with:
 
   #table(
     columns: (auto, 1fr),
     stroke: 0.4pt, inset: 4pt,
-    [$phi$], [$Sat(phi)$ (subset of $S_T$)],
-    [elementary ($p$ or $X phi_1$)], [states that *contain* $phi$],
+    [formula], [$Sat$ (subset of $S_T$)],
+    [elementary ($p$ or $X phi_1$)], [states that *contain* it (read the column)],
     [$"true"$], [$S_T$],
     [$not phi_1$], [$S_T without Sat(phi_1)$],
-    [$phi_1 and phi_2$ / $phi_1 or phi_2$], [$Sat(phi_1) inter Sat(phi_2)$ / $Sat(phi_1) union Sat(phi_2)$],
+    [$phi_1 and phi_2$], [$Sat(phi_1) inter Sat(phi_2)$],
+    [$phi_1 or phi_2$], [$Sat(phi_1) union Sat(phi_2)$],
     [$phi_1 U phi_2$], [$Sat(phi_2) union (Sat(phi_1) inter Sat(X(phi_1 U phi_2)))$],
   )
+
+  $phi_1, phi_2$ are placeholders for any two subformulas: for $"true" U "moving"$ take $phi_1 = "true"$, $phi_2 = "moving"$.
 
 + #strong[Tableau transitions.] $t trn(T) t'$ iff for every $X phi in el(psi)$: $X phi in t <=> t' in Sat(phi)$. In words, per $X phi$: a state that *contains* $X phi$ may only go to states in $Sat(phi)$; a state that does *not* contain it may only go to states *outside* $Sat(phi)$. With several X-formulas, intersect the allowed successor sets. Draw every allowed arrow (green $arrow.r$ red, yellow $arrow.r$ white in the exercise). Finally delete states without successors, repeating until none are left --- no infinite path is lost.
 

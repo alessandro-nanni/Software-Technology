@@ -1,0 +1,20 @@
+IMPORTS{
+}
+
+GLOBAL{
+
+	EVENTS{
+		
+	}
+
+	PROPERTY property1{
+		STATES{
+			STARTING{start}
+		}
+
+		TRANSITIONS{
+
+		}
+	}
+
+}
