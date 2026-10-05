@@ -61,7 +61,7 @@ return 0;
 
 public void _call(String _info, int... _event){
 synchronized(_cls_GradeAdministration0_instances){
-_performLogic_gradesBetween1And10(_info, _event);
+_performLogic_ex1(_info, _event);
 }
 }
 
@@ -89,34 +89,45 @@ else if (no_automata < 0)
 }catch(Exception ex){ex.printStackTrace();}
 }
 
-int _state_id_gradesBetween1And10 = 1;
+int _state_id_ex1 = 2;
 
-public void _performLogic_gradesBetween1And10(String _info, int... _event) {
+public void _performLogic_ex1(String _info, int... _event) {
 
-_cls_GradeAdministration0.pw.println("[gradesBetween1And10]AUTOMATON::> gradesBetween1And10("+") STATE::>"+ _string_gradesBetween1And10(_state_id_gradesBetween1And10, 0));
+_cls_GradeAdministration0.pw.println("[ex1]AUTOMATON::> ex1("+") STATE::>"+ _string_ex1(_state_id_ex1, 0));
 _cls_GradeAdministration0.pw.flush();
 
 if (0==1){}
-else if (_state_id_gradesBetween1And10==1){
+else if (_state_id_ex1==2){
+		if (1==0){}
+		else if ((_occurredEvent(_event,2/*programStarted*/))){
+		_cls_GradeAdministration0.pw .println ("hi");
+
+		_state_id_ex1 = 1;//moving to state ok
+
+		_goto_ex1(_info);
+		}
+}
+else if (_state_id_ex1==1){
 		if (1==0){}
 		else if ((_occurredEvent(_event,0/*gradeRegistered*/)) && (grade <1 ||grade >10 )){
 		_cls_GradeAdministration0.pw .println ("VIOLATION: grade "+grade +" registered for student "+student +" in course "+course .getCourseCode ());
 
-		_state_id_gradesBetween1And10 = 0;//moving to state invalidGrade
-		_goto_gradesBetween1And10(_info);
+		_state_id_ex1 = 0;//moving to state invalidGrade
+		_goto_ex1(_info);
 		}
 }
 }
 
-public void _goto_gradesBetween1And10(String _info){
-_cls_GradeAdministration0.pw.println("[gradesBetween1And10]MOVED ON METHODCALL: "+ _info +" TO STATE::> " + _string_gradesBetween1And10(_state_id_gradesBetween1And10, 1));
+public void _goto_ex1(String _info){
+_cls_GradeAdministration0.pw.println("[ex1]MOVED ON METHODCALL: "+ _info +" TO STATE::> " + _string_ex1(_state_id_ex1, 1));
 _cls_GradeAdministration0.pw.flush();
 }
 
-public String _string_gradesBetween1And10(int _state_id, int _mode){
+public String _string_ex1(int _state_id, int _mode){
 switch(_state_id){
-case 1: if (_mode == 0) return "start"; else return "start";
+case 2: if (_mode == 0) return "start"; else return "start";
 case 0: if (_mode == 0) return "invalidGrade"; else return "!!!SYSTEM REACHED BAD STATE!!! invalidGrade "+new _BadStateExceptionGradeAdministration().toString()+" ";
+case 1: if (_mode == 0) return "ok"; else return "ok";
 default: return "!!!SYSTEM REACHED AN UNKNOWN STATE!!!";
 }
 }

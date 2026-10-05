@@ -1,8 +1,0 @@
-digraph _logic_gradesBetween1And10 {
-rankdir=LR;
-node [shape = circle]; start;
-node [shape = octagon]; invalidGrade;
-node [shape = point]; _s_s;
-_s_s -> start;
-start -> invalidGrade [ label = "(1) gradeRegistered\\grade < 1 || grade > 10 \\System . out . println ( \" VIOLATION: grade  \" + grade + \"  registered for student  \" + student + \"  in course  \" + course . getCourseCode ( ) ) ; "];
-}

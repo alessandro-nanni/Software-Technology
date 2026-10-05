@@ -11,7 +11,7 @@ GLOBAL{
 		gradeRegistered(Course course, Student student, int grade) = {Course c.addGrade(Student s, int g)} where {course = c; student = s; grade = g;}
 	}
 
-	PROPERTY gradesBetween1And10{
+	PROPERTY ex1{
 
 		STATES{
 			BAD{
@@ -21,6 +21,8 @@ GLOBAL{
 			STARTING{
 				start
 			}
+			
+
 		}
 
 		TRANSITIONS{

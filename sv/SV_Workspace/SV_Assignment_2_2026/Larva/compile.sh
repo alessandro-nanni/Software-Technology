@@ -1,4 +1,5 @@
 #!/bin/bash
+rm -rf bin
 mkdir bin
 
 echo "compiling source files..."
