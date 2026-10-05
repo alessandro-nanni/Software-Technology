@@ -1,3 +1,0 @@
-[ex1]AUTOMATON::> ex1() STATE::>start
-hi
-[ex1]MOVED ON METHODCALL: void gradeAdministration.Main.main(String[]) TO STATE::> ok

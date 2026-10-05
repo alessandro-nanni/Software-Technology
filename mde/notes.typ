@@ -475,20 +475,27 @@ Called/imperative rules have the same structure as declarative rules, but withou
 #i[*Rule inheritance*: helps structure transformation and reuse rules. Child rule matches a subset of what its parent rule matches. Child rule specializes target elements of its parent rule.]
 
 = QVT Transformation language & Java Transformations
+QVT (Query/View/Transformation) is the OMG standard language for model transformations.
+
 == QVT Terminology
-#def[Query][Expression that is evaluated over a model. The result of a query is one ore more model elements, which are instances of types defined in the source model, or defined by the query language.]
+#def[Query][Expression that is evaluated over a model. The result of a query is one or more model elements, which are instances of types defined in the source model, or defined by the query language.]
 
-#def[View][Model completely derived from another model (the base model). A live connection exists between the view and the base mdoel.]
+#def[View][Model completely derived from another model (the base model). A live connection exists between the view and the base model: when the base model changes, the view changes with it.]
 
-#def[Transformation][Process of automatic generation of a target model from a source model #m(page:3)]
+#def[Transformation][Process of automatic generation of a target model from a source model, according to a transformation definition.]
 
-The abstract syntax of the QVT language is defined as a MOF 2.0 metamodel. Transformations are defined based on MOF 2.0 metamodels. Transformations are executed on instances of MOF 2.0 metamodels. 
+== QVT Operational Context
+The source metamodel, the target metamodel and the QVT language itself are all defined with MOF. A transformation definition is written in QVT and refers to the elements of the source and target metamodels. The QVT engine executes it: it reads the source model (instance of the source metamodel) and produces the target model (instance of the target metamodel).
+
+#merge[Source model][QVT engine (runs the transformation)][Target model]
+
+So: the abstract syntax of QVT is a MOF 2.0 metamodel, transformations are defined on MOF 2.0 metamodels, and they are executed on instances of those metamodels.
 
 == Original QVT requirements
-/ Mandatory: 
-  - Query language;
+/ Mandatory:
+  - Query language ($->$ OCL)
   - Transformation language
-  - Abstract syntax
+  - Abstract syntax, based on MOF 2.0
   - Paradigm $->$ declarative
 / Optional:
   - Bidirectionality
@@ -496,54 +503,189 @@ The abstract syntax of the QVT language is defined as a MOF 2.0 metamodel. Trans
   - Reusability
   - Model update
 
-#i[Core and relations not relevant.]
+== QVT Architecture
+QVT is a layered architecture with three transformation languages:
+/ Core (declarative): small, low-level language to define relations between source and target models. It has the same expressive power as Relations, but transformations are much more verbose and traceability links must be handled manually. It is mainly used as a reference to define the semantics of Relations.
+/ Relations (declarative): describes more complex relations between model elements, with object patterns that are matched in one model and created in another. Traceability links are handled automatically and transformations can be multidirectional. It supports check-only mode (just verify that two models are related, without creating anything), uni- and multidirectional transformations, and incremental (in-place) updates of existing models.
+/ Operational Mappings (imperative): extends Relations with imperative constructs.
 
-#i[Operational mappings extend the relations language with imperative constructs.]
+Relations is translated into Core (by the RelationsToCore transformation). Operational Mappings and *Black Box* (a mechanism to call external programs, e.g. code written in another language) extend both of them.
 
-The 3 QVT languages collectively provide one hybrid language. 
+#i[The 3 QVT languages collectively provide one *hybrid* language.]
 
-In the core language, transformations get very verbose. The relations language is also based on relations of model elements. 
-
-== Relations language
-
-#m(page:10)
+#i[Core and Relations are not relevant for the course, the focus is on Operational Mappings.]
 
 == Operational Mappings Language
-Given a source UML model, we want to transform it in another UML model where only the leaf classes remain and the inheritance classes are collapsed.
+Explained with the *flattening UML class hierarchies* example: given a UML model, produce another UML model where only the leaf classes (classes not extended by other classes) are kept, and each of them contains everything it inherited.
 
 Rules:
 + Copy the primitive types
-+ Copy the leaf classes
++ Copy only the leaf classes of the source model
 + Include the inherited attributes and associations
-+ Attributes with the same name override inherited attributes
++ Attributes with the same name override the inherited attributes
+
+Source and target use the same metamodel, *SimpleUML*: a simplified UML class diagram with packages, classes (with their attributes), primitive types, generalizations (each one points to the superclass, called `general`) and associations (from a source class to a target class).
+
+*Example*: `Person` is extended by `Student` and `Employee`, which are extended by `PhDStudent` and `Professor`. After flattening, only `PhDStudent`, `Professor` and the other leaf classes (`Course`, `Address`, `Car`, ...) remain. `PhDStudent` now directly has `name`, `ssn` and `school`, and the inherited associations (`attends`, `residesAt`, `supervisor`). `Professor` keeps its own `name : FullName`, which overrides the inherited `name : String`.
+
+=== Structure of a transformation
+A QVTo file declares:
+- the metamodel it uses (`modeltype`, by its URI);
+- the signature of the transformation: its input and output models;
+- the entry point `main()`. In the example, it takes the root `Model` of the input and applies the top-level mapping to it;
+- then helpers and mapping operations.
 
 == Mapping operation
-Maps one or more source elements into one or more target elements. It's always unidirectional, and selects source elements based on their type and a boolean condition (guard). Executes operations in its body to create target models. May invoke other mapping operations and may be invoked. Mapping operations may be related by inheritance.
+A mapping operation maps one or more source elements onto one or more target elements. It's always unidirectional, and selects source elements based on their type and a boolean condition (the guard, `when`). It executes operations in its body to create the target elements, and it may invoke other mapping operations (and be invoked). Mapping operations may be related by inheritance.
 
-`(rname : rType)` is generated.
-- `init{...}` code is executed befoore instantiation of result elements
-- `population{...}` an implicit instantiation section output parameters are created
-- `end{...}` code executed before exiting operation
+A mapping is defined on a type: the source element it is applied to is available as `self`. It can have parameters (`in`, `out`, `inout`) and returns one or more results, the created target elements. Its body has three sections:
+- `init`: executed before the result elements are created;
+- `population`: the result elements are created automatically and then filled in. It is the default section: what you write directly in the body goes here;
+- `end`: executed before exiting the operation.
 
-To transform leaf classes
-+ Select only classes without subclasses (not `general` in a `Generalization`).
-+ Collects all inherited properties
-+ Create a new class in the target model
-`_'abstract' := self._'abstract`: OCL's underscore-prefixed-string-literal-escape, // checks if a class is abstract? 
+=== Transforming leaf classes
+The mapping for classes has a guard that only accepts classes that are not the `general` (superclass) of any generalization, i.e. the leaf classes. When the body runs, `self` is the source class and the new target class has already been created. The body just copies the name and the abstract flag#footnote[`abstract` is a reserved word, so the property has to be escaped as `_'abstract'`.]. The attributes are handled by a separate mapping.
 
-A helper can be tied to a type and perform navigations over source models. Side-effect free: `query`. 
+== Helpers
+Operations attached to a type, used to perform complex navigations over the source models. They have input parameters and a body. A `query` is side-effect free, while a `helper` may modify its input parameters.
 
-=== Resolution of object references/transformation of associations
+The example uses a recursive query to compute the *derived attributes* of a class (its own plus the inherited ones):
+- if the class has no superclass, they are just its own attributes;
+- otherwise, take the derived attributes of each superclass, remove the ones with the same name as one of the class's own attributes (this implements overriding), and add the class's own attributes.
 
-In the target model, an association should relate classe #m(page:23)
+Collecting over several superclasses gives a set of sets, so the result has to be flattened into a single set.
 
+== Resolution of object references
+Associations in the target model must connect the *new* classes, not the original ones. To find them, the transformation engine keeps a *trace*: every time a mapping runs, it records which source element produced which target element. The operation `resolveIn` (or `resolveoneIn` for a single result) looks up in the trace what a given mapping created from a given source element.
 
+To transform associations, for each leaf class we collect its own associations plus those inherited from its superclasses (recursively, as for attributes), and copy each one. The copy keeps the name; its source becomes the new leaf class, and its target becomes the new class created from the original target. Both are found through the trace.
 
-Objects can be created and populated in mapping operations with the object operation. There are also imperative constructs for managing control flow
+E.g. `residesAt` goes from `Person` to `Address`. Both `PhDStudent` and `Professor` inherit it, so the output contains two `residesAt` associations.
+
+== Putting it together
+The top-level mapping (applied to the `Model`) works in three phases:
++ `init`: create the copies of the primitive types, the new classes (the leaf class mapping is applied to all classes, and its guard skips the non-leaf ones) and the associations.
++ Body: name the new model `flattened_` + original name, and add all the created elements to it.
++ `end`: assign the properties of every leaf class. This must happen last, because the type of a property must point to a class or primitive type that has already been created.
+
+To assign the properties, a mapping finds (through the trace) the class already created for the leaf class, and gives it all its derived attributes. Since its result is set to this existing class in `init`, no new class is created. Each attribute is copied by another mapping, which copies the name and sets the type through the trace (to the copied primitive type or to the new class).
+
+== Other facilities
+- Objects can also be created explicitly inside a mapping with the `object` operation, setting their properties directly (they can refer to the source object, `self`).
+- Imperative constructs for control flow: `compute`, `while`, `forEach`, `break`, `continue`, `if-then-else`.
+- Not covered (see the QVT specification): transformation libraries, rule inheritance and merging, disjunctions of mapping operations, constructor operations, intermediate data, reusing and extending transformations, post conditions (`where` clause).
+
+== Tool support
+- Eclipse MMT (Model to Model Transformation) project: aims at a full implementation of QVT and ATL, provides the Operational Mappings engine, and brings together existing tools (Borland, Compuware, INRIA).
+- Commercial tools (possibly inactive): MediniQVT (IKV++), ModelMorf (Tata Consultancy), SmartQVT (France Telecom).
+
+In Eclipse, a transformation is run with an _Operational QVT Interpreter_ run configuration: choose the `.qvto` file, the input model and the output model. Optionally, it can also generate a trace file.
+
+== Take-home messages (QVT)
+- QVT is the OMG standard language for model transformations
+- The requirement of *views* over models is not explicitly addressed
+- The query language is based on OCL
+- QVT is a family of three transformation languages:
+  - Core: declarative language, simplified notation
+  - Relations: declarative language
+  - Operational Mappings: imperative language that extends Relations
+- Collectively, the QVT languages form a hybrid language
 
 == Java Transformations
+Transformations can also be written in a GPL such as Java (especially for not complex transformations). A pure Java implementation has no overhead, so in theory it should be the fastest.
 
-GPL can do transformations aswell (especially for not complex transformations). Pure java implementation with no overhead should theoretically have the the fastest implementation. Based on a `Rule` interface.
+=== SiTra library
+SiTra (Simple Transformations in Java) is a minimal library to help write model transformations in Java (shown as an example, not as the best or only way).
+- Each transformation rule implements a `Rule` interface with three methods: *check* (can this rule transform this source object?), *build* (create the target object) and *setProperties* (fill in the properties of the target object).
+- A *transformer* object applies the rules: given a source object (or a list), it finds a rule that accepts it and runs it. SiTra ships with a simple transformer.
 
-Pure java solutions are possible.
+Creating and filling in the target are separate steps, so the target object already exists when its properties are set, and other rules can refer to it.
 
+=== Example: SimpleClass to SimpleRDBMS
+Classes are transformed into database tables. The source metamodel has packages containing classes (with attributes, an optional parent class and a persistence flag), primitive types and associations. The target metamodel has tables, with columns, a primary key and foreign keys that reference other tables.
+
+They defined both metamodels, generated the genmodel and the model code for each, and implemented the transformation both with SiTra and in "pure" Java (inspired by SiTra).
+
+In the pure Java version, each rule is a class with `transform` methods (e.g. `Class2Table` transforms a class into a table). Since Java is imperative:
+- each `transform` method must be called explicitly by another one, following the structure of the transformation (package $->$ its classes $->$ ...);
+- traces are not automatic: a `HashMap` (from class to table) is needed to remember what has already been transformed.
+
+The goal was to compare transformation languages with pure Java: for some types of models, performance depends a lot on the tracing mechanism.
+
+=== Take-home messages (Java)
+- SiTra makes it easier to implement transformations, but here we built our own code inspired by SiTra
+- This works for simple transformations, but more complex scenarios (multiple sources/targets, very different metamodels, complex mappings) require much more complex code
+- With #link("https://modeling-languages.com/pyecore-python-eclipse-modeling-framework/")[PyEcore] something similar can be done in Python
+
+= Model-to-Text Transformations / Acceleo
+Model-to-text (M2T) transformations are "the missing piece" of MDE: so far we transformed models into other models, now we turn models into text (e.g. code).
+
+== Compiling models in MDE
+In MDE, compiling is a translation, so it's a *transformation*. A model can be compiled into a model that is directly executable, or into a model (program code) that can be executed. There are two ways:
+- *Model-to-model* (e.g. QVT, ATL): transform the model, possibly in several steps, until we get a model that can be executed.
+- *Model-to-text*: transform the model into code (e.g. Java, C\#, SQL, HTML), which is then executed.
+
+Models are abstractions, so behavioural details needed for execution may be missing. The model-to-model and model-to-text transformations must add this missing information, so that the whole process is fully automated.
+
+Typical chain:
+#merge[Model][Platform model][Code][Executable]
++ Model-to-model: the result is still a model, but it uses platform concepts (e.g. OOP constructs like classes and methods).
++ Model-to-text: the result is a textual model, i.e. code (e.g. Java). This is the step of this lecture.
++ Compilation, done by a normal compiler: the result can be executed (e.g. Java bytecode).
+
+== Code generation
+Code generation is a model-to-text transformation. In MDE it is treated as a special type of transformation, and it is supported by specialised M2T languages (e.g. Jamda, OptimalJ, JET, AndroMDA, XPand). Here we use *Acceleo*, developed by Obeo and part of the Eclipse Model to Text (M2T) project.
+
+== Acceleo
+- Tool for model-to-text transformation based on *templates*.
+- Pragmatic implementation of the OMG MOF Model to Text Language (MTL) standard.
+- Can generate any text, in particular programming language code.
+- Relatively easy to use (much easier than e.g. XPand).
+- Has the usual IDE features: content assist, outline, navigation to declarations, quick fixes, refactoring, syntax highlighting, etc.
+
+*How it works*: Acceleo takes two inputs, the model (instance of an Ecore metamodel) and a template. A template is text with "gaps": the fixed parts are copied as they are into the output, while the gaps are expressions over the metamodel elements, which are filled in with the values found in the model. The output is text (code, a report, etc.).
+
+#merge[Model + Template][Acceleo][Text (code, report, ...)]
+
+== Example: Simple Activity Language
+A model represents a behaviour, like a flowchart: a start action, intermediate actions (variable declarations, assignments, condition tests) and a stop action. Each action has a label and points to the next action, while a condition points to a "yes" action and a "no" action. Assignments use integer expressions (variables, constants and sums), conditions use a "less than" expression.
+
+The language has a textual syntax where each line is an action: its label, what it does, and the label of the next action.
+
+*Example*: a model that computes the 9th Fibonacci number ($F_n = F_(n-1) + F_(n-2)$, with $F_0 = 0$, $F_1 = 1$). It declares the variables `a`, `b`, `r`, `n`, `fn`, initialises them, then loops: while `n < fn`, it sets `a = b`, `b = r`, `r = a + b` and increments `n`. When the condition fails, it goes to the stop action (at the end, `r = 21`).
+
+== Acceleo module
+An Acceleo module (a `.mtl` file) declares its name and the metamodels it uses, and contains templates and queries. Inside a template, everything between square brackets is Acceleo code (expressions, loops, ...), and everything else is text copied to the output#footnote[Since `[` starts Acceleo code, literal brackets in the output (e.g. `String[]`) must be written as string expressions.].
+
+The *main template* (marked with `@main`) is the entry point. It is applied to the `Model` element and opens a *file* block: everything generated inside it is written to an output file (here `Fibonacci.java`). Inside, it writes a Java class named after the model.
+
+The generated class follows this idea:
+- each variable declaration becomes an `int` field;
+- each action becomes a method named after its label;
+- "go to the next action" becomes a call to the method of the next action;
+- a condition becomes an `if`/`else` that calls the "yes" or the "no" method;
+- an assignment becomes the Java assignment, followed by the call to the next method;
+- the stop action becomes a method that prints the final value of every variable;
+- a `main` method creates an object of the class and calls the start method.
+
+To generate the same text for every element of a certain type (e.g. one method per assignment), the template uses a `for` loop over the model's actions, filtered by type.
+
+So the loop of the Fibonacci model becomes a chain of method calls (check $->$ iterate $->$ ... $->$ check).
+
+== Polymorphic queries
+The expressions in the model (e.g. `a + b`, `n < fn`) must be turned into Java text. This is done by *queries*: side-effect free operations that compute a value, here a string.
+
+They are *polymorphic*: there are several versions with the same name for different types, and Acceleo picks the one matching the actual type of the element (like method overriding in Java):
+- a variable gives its name, a constant gives its value;
+- a sum gives "left + right", calling the query again on both sides (so chained sums also work);
+- a less-than gives "left < right";
+- the versions for the abstract types return an empty string, as a fallback.
+
+E.g. the assignment `r = a + b` becomes `r = a + b;` in Java, and the condition `n < fn` becomes `if(n < fn)`.
+
+*Running it*: with an Acceleo run configuration, choose the module file, the model file (`Fibonacci.xmi`) and the destination folder. Running it generates the Java file there.
+
+== Take-home messages (M2T)
+- M2T transformations are often used to generate executable code from models, but they can also generate other textual representations, such as reports.
+- A template-based language lets developers define code patterns for metamodel elements, and how these patterns are filled in (generated) with the elements of the models.
+- Usually M2T transformations are the last step of a transformation chain (just before compilation).

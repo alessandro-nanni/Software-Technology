@@ -16,16 +16,6 @@ if (!initialized){
 }
 }
 
-before () : (execution(* *.main(..)) && args(*) && !cflow(adviceexecution())) {
-
-synchronized(_asp_GradeAdministration0.lock){
-
-_cls_GradeAdministration0 _cls_inst = _cls_GradeAdministration0._get_cls_GradeAdministration0_inst();
-_cls_inst._call(thisJoinPoint.getSignature().toString(), 2/*programStarted*/);
-_cls_inst._call_all_filtered(thisJoinPoint.getSignature().toString(), 2/*programStarted*/);
-}
-}
-
 before ( Course c,Student s,int g) : (call(* Course.addGrade(..)) && target(c) && args(s,g) && !cflow(adviceexecution())) {
 
 synchronized(_asp_GradeAdministration0.lock){
