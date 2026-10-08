@@ -433,3 +433,271 @@ Pipeline: $psi arrow.r$ tableau $T$ $arrow.r$ product $P$ $arrow.r$ fairness con
 
 #i[Verdict polarity: CTL says yes when $I subset.eq Sat(Phi)$; LTL says yes when $P$ has *no* fair path. Also: tableau sets live in $S_T$, model sets in $S$ --- never mix them, and all $F_j$ must be visited, not just one.]
 
+#show table: set par(justify: false)
+
+= Function Contracts in ACSL --- Ch. 7
+
+A contract is a special comment placed *directly before* the function: #box[`/*@ ... */`] or #box[`//@ ...`] (the `@` marks it as an annotation). Every clause ends in `;`. Clause bodies are side-effect-free C expressions: no `=`, no `++`, and (unlike JML) no calls to C functions.
+
+```
+/*@ requires P;      // precondition: caller's duty
+    terminates T;    // must terminate when T holds
+    assigns L;       // frame: what may be modified
+    ensures Q;       // postcondition: callee's promise
+*/
+int f(int *a, int n) { ... }
+```
+
+#strong[Clause order] (ACSL grammar): `requires` $arrow.r$ `terminates` $arrow.r$ `assigns`/`ensures` (any mix) $arrow.r$ `behavior`s $arrow.r$ `complete`/`disjoint`.
+
+== Clauses \& defaults
+
+#table(
+  columns: (auto, 1fr, auto),
+  stroke: 0.4pt, inset: 4pt,
+  [clause], [meaning], [default],
+  [`requires P;`], [precondition: must hold on entry; the *caller* must establish it], [`\true`],
+  [`ensures Q;`], [postcondition: holds on exit --- *if* entered with $P$ and it terminates], [`\true`],
+  [`assigns L;`], [frame: the *only* locations the function may modify (over-approximating is fine)], [everything],
+  [`terminates T;`], [total correctness: must terminate whenever $T$ holds on entry], [none (partial)],
+)
+
+Several `requires` (or `ensures`) clauses are joined by `&&`: `requires A; requires B;` $equiv$ `requires A && B;`.
+
+#strong[Partial correctness] (plain `requires`/`ensures`): if started in a state satisfying $P$ *and* it terminates, the end state satisfies $Q$. A function that never terminates vacuously satisfies every such contract. \
+#strong[Total correctness]: it must also terminate --- add a `terminates` clause.
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [clause], [meaning],
+  [ACSL `terminates T;`], [*must* terminate whenever $T$ holds on entry],
+  [JML `diverges D;`], [*may* run forever only when $D$ holds on entry],
+)
+
+`terminates T` $equiv$ `diverges !T`, e.g. `terminates x >= 0;` $equiv$ `diverges x < 0;`. Always terminate: `terminates \true;` / `diverges false;`.
+
+#i[Degenerate contracts: `requires \false;` --- nobody can legally call it (marks a deprecated function). `ensures \false;` --- it never returns normally. Called outside its precondition $arrow.r$ *no* guarantee at all. That is what allows "offensive" programming: drop the defensive argument checks from the body and check every call site instead.]
+
+== Specification expressions
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [syntax], [meaning],
+  [`\result`], [return value --- only in `ensures`],
+  [`\old(e)`], [value of `e` on entry --- only in postconditions; sugar for `\at(e, Old)`],
+  [`\at(e, L)`], [value of `e` at label `L` (table below, or any C label)],
+  [`\true`, `\false`], [mathematical Booleans --- not C's `0`/`1`],
+  [`\null`], [`(void*)0`],
+  [`==>`, `<==>`], [implication, equivalence --- on top of `&&`, `||`, `!`],
+  [`0 <= i < n`], [chained comparison $=$ `0 <= i && i < n`],
+  [`c ? a : b`], [conditional expression],
+  [`integer`], [mathematical (unbounded) integer, no overflow --- use it in specs; `int` is the machine type],
+)
+
+#i[Binders have the *lowest* precedence: a `\forall`/`\exists` body extends as far right as possible. `==>` binds weaker than `&&`/`||` (and is right-associative). So parenthesise a quantifier that is just one conjunct: `(\forall integer i; ...) && n > 0`.]
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [label], [state it refers to],
+  [`Pre`], [entry of the current function],
+  [`Old`], [entry, as seen by the contract --- `\old(e)` $=$ `\at(e, Old)`],
+  [`Here`], [where the annotation is written],
+  [`Post`], [exit of the current function],
+  [`LoopEntry`], [just before the current loop's first iteration],
+  [`LoopCurrent`], [start of the current loop iteration],
+  [`Init`], [before `main` runs, once globals are initialised],
+)
+
+== Quantifiers
+
+`\forall type x, y; body` #h(1em) `\exists type x; body` --- declare the bound variables, then `;`, then the body. Quantify over `integer`.
+
+```
+\forall integer i; 0 <= i < n ==> P(i)
+\exists integer i; 0 <= i < n && P(i)
+```
+
+#i[*Pairing rule:* `\forall` goes with `==>` (in range implies property), `\exists` goes with `&&` (in range and property). Swapping them is a classic bug: `\exists i; range ==> P` is made true by any `i` *outside* the range, and `\forall i; range && P` is made false by that same `i`.]
+
+#block(sticky: true)[Patterns over an array `a` of length `n`:]
+
+```
+// sorted (all pairs)
+\forall integer i, j; 0 <= i < j < n ==> a[i] <= a[j]
+// sorted (neighbours --- equivalent by transitivity)
+\forall integer i; 0 <= i < n-1 ==> a[i] <= a[i+1]
+// all zero
+\forall integer i; 0 <= i < n ==> a[i] == 0
+// contains x
+\exists integer i; 0 <= i < n && a[i] == x
+// no duplicates
+\forall integer i, j; 0 <= i < j < n ==> a[i] != a[j]
+// \result is the maximum: an upper bound AND attained
+(\forall integer i; 0 <= i < n ==> a[i] <= \result) &&
+(\exists integer i; 0 <= i < n && a[i] == \result)
+// array unchanged
+\forall integer i; 0 <= i < n ==> a[i] == \old(a[i])
+```
+
+`\sum` and `\num_of` also exist, but tool support for them is experimental.
+
+== Pointers \& memory
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [syntax], [meaning],
+  [`\valid(p)`], [`*p` may safely be read *and* written],
+  [`\valid(a+(0..n-1))`], [all of `a[0]`, ..., `a[n-1]` are valid --- `a+(i..j)` is a *set* of pointers],
+  [`\valid_read(p)`], [`*p` may only be read (e.g. a string literal); `\valid` $arrow.r.double$ `\valid_read`, not conversely],
+  [`\null`], [`\valid(\null)` and `\valid_read(\null)` are always false],
+  [`\separated(p, q)`], [what `p` and `q` point to does not overlap (ranges allowed)],
+)
+
+#block(sticky: true)[Typical array-parameter prelude:]
+
+```
+requires n >= 0 && \valid(a + (0..n-1));
+requires \separated(a + (0..n-1), b + (0..n-1));
+```
+
+== Frame --- `assigns` (§10.3)
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [clause], [may modify],
+  [`assigns \nothing;`], [nothing: no side effects at all],
+  [`assigns *p;`], [only the cell `p` points to],
+  [`assigns s->credits;`], [only that field],
+  [`assigns a[0..n-1];`], [a slice of an array (`a[i..j]`)],
+  [`assigns x, *p;`], [a list: any of these],
+)
+
+#i[No `assigns` $=$ *anything* may change. So `addCredits` with only `ensures s->credits == \old(s->credits) + c;` may legally overwrite the name or the status (Ex. 7.3). Adding `ensures s->name == \old(s->name);` for every untouched variable works but doesn't scale; `assigns s->credits;` says it once.]
+
+== Behaviours --- §7.4
+
+```
+/*@ requires P;               // shared by all cases
+    behavior b1:
+      assumes A1;             // when does b1 apply?
+      requires R1;            // extra duty if it does
+      ensures E1;
+    behavior b2:
+      assumes A2;
+      requires R2;
+      ensures E2;
+    complete behaviors b1, b2;  // P ==> (A1 || A2)
+    disjoint behaviors b1, b2;  // P ==> !(A1 && A2)
+*/
+```
+
+- `assumes` *selects* the case: if $A$ is false the behaviour simply doesn't apply (no error). A `requires` inside a behaviour is an *obligation* on the caller whenever the behaviour applies.
+- Behaviour `b` reads as `requires A ==> R; ensures \old(A) ==> E;` --- the assumption is evaluated on entry.
+- `complete` $=$ the cases cover every input allowed by $P$; `disjoint` $=$ at most one case applies; both $=$ a partition. With no names listed they refer to *all* behaviours.
+- Clauses outside any `behavior` (incl. `assigns`, `ensures`) apply in every case.
+
+```
+/*@ requires \valid(p);
+    assigns *p;
+    behavior pos:
+      assumes *p >= 0;
+      ensures *p == \old(*p);
+    behavior neg:
+      assumes *p < 0;
+      requires *p > INT_MIN;   // -INT_MIN overflows
+      ensures *p == -\old(*p);
+    complete behaviors;
+    disjoint behaviors;
+*/
+void absInPlace(int *p);
+```
+
+== Data invariants --- §7.3
+
+```
+//@ global invariant cntPos: count >= 0;
+
+/*@ type invariant posCredits(Student *s) =
+      s->credits >= 0;
+*/
+```
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [kind], [meaning],
+  [`global invariant`], [property of *global variables*: `global invariant name: pred;`],
+  [`type invariant`], [property of every value of a (typedef'd) type: `type invariant name(T x) = pred;`],
+  [weak (default)], [holds at function *boundaries*: silently added to every function's `requires` and `ensures`; may be broken temporarily inside a body],
+  [`strong`], [prefix, e.g. `strong global invariant ...`: must hold at *every* program point],
+)
+
+#i[A weak invariant must be re-established *before every call* --- even a call in the middle of the body --- because it is part of the callee's precondition (callback problem, Ex. 7.16). Weak invariants only make sense for sequential code; with threads every state is visible. Frama-C's static checker does not verify type invariants yet.]
+
+= Abstract Specifications --- §8.1, §8.3
+
+ACSL can't call C functions inside specs. Instead, define *mathematical*, spec-only functions: pure definitions that are never executed and can't change the state.
+
+```
+/*@ logic integer _abs(int x) = (x > 0) ? x : -x; */
+
+/*@ requires x > INT_MIN;     // -x would overflow
+    ensures \result == _abs(x);
+*/
+int abs(int x) { ... }
+
+/*@ predicate validDate(struct date *d) =
+      \valid(d) && 0 < d->day < 32
+                && 0 < d->month <= 12;
+*/
+//@ requires validDate(d);
+```
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [declaration], [meaning],
+  [`logic T f(params) = e;`], [value-returning math function; returning `integer` $arrow.r$ no overflow. The leading `_` avoids a clash with the C function `abs`],
+  [`predicate p(params) = pred;`], [Boolean-valued; bundles e.g. "this struct is valid" into one name to reuse in `requires` and invariants],
+)
+
+== Ghost variables (§8.3)
+
+```
+//@ ghost int MEM = 0;
+//@ ghost int MAX = ...;
+
+//@ requires MEM + 400 <= MAX;
+//@ ensures MEM <= MAX;
+void m() {
+  ptr = (int*) malloc(100 * sizeof(int));
+  //@ ghost MEM = MEM + 400;
+}
+```
+
+Spec-only variables that *extend* the state; declared and updated only through `//@ ghost ...` statements, never seen by the compiler. Uses: count loop iterations or calls, track resources (memory, time), encode a *usage protocol* (a ghost `state` moving fresh $arrow.r$ active $arrow.r$ dead, with `requires state == ...` on each function).
+
+#i[Model vs. ghost: a *model* variable (JML only --- ACSL support is future work) *abstracts* the existing state and changes implicitly with it (via `represents`); a *ghost* variable *adds* state and must be updated explicitly.]
+
+== ACSL vs. JML at a glance
+
+#table(
+  columns: (auto, 1fr, 1fr),
+  stroke: 0.4pt, inset: 3pt,
+  [], [ACSL (C)], [JML (Java)],
+  [termination], [`terminates T;` must terminate if `T`], [`diverges D;` may diverge only if `D`],
+  [cases], [named: `behavior b:` + `assumes`; `complete`/`disjoint`], [unnamed, joined by `also`; nest with `{| |}`],
+  [heavyweight], [---], [`behavior`: must terminate (throwing ok) #linebreak() `normal_behavior`: must return normally #linebreak() `exceptional_behavior`: must throw],
+  [in specs], [`logic`/`predicate` only], [`pure` methods, `model` methods],
+  [quantifier], [`\forall integer i; R ==> P`], [`(\forall int i; R; P)`, range optional],
+  [constants], [`\true`, `\false`, `\null`], [`true`, `false`, `null`; refs *non-null by default* (`nullable`)],
+  [frame], [`assigns`], [`assignable`/`modifies`],
+  [invariants], [`global`/`type`; weak or `strong`], [`instance invariant`, always weak; `helper` exempt],
+  [exceptions], [none in C], [`signals (E e) P;` #linebreak() `signals_only E1, E2;`],
+  [extras], [`\at`, `\valid`, `\separated`, `ghost`], [`initially`, `constraint`, `spec_public`, `model` + `represents`, `ghost`],
+)
