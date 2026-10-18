@@ -1,0 +1,6 @@
+e-acsl-gcc: fatal error: aborted by Frama-C
+)
+[kernel:annot-error] basic.c:21: Failure: 
+  Assignment operators not allowed in annotations.
+[kernel] User Error: warning annot-error treated as fatal error.
+[kernel] Frama-C aborted: invalid user input.

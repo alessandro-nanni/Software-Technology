@@ -204,6 +204,35 @@ extern size_t __e_acsl_heap_allocated_blocks;
 
 /*@ requires \valid(data);
     requires data->values ≡ \null ∨ \valid(data->values);
+    ensures \valid(\old(data)->values);
+    assigns __fc_heap_status, data->values;
+    assigns __fc_heap_status \from __fc_heap_status;
+    assigns data->values
+      \from &__fc_eacsl_assert_data_value_base, (indirect: name),
+            (indirect: is_enum), (indirect: value);
+    allocates \old(data)->values;
+ */
+ __attribute__((__FC_BUILTIN__)) void __e_acsl_assert_register_long(__e_acsl_assert_data_t *data,
+                                                                    char const *name,
+                                                                    int is_enum,
+                                                                    long value);
+
+/*@ requires \valid(data);
+    requires data->values ≡ \null ∨ \valid(data->values);
+    ensures \valid(\old(data)->values);
+    assigns __fc_heap_status, data->values;
+    assigns __fc_heap_status \from __fc_heap_status;
+    assigns data->values
+      \from &__fc_eacsl_assert_data_value_base, (indirect: name),
+            (indirect: ptr);
+    allocates \old(data)->values;
+ */
+ __attribute__((__FC_BUILTIN__)) void __e_acsl_assert_register_ptr(__e_acsl_assert_data_t *data,
+                                                                   char const *name,
+                                                                   void *ptr);
+
+/*@ requires \valid(data);
+    requires data->values ≡ \null ∨ \valid(data->values);
     ensures \old(data)->values ≡ \null;
     assigns __fc_heap_status, data->values;
     assigns __fc_heap_status \from __fc_heap_status;
@@ -231,51 +260,136 @@ axiomatic dynamic_allocation {
 /*@ assigns \nothing; */
  __attribute__((__FC_BUILTIN__)) void __e_acsl_memory_clean(void);
 
+/*@ assigns \result;
+    assigns \result \from *((char *)ptr + (0 .. size - 1)), ptr, size;
+    
+    behavior valid:
+      assumes \valid((char *)ptr + (0 .. size - 1));
+      assumes
+        size ≤ 0 ∨
+        ¬\separated(
+           (char *)ptr + (0 .. size - 1),
+           (char *)\base_addr(base) + (0 .. \block_length(base) - 1)
+           );
+      ensures \result ≡ 1;
+    
+    behavior invalid_ptr:
+      assumes ¬\valid((char *)ptr + (0 .. size - 1));
+      ensures \result ≡ 0;
+    
+    behavior separated_ptr:
+      assumes size > 0;
+      assumes
+        \separated(
+          (char *)ptr + (0 .. size - 1),
+          (char *)\base_addr(base) + (0 .. \block_length(base) - 1)
+          );
+      ensures \result ≡ 0;
+    
+    complete behaviors separated_ptr, invalid_ptr, valid;
+    disjoint behaviors separated_ptr, invalid_ptr, valid;
+ */
+ __attribute__((__FC_BUILTIN__)) int __e_acsl_valid(void *ptr, size_t size,
+                                                    void *base,
+                                                    void *addrof_base);
+
 extern  __attribute__((__FC_BUILTIN__)) int __e_acsl_sound_verdict;
 
-extern int printf(char const * restrict __format , ...);
+int fun(int a)
+{
+  int x;
+  int y;
+  int sum;
+  int result;
+  if (a == 0) {
+    x = 0;
+    y = 0;
+  }
+  else {
+    x = 5;
+    y = 5;
+  }
+  sum = x + y;
+  result = 10 / sum;
+  return result;
+}
 
-/*@ assigns \result;
-    assigns \result \from (indirect: *(__format + (0 ..)));
- */
-int printf_va_1(char const * restrict __format);
+/*@ requires len ≥ 0;
+    requires \valid(arr + (0 .. len - 1)); */
+void __gen_e_acsl_add1(int *arr, int len);
+
+void add1(int *arr, int len)
+{
+  int i = 0;
+  while (i < len) {
+    (*(arr + i)) ++;
+    i ++;
+  }
+  return;
+}
 
 int main(void)
 {
   int __retres;
-  int a[5];
   __e_acsl_memory_init((int *)0,(char ***)0,8UL);
-  {
-    int i = 0;
-    while (i <= 5) {
-      {
-        int __gen_e_acsl_and;
-        __e_acsl_assert_data_t __gen_e_acsl_assert_data =
-          {.values = (void *)0};
-        __e_acsl_assert_register_int(& __gen_e_acsl_assert_data,"i",0,i);
-        if (0 <= i) {
-          __e_acsl_assert_register_int(& __gen_e_acsl_assert_data,"i",0,i);
-          __gen_e_acsl_and = i < 5;
-        }
-        else __gen_e_acsl_and = 0;
-        __gen_e_acsl_assert_data.blocking = 1;
-        __gen_e_acsl_assert_data.kind = "Assertion";
-        __gen_e_acsl_assert_data.pred_txt = "0 \342\211\244 i < 5";
-        __gen_e_acsl_assert_data.file = "basic.c";
-        __gen_e_acsl_assert_data.fct = "main";
-        __gen_e_acsl_assert_data.line = 6;
-        __e_acsl_assert(__gen_e_acsl_and,& __gen_e_acsl_assert_data);
-        __e_acsl_assert_clean(& __gen_e_acsl_assert_data);
-      }
-      /*@ assert 0 ≤ i < 5; */ ;
-      a[i] = 0;
-      i ++;
-    }
-  }
-  printf("done\n"); /* printf_va_1 */
+  fun(42);
+  fun(0);
   __retres = 0;
   __e_acsl_memory_clean();
   return __retres;
+}
+
+/*@ requires len ≥ 0;
+    requires \valid(arr + (0 .. len - 1)); */
+void __gen_e_acsl_add1(int *arr, int len)
+{
+  {
+    long __gen_e_acsl_size;
+    long __gen_e_acsl_if;
+    int __gen_e_acsl_valid;
+    __e_acsl_assert_data_t __gen_e_acsl_assert_data = {.values = (void *)0};
+    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data,"len",0,len);
+    __gen_e_acsl_assert_data.blocking = 1;
+    __gen_e_acsl_assert_data.kind = "Precondition";
+    __gen_e_acsl_assert_data.pred_txt = "len \342\211\245 0";
+    __gen_e_acsl_assert_data.file = "basic.c";
+    __gen_e_acsl_assert_data.fct = "add1";
+    __gen_e_acsl_assert_data.line = 18;
+    __e_acsl_assert(len >= 0,& __gen_e_acsl_assert_data);
+    __e_acsl_assert_clean(& __gen_e_acsl_assert_data);
+    __e_acsl_assert_data_t __gen_e_acsl_assert_data_2 =
+      {.values = (void *)0};
+    __gen_e_acsl_size = 4L * (((len - 1L) - 0L) + 1L);
+    __e_acsl_assert_register_long(& __gen_e_acsl_assert_data_2,"size",0,
+                                  __gen_e_acsl_size);
+    if (__gen_e_acsl_size <= 0L) __gen_e_acsl_if = 0L;
+    else __gen_e_acsl_if = __gen_e_acsl_size;
+    __gen_e_acsl_valid = __e_acsl_valid((void *)((char *)arr + 4 * 0),
+                                        (size_t)__gen_e_acsl_if,(void *)arr,
+                                        (void *)(& arr));
+    __e_acsl_assert_register_ptr(& __gen_e_acsl_assert_data_2,"arr",
+                                 (void *)arr);
+    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_2,"sizeof(int)",
+                                 0,4);
+    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_2,"sizeof(int)",
+                                 0,4);
+    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_2,"len",0,len);
+    __e_acsl_assert_register_long(& __gen_e_acsl_assert_data_2,"size",0,
+                                  __gen_e_acsl_size);
+    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_2,
+                                 "\\valid(arr + (0 .. len - 1))",0,
+                                 __gen_e_acsl_valid);
+    __gen_e_acsl_assert_data_2.blocking = 1;
+    __gen_e_acsl_assert_data_2.kind = "Precondition";
+    __gen_e_acsl_assert_data_2.pred_txt = "\\valid(arr + (0 .. len - 1))";
+    __gen_e_acsl_assert_data_2.file = "basic.c";
+    __gen_e_acsl_assert_data_2.fct = "add1";
+    __gen_e_acsl_assert_data_2.line = 19;
+    __e_acsl_assert(__gen_e_acsl_valid,& __gen_e_acsl_assert_data_2);
+    __e_acsl_assert_clean(& __gen_e_acsl_assert_data_2);
+  }
+  add1(arr,len);
+  return;
 }
 
 
