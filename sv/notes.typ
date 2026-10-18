@@ -1,4 +1,5 @@
 #import "../mono.typ": *
+#import "@preview/mannot:0.4.0": *
 #show: template.with(blue, red, [System Validation])
 
 //#align(center,text(fill:red, size:20pt)[! Unlike other PDFs, this is AI generated !\ #text(fill:red, size:12pt)[It's a summary of questions I asked Claude, formatted as a cheat sheet.]])
@@ -639,7 +640,20 @@ void absInPlace(int *p);
 
 #i[A weak invariant must be re-established *before every call* --- even a call in the middle of the body --- because it is part of the callee's precondition (callback problem, Ex. 7.16). Weak invariants only make sense for sequential code; with threads every state is visible. Frama-C's static checker does not verify type invariants yet.]
 
-= Abstract Specifications --- §8.1, §8.3
+= Abstract Specifications --- Ch. 8
+
+A contract should say *what* a function does, not *how*. Every sorting algorithm gets the same contract (input: an array; output: sorted, and a permutation of the input), so callers can rely on it whatever the implementation. Abstraction also lets you specify code that doesn't exist yet: the spec then guides the implementation.
+
+#table(
+  columns: (auto, 1fr, auto),
+  stroke: 0.4pt, inset: 4pt,
+  [feature], [idea], [ACSL #linebreak() JML],
+  [§8.1 #linebreak() functions], [hide details behind a spec-only function --- no new state], [`logic`, `predicate` #linebreak() `pure`, `model` methods],
+  [§8.2 #linebreak() model vars], [*abstract* the state: a value computed from the concrete fields], [future work #linebreak() `model` + `represents`],
+  [§8.3 #linebreak() ghost vars], [*extend* the state: extra info, updated explicitly], [`ghost` #linebreak() `ghost`],
+)
+
+== Functions in contracts --- §8.1
 
 ACSL can't call C functions inside specs. Instead, define *mathematical*, spec-only functions: pure definitions that are never executed and can't change the state.
 
@@ -666,7 +680,127 @@ int abs(int x) { ... }
   [`predicate p(params) = pred;`], [Boolean-valued; bundles e.g. "this struct is valid" into one name to reuse in `requires` and invariants],
 )
 
-== Ghost variables (§8.3)
+JML can use any `pure` method in a spec, or a spec-only *model method* (JML leaves overflow up to the tool):
+
+```
+/*@ model int math_abs(int x) {
+      return (x > 0) ? x : -x;
+    }
+*/
+```
+
+#i[Not a real abstraction of the state space: it only hides details from the reader. For a tiny function the definition looks like the code; for big ones it keeps the contract readable.]
+
+#strong[Abstract logic functions] (slides). If the implementation isn't known yet, *declare* a logic function without a body and specify in terms of it; the definition comes once the concrete code exists. Phone example: how many queue slots a message takes depends on its protocol (SMS, MMS) and contents, which `send` shouldn't have to know:
+
+```
+struct message {
+  ...
+  //@ logic integer slots_used();   // no body yet
+};
+//@ ghost int slots_available;
+
+/*@ requires m.slots_used() < slots_available;
+    ensures \result == slots_available;
+    ensures slots_available + m.slots_used()
+              == \old(slots_available);
+*/
+int send(message *m) {
+  ...
+  /*@ ghost slots_available =
+        slots_available - m.slots_used(); */
+}
+```
+
+#i[That is slide pseudo-syntax. In real ACSL the message is a parameter (`slots_used(m)`), and a `logic` declaration without a body goes inside an `/*@ axiomatic Name { ... } */` block.]
+
+== Model variables --- §8.2 (JML only)
+
+A *model* variable is a spec-only field whose value is *defined by* the concrete state (Hoare's data abstraction). It changes implicitly whenever that state changes. ACSL support is future work, so Frama-C has none. Two uses:
+
++ the concrete state isn't defined yet, e.g. an *interface* that will be implemented in different ways;
++ a more abstract, mathematical view of a value spread over several fields.
+
+```
+public interface Student {
+  //@ public instance model int credits;
+  //@ public instance model int status;
+  //@ public invariant credits >= 0;
+
+  //@ ensures \result == credits;
+  /*@ pure */ public int getCredits();
+
+  /*@ requires c >= 0;
+      ensures credits == \old(credits) + c; */
+  public void addCredits(int c);
+}
+
+class CreditListStudent implements Student {
+  private List<Integer> credit_list;
+  /*@ represents credits <- sum();
+      represents status <-
+        (sum() < 180 ? bachelor : master);
+  */
+  ...
+}
+```
+
+`instance` is needed because interface fields are `static` by default. The class inherits the interface's specs; `represents` links each model field to the class's own fields. Tools *substitute* it, so `ensures \result == credits` is checked as `ensures \result == sum();`. A simpler `BasicStudent` just writes `represents credits <- this.credits;`.
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [clause], [meaning],
+  [`represents m <- e;` #linebreak() (or `= e`)], [functional: $m$ *is* $e$, computed from the concrete fields],
+  [`represents m \such_that P;`], [non-functional: only a relation $P$ between abstract and concrete state, e.g. "`_credit_list` and `credit_list` have the same elements" (two nested `\forall`/`\exists`). JML also has dependency clauses, not covered],
+)
+
+#i[`spec_public` is sugar for a model variable: `/*@ spec_public */ private int x;` $equiv$ `//@ model int _x;` + `//@ represents _x <- this.x;`. The client gets the same abstract view either way.]
+
+#block(sticky: true)[#strong[Mathematical abstraction] (`Decimal`): two fields encode one number; the spec talks only about the number.]
+
+```
+public static final short PRECISION = 1000;
+/*@ spec_public */ private short intPart = 0;
+/*@ spec_public */ private short decPart = 0;
+//@ model int value;
+//@ represents value = intPart * PRECISION + decPart;
+
+//@ ensures value == \old(value) + e * PRECISION + f;
+public void add(short e, short f);
+```
+
+#block(sticky: true)[ACSL workaround (slides): a `logic` function over the fields plays the model variable.]
+
+```
+//@ logic integer value() = intPart * PRECISION + decPart;
+```
+
+== Ghost variables --- §8.3
+
+Spec-only variables that *extend* the state; declared and updated only through `//@ ghost ...` statements, never seen by the compiler. A ghost statement may be more complex (`if`, `?:`) as long as it only writes ghost variables: erasing all ghost code must leave the program's behaviour unchanged. Three typical uses:
+
+#block(sticky: true)[*Control flow* --- count loop iterations (e.g. to bound them):]
+
+```
+//@ ghost int z;
+
+//@ requires x >= 0;
+//@ ensures z == x;
+void doLoop(int x) {
+  int y = 0;
+  //@ ghost z = 0;
+  while (x > 0) {
+    x = x - 1;
+    y = y + 2;
+    //@ ghost z = z + 1;
+  }
+}
+```
+
+#i[In `doLoop`, `ensures z == x` compares with the *entry* value of `x`: a parameter in a postcondition always means its value on entry. The book omits `requires x >= 0`, but without it the contract fails for negative `x` (then `z == 0`).]
+
+#block(sticky: true)[*Resources* --- memory, time (each `int` is 4 bytes; matters on smart cards and other small devices):]
 
 ```
 //@ ghost int MEM = 0;
@@ -680,9 +814,50 @@ void m() {
 }
 ```
 
-Spec-only variables that *extend* the state; declared and updated only through `//@ ghost ...` statements, never seen by the compiler. Uses: count loop iterations or calls, track resources (memory, time), encode a *usage protocol* (a ghost `state` moving fresh $arrow.r$ active $arrow.r$ dead, with `requires state == ...` on each function).
+#block(sticky: true)[*Protocol* --- in which order functions may be called (fresh $arrow.r$ active $arrow.r$ dead):]
 
-#i[Model vs. ghost: a *model* variable (JML only --- ACSL support is future work) *abstracts* the existing state and changes implicitly with it (via `represents`); a *ghost* variable *adds* state and must be updated explicitly.]
+```
+//@ ghost int state = 0;   // 0 fresh, 1 active, 2 dead
+
+/*@ requires state == 0;
+    ensures  state == 1; */
+void init() {
+  ...
+  //@ ghost state = 1;
+}
+
+/*@ requires state == 1;
+    ensures  state == 1; */
+void execute() { ... }
+
+/*@ requires state == 1;
+    ensures  state == 2; */
+void finalize() {
+  //@ ghost state = 2;
+  ...
+}
+```
+
+- Transitions = ghost updates in the body; "may this be called now?" = `requires`.
+- JML can also add an `invariant` (legal values of `state`) and a `constraint` relating `\old(state)` to `state` (never back to fresh; dead stays dead).
+- Like a LarVa automaton (§6.2), but the protocol is *woven* into the code and combines with the other contracts. Main application: security automata (§9.5).
+
+== Model vs. ghost --- §8.4
+
+#block(sticky: true)[Both are spec-only and don't exist when the program runs.]
+
+#table(
+  columns: (auto, 1fr, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [], [model], [ghost],
+  [relation to state], [*abstracts* the existing state], [*extends* the state with info not derivable from it],
+  [value given by], [`represents`: a function, a relation, or only a dependency], [explicit `ghost` assignments],
+  [changes], [implicitly, with the concrete state], [only when you update it],
+  [tied to], [data / objects (e.g. max size of a message)], [state / history (e.g. space left in a buffer; which methods were called, how often)],
+  [ACSL], [not supported (use a `logic` function)], [supported],
+)
+
+#i[Rule of thumb (slides): if you need one per `x` and `x` is defined in your program, use a model variable. If it records what has *happened* (events, counts, resources used), use a ghost variable.]
 
 == ACSL vs. JML at a glance
 
@@ -694,10 +869,754 @@ Spec-only variables that *extend* the state; declared and updated only through `
   [cases], [named: `behavior b:` + `assumes`; `complete`/`disjoint`], [unnamed, joined by `also`; nest with `{| |}`],
   [heavyweight], [---], [`behavior`: must terminate (throwing ok) #linebreak() `normal_behavior`: must return normally #linebreak() `exceptional_behavior`: must throw],
   [in specs], [`logic`/`predicate` only], [`pure` methods, `model` methods],
+  [abstract state], [`logic` function over the fields], [`model` fields + `represents`],
   [quantifier], [`\forall integer i; R ==> P`], [`(\forall int i; R; P)`, range optional],
   [constants], [`\true`, `\false`, `\null`], [`true`, `false`, `null`; refs *non-null by default* (`nullable`)],
   [frame], [`assigns`], [`assignable`/`modifies`],
   [invariants], [`global`/`type`; weak or `strong`], [`instance invariant`, always weak; `helper` exempt],
   [exceptions], [none in C], [`signals (E e) P;` #linebreak() `signals_only E1, E2;`],
   [extras], [`\at`, `\valid`, `\separated`, `ghost`], [`initially`, `constraint`, `spec_public`, `model` + `represents`, `ghost`],
+)
+
+= Runtime Annotation Checking --- Ch. 9
+
+Instrument the program so every annotation becomes a check: evaluate the predicate at the right point, and abort if it is false.
+
+- *precondition*: on entry, before the body runs;
+- *postcondition*: after the body, before control returns to the caller --- at *every* exit point;
+- several behaviours / spec cases are first desugared into one pre and one post (§7.4).
+
+It validates the spec against *one* execution: no guarantee for runs you didn't try. For that you need static checking (Ch. 10).
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [tool], [history],
+  [Eiffel], [first: Meyer's Design by Contract, a compiler option inserts pre/post checks for testing],
+  [JML], [developed together with its checker; checks first added to the source, now to the bytecode],
+  [ACSL / Frama-C], [designed for runtime *and* static checking; runtime checking only for the executable subset *E-ACSL*],
+)
+
+== By hand --- §9.2
+
+```
+/*@ requires c >= 0;
+    ensures s->credits == \old(s->credits) + c; */
+void addCredits(Student *s, int c) {
+  assert(c >= 0);                        // pre
+  int oldCredits = s->credits;           // save \old yourself
+  s->credits = s->credits + c;
+  assert(s->credits == oldCredits + c);  // post
+}
+```
+
+Niño \& Hosch only assert the *precondition*: the callee can never trust its callers, while the postcondition is the implementer's own job (to be shown by other means, e.g. static checking). Real checkers test both.
+
+#block(sticky: true)[What makes it hard (book + slides), i.e. what a checker has to handle:]
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [problem], [why],
+  [multiple exit points], [the postcondition must be checked at every `return`],
+  [abnormal termination], [temporarily recover, check invariants / exceptional post, then re-raise the error (the runtime version of `try`/`catch`/`finally`)],
+  [spec-only constructs], [not valid in `assert`: quantifiers become loops, `\old` needs saved copies, `\valid` needs memory tracking],
+  [global specs], [one invariant becomes checks in many places],
+  [spec itself fails], [`requires 1/x > 0;` divides by zero when `x == 0`: evaluation must be guarded],
+  [concurrency], [the checks change the interleavings, and interleavings can change whether a spec holds],
+  [source changes], [the code that runs is not the code you wrote],
+)
+
+== Requirements --- §9.3
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [requirement], [meaning],
+  [*transparent*], [no violation $arrow.r$ same behaviour with or without checking (apart from speed)],
+  [*isolation*], [a violation is reported when it happens, and traceable to where it went wrong],
+  [*trustworthy*], [no false alarms: every reported violation is a real one],
+  [overhead], [(slides) keep it as low as possible],
+)
+
+== E-ACSL
+
+A Frama-C plugin for an *executable subset* of ACSL: every E-ACSL spec can be executed. It:
+
+- wraps each function body in spec checks; checks the post at every exit;
+- copies values when you use `\old(...)`;
+- tracks allocated memory at run time, to evaluate `\valid`;
+- computes `integer` with the GMP library (real mathematical integers, so no overflow inside the check);
+- guards expressions that would themselves fail, and reports them instead of crashing;
+- *enumerates* quantifiers, so they must be bounded and of the right shape: `\forall integer i; lo <= i < hi ==> ...`.
+
+```
+e-acsl-gcc.sh file.c -c -O out   # instrument + compile
+./out.e-acsl                      # run; aborts on violation
+```
+
+*Pre-deployment:* debug with the checks on, ship without them. #h(0.5em) *Post-deployment:* keep them as a monitor for unwanted situations.
+
+#strong[Limitations.] Only executable specs; unbounded quantification (e.g. over all objects) is problematic. A bug is caught only if a spec covers it *and* the run you execute actually violates it.
+
+== Using the checker --- §9.4
+
+You need an executable *driver* (`main`) that steers the component into the violating state. As in testing, corner cases are where bugs hide, so aim for coverage of all execution paths; the annotations suggest the cases. Test generation from annotations: Frama-C *PathCrawler*, JML *JmlUnitNG* (a JUnit extension).
+
+#n(supplement: [example], [activity bonus --- Ex. 9.3])[
+  Active students get up to 5 bonus credits, but a Bachelor student may never get past 180 that way. The implementation forgets the cap:
+
+  ```
+  /*@ requires 0 <= bonus <= 5 && s->active;
+      behavior bachelor:
+        assumes s->status == bachelor;
+        ensures s->credits ==
+          (\old(s->credits) + bonus > 180 ? 180
+             : \old(s->credits) + bonus);
+      behavior master:
+        assumes s->status == master;
+        ensures s->credits == \old(s->credits) + bonus;
+  */
+  void activityBonus(Student *s, int bonus) {
+    if (active(s)) addCredits(s, bonus);   // no cap!
+  }
+
+  void main() {
+    Student s;
+    studentInit(&s, 0, "Marieke");
+    becomeActive(&s);
+    addCredits(&s, 178);   // get close to the cap first
+    activityBonus(&s, 5);  // 183, spec says 180
+  }
+  ```
+
+  A lone `activityBonus(&s, 5)` from 0 credits never reaches the cap. So the driver first uses `addCredits`, which has no bound, to get to 178.
+
+  #i[The book writes `requires` where `assumes` is meant, so *both* behaviours apply to every student. E-ACSL then reports `Precondition failed ... s->status == master`: an error in the *spec*, not the code. With `assumes` you get the intended postcondition failure (183 $eq.not$ 180).]
+]
+
+#block(breakable: false, n(supplement: [example], [abs and max (slides)])[
+  ```
+  /*@ requires x > INT_MIN;      // only in the last run
+      ensures (x >= 0 ==> \result == x) &&
+              (x <  0 ==> \result == -x);
+      assigns \nothing; */
+  int absval(int x) { return (x > 0) ? x : (-x); }
+  ```
+
+  #table(
+    columns: (1fr, 1fr),
+    stroke: 0.4pt, inset: 4pt,
+    [driver], [result],
+    [no contract; `n = absval(3);` then `//@ assert n == 2;`], [assertion failure (an `assert` in the code is checked too)],
+    [contract without `requires`; `absval(0)`, `absval(3)`], [no error],
+    [same, plus `absval(INT_MIN)`], [*postcondition* violation],
+    [with `requires`, same calls], [*precondition* violation: blame moves to the caller],
+  )
+
+  `-INT_MIN` overflows in C, but the check computes `-x` as a mathematical `integer`, so `\result == -x` fails.
+
+  ```
+  /*@ ensures \result >= x && \result >= y;
+      ensures \result == x || \result == y; */
+  int maxval(int x, int y) { return x; }
+  ```
+
+  Driver `maxval(INT_MAX, INT_MIN)`, `maxval(5, 3)`, `maxval(0, 0)`: *no error*. Every call has `x >= y`, and the bug only shows with `x < y`.
+])
+
+== Monitoring behavioural properties --- §9.5
+
+Runtime monitoring (§6.2) done with a runtime annotation checker: (1) encode the automaton as annotations, (2) write a `main` and run it. If an annotation of the automaton is violated, the checker terminates the application.
+
+Smart card *life cycle property*: initialise the PIN once; before each payment the right PIN must be entered; three wrong PINs in a row block the card.
+
++ ghost constants for the automaton states, including a bad state (`BLOCKED`) that must never be reached;
++ ghost variables for the current state (starts `FRESH`) and extra counters (`attempts = 0`);
++ a `global invariant` listing the allowed states --- *without* the bad one, so reaching it is a violation; another one links the counter to it;
++ per function: `requires` = in which states it may be called, `ensures` = the transitions;
++ ghost assignments in the bodies = the automaton's events (they make the code follow the spec).
+
+#block(sticky: true)[States, counters and invariants:]
+
+```
+//@ ghost static const int FRESH = 0;
+//@ ghost static const int READY_FOR_USE = 1;
+//@ ghost static const int READY_FOR_PAYMENT = 2;
+//@ ghost static const int BLOCKED = 3;
+//@ ghost int state = FRESH;
+//@ ghost int attempts = 0;
+
+/*@ global invariant allowed:
+      state == FRESH || state == READY_FOR_USE
+                     || state == READY_FOR_PAYMENT;
+    global invariant I:
+      state == BLOCKED <==> attempts == 3;
+*/
+```
+
+#block(sticky: true)[Contracts (transitions) and ghost updates (events):]
+
+```
+/*@ requires state == FRESH;
+    ensures state == READY_FOR_USE && attempts == 0; */
+void initialiseCard() {
+  ...
+  //@ ghost state = READY_FOR_USE;
+  //@ ghost attempts = 0;
+}
+
+/*@ requires state == READY_FOR_PAYMENT;
+    ensures state == READY_FOR_USE; */
+void makePayment() {
+  ...
+  //@ ghost state = READY_FOR_USE;
+}
+```
+
+```
+/*@ requires state == READY_FOR_USE && attempts < 3;
+    ensures \result == true ==>
+      state == READY_FOR_PAYMENT && attempts == 0;
+    ensures \result == false ==>
+      attempts == \old(attempts) + 1;
+    ensures \result == false && attempts < 3 ==>
+      state == READY_FOR_USE;
+    ensures \result == false && attempts == 3 ==>
+      state == BLOCKED;
+*/
+bool enterPin(int pin) {
+  bool rslt = false;
+  ...
+  //@ ghost attempts = (rslt ? 0 : attempts + 1);
+  /*@ ghost state = (rslt ? READY_FOR_PAYMENT
+        : (attempts == 3 ? BLOCKED : READY_FOR_USE));
+  */
+  return rslt;
+}
+```
+
+The third wrong PIN sets `state = BLOCKED`, which breaks invariant `allowed` at the exit of `enterPin`. A blocked card stays blocked: no function accepts `BLOCKED` in its `requires`.
+
+#block(sticky: true)[JML can state the whole automaton in one place, with `initially` (holds right after construction) and a `constraint` (relates the pre- and post-state of *every* method):]
+
+```
+//@ initially state == FRESH;
+/*@ public constraint
+    (\old(state) == FRESH ==>
+       state == FRESH || state == READY_FOR_USE) &&
+    (\old(state) == READY_FOR_USE ==>
+       state == READY_FOR_USE ||
+       state == READY_FOR_PAYMENT ||
+       state == BLOCKED) &&
+    (\old(state) == READY_FOR_PAYMENT ==>
+       state == READY_FOR_PAYMENT ||
+       state == READY_FOR_USE) &&
+    (\old(state) == BLOCKED ==> state == BLOCKED);
+*/
+```
+
+#i[Advantage over a LarVa monitor (§6.2): the same annotations can also be checked *statically* (Ch. 10). Monitoring has a significant overhead; wherever static analysis proves the property can't be violated, the runtime check can be dropped. Systematic translations exist (AutoJML; security automata $arrow.r$ JML, proven correct by Huisman \& Tamalet).]
+
+// Ch. 10 colours: one meaning per colour, used in every annotated formula.
+#let cP = rgb("#1565c0") // precondition: what is assumed
+#let cS = rgb("#e65100") // statement: the program
+#let cQ = rgb("#2e7d32") // postcondition: what must be reached
+#let cR = rgb("#00838f") // intermediate predicate
+#let cI = rgb("#6a1b9a") // loop invariant
+#let cV = rgb("#c62828") // variant: termination
+
+// mannot annotations take no space: reserve it, and keep the equation in one piece.
+#let room(top: 0em, bottom: 0em, body) = block(
+  breakable: false,
+  width: 100%,
+  inset: (top: top, bottom: bottom),
+  body,
+)
+
+// Proof-tree node: premises side by side (bottom-aligned), a line, the conclusion.
+#let infer(..prems, concl) = context {
+  let ps = prems.pos()
+  let p = grid(columns: ps.len(), column-gutter: 1.5em, align: bottom, ..ps)
+  let w = calc.max(measure(p).width, measure(concl).width)
+  box(width: w, stack(
+    dir: ttb,
+    spacing: 3pt,
+    align(center, p),
+    line(length: w, stroke: 0.5pt),
+    align(center, concl),
+  ))
+}
+
+= Static Annotation Checking --- Ch. 10
+
+Runtime checking (Ch. 9) only checks the runs you actually execute. *Static* checking proves the annotations for *every* input and every path, without running anything: a *program logic* turns code + contract into first-order formulas, and an automated theorem prover (Z3, CVC3, Simplify) proves them.
+
+#table(
+  columns: (auto, auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [who], [when], [contribution],
+  [Floyd], [1960s], [pre- and postconditions: reason about a program without running it],
+  [Hoare], [1969], [concrete proof rules $arrow.r$ *Hoare logic*; needs *invented* intermediate predicates],
+  [Dijkstra], [1976], [*weakest preconditions*: *compute* those predicates instead $arrow.r$ automation],
+)
+
+Tools: Frama-C's *WP* plugin (ACSL); *OpenJML* (recommended by the book) and *KeY* (JML). Older Java tools: ESC/Java, LOOP, Krakatoa, Jack. Other languages: Spec\#, CodeContracts. Frama-C (CEA, from 2009) reasons effectively about C, long thought impossible because of C's under-specified semantics.
+
+#block(sticky: true)[The chapter builds a tower. Each level only uses the levels above it in this table:]
+
+#table(
+  columns: (auto, 1fr, auto),
+  stroke: 0.4pt, inset: 4pt,
+  [level], [adds], [§],
+  [0 predicates], [formulas over program variables; $=>$ as "stronger than"; substitution], [Ch. 2],
+  [1 triples], [${P} S {Q}$: what "correct" means], [10.2],
+  [2 proof rules], [how to *derive* triples, one rule per statement form], [10.2],
+  [3 wp calculus], [*compute* the precondition $arrow.r$ one formula for the prover], [10.2],
+  [4 calls, frame], [use the callee's *contract*, not its body; say what it may change], [10.3],
+  [5 annotations], [`assert`, loop invariants: what wp can't compute], [10.4],
+  [6 termination], [loop variants: total correctness], [10.5],
+)
+
+#i[Colours in the annotated formulas below: #text(fill: cP)[*precondition*] (assumed), #text(fill: cS)[*statement*] (the program), #text(fill: cQ)[*postcondition*] (to reach), #text(fill: cR)[*intermediate*], #text(fill: cI)[*invariant*], #text(fill: cV)[*variant*].]
+
+== Level 0: predicates --- the building blocks
+
+A *state* gives every program variable a value, e.g. $x |-> 3, y |-> 5$. A *predicate* (assertion) $P$ is a first-order formula over the program variables, such as $x > y$ (connectives and quantifiers: see the first section). Each state satisfies it or not, so a predicate *is* a set of states.
+
+#room(top: 0.3em, bottom: 0.3em)[$
+  markhl(P, #<str>, #cP) quad => quad markhl(Q, #<wk>, #cQ)
+  #annot(<str>, pos: left, dx: -1.5em)[stronger: \ fewer states]
+  #annot(<wk>, pos: right, dx: 1.5em)[weaker: \ more states]
+$]
+
+$P => Q$ (valid) means every state satisfying $P$ also satisfies $Q$: $P$ says *more*. Extremes: $"false"$ is the strongest predicate (no state), $"true"$ the weakest (every state).
+
+*Substitution* (Def. 2.5) is the one operation on predicates this chapter needs:
+
+#room(top: 1.3em, bottom: 1.3em)[$
+  mark(Q, #<sq>, #cQ) [ mark(x, #<sx>, #cS) := mark(E, #<se>, #cP) ]
+  #annot(<sq>, pos: left, dx: -1.5em)[a predicate]
+  #annot(<sx>, pos: bottom, dy: 0.6em)[every free $x$ in $Q$ ...]
+  #annot(<se>, pos: top, dy: -0.8em)[... is replaced by $E$]
+$]
+
+E.g. $(x > 0)[x := y + 2] = (y + 2 > 0)$.
+
+*Logical variables* ($A$, $B$, ...) are not program variables: the program never assigns them. They are implicitly $forall$-quantified over the whole triple and *remember* a value --- Hoare logic's version of `\old`.
+
+== Level 1: Hoare triples --- §10.2
+
+#room(top: 1.6em, bottom: 2em)[$
+  {markhl(P, #<hp>, #cP)} quad markhl(S, #<hs>, #cS) quad {markhl(Q, #<hq>, #cQ)}
+  #annot(<hp>, pos: bottom + left, dy: 0.6em)[precondition: \ assumed at the start]
+  #annot(<hs>, pos: top, dy: -0.8em)[statement: any program fragment]
+  #annot(<hq>, pos: bottom + right, dy: 0.6em)[postcondition: \ guaranteed at the end]
+$]
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [triple], [meaning],
+  [${P} S {Q}$ #linebreak() partial], [*if* $S$ starts in a state satisfying $P$ *and* terminates, the final state satisfies $Q$. Running forever satisfies it vacuously.],
+  [$[P] S [Q]$ #linebreak() total], [if $S$ starts in a state satisfying $P$, it *does* terminate, and the final state satisfies $Q$.],
+)
+
+A contract is a verbose Hoare triple: `requires P; ensures Q;` on body $B$ means ${P} B {Q}$ (with `terminates`: $[P] B [Q]$). A proof covers *all* input states and arguments at once, without executing anything.
+
+#n(supplement: [example], [swap --- Ex. 10.1])[
+  ```
+  //@ ensures x == \old(y) && y == \old(x);
+  void swap() { int t = x; x = y; y = t; }
+  ```
+  As a triple, with logical variables for the old values:
+  #room(top: 0.2em, bottom: 1.3em)[$
+    {x = mark(A, #<la>, #cP) and y = mark(B, #<lb>, #cP)} quad "swap"() quad {x = B and y = A}
+    #annot((<la>, <lb>), pos: bottom, dx: 1.6em, dy: 0.8em)[logical variables: the initial values]
+  $]
+  It holds for *every* $A$, $B$: whatever $x$ and $y$ were, they end up swapped.
+]
+
+== Level 2: proof rules (Hoare logic) --- §10.2
+
+A rule says: to get the triple *below* the line, it suffices to prove what is *above* it. A rule with nothing above is an *axiom*. There is one rule per statement form, so the proof of a compound statement splits into proofs about its parts.
+
+#room(top: 0.3em, bottom: 0.3em)[$
+  (markrect(H_1 quad H_2 quad dots quad H_n, #<prem>, #luma(90))) / (markrect(C, #<concl>, #luma(90)))
+  #annot(<prem>, pos: right, dx: 1.5em)[premises: what you prove]
+  #annot(<concl>, pos: right, dx: 1.5em)[conclusion: what you get]
+$]
+
+#strong[Assignment axiom] --- the base case: no premises.
+
+#room(top: 1.4em, bottom: 1.4em)[$
+  {markhl(Q[x := E], #<aq>, #cP)} quad markhl(x := E, #<as>, #cS) quad {markhl(Q, #<aqq>, #cQ)}
+  #annot(<aq>, pos: top + left, dy: -0.8em)[$Q$, with $E$ in place of $x$]
+  #annot(<as>, pos: bottom, dy: 0.6em)[the assignment]
+  #annot(<aqq>, pos: top + right, dy: -0.8em)[$Q$ about the new $x$]
+$]
+
+After `x := E`, $x$ holds the value $E$ had *before*. So $Q$ holds afterwards iff $Q$ with $E$ in place of $x$ held before. That is why the rule runs *backwards*: from the post you get the pre. E.g. for `x := y + 2` and $Q = x > 0$: ${y + 2 > 0} med x := y + 2 med {x > 0}$.
+
+#i[A forward rule like ${P} med x := E med {P and x = E}$ is wrong: for `x := x + 1` it gives $x = x + 1$. The old $x$ is gone; substituting backwards never has that problem.]
+
+#strong[Sequence.] Split $S_1; S_2$ at a predicate $R$ that holds in between:
+
+#room(top: 1.6em, bottom: 0.2em)[$
+  ({P} med S_1 med {markhl(R, #<r1>, #cR)} quad {markhl(R, #<r2>, #cR)} med S_2 med {Q}) / ({P} med S_1; S_2 med {Q})
+  #annot((<r1>, <r2>), pos: top, dx: 1.5em, dy: -0.8em)[intermediate predicate: has to be *invented*]
+$]
+
+#strong[Conditional.] Each branch may assume the outcome of the test, and both must reach the *same* $Q$:
+
+#room(top: 1.5em, bottom: 0.2em)[$
+  ({P and markhl(c, #<ct>, #cP)} med S_1 med {Q} quad {P and markhl(not c, #<cf>, #cP)} med S_2 med {Q}) / ({P} med "if" c "then" S_1 "else" S_2 med {Q})
+  #annot(<ct>, pos: top, dy: -0.8em)[then: $c$ was true]
+  #annot(<cf>, pos: top, dy: -0.8em)[else: $c$ was false]
+$]
+
+#strong[Function.] Proving a function's contract $=$ proving its body: $ ({P} "body" {Q}) / ({P} #raw("void m() { body }") {Q}) $
+
+#strong[Consequence] (only in a footnote of the book, but every real proof needs it): glue the triple you *derived* to the one you *want*.
+
+#room(top: 1.5em, bottom: 0.2em)[$
+  (markhl(P => P', #<cs>, #cP) quad {P'} med S med {Q'} quad markhl(Q' => Q, #<cw>, #cQ)) / ({P} med S med {Q})
+  #annot(<cs>, pos: top, dy: -0.8em)[strengthen the pre]
+  #annot(<cw>, pos: top, dy: -0.8em)[weaken the post]
+$]
+
+#block(breakable: false, n(supplement: [example], [proof tree for swap --- Ex. 10.2])[
+  Abbreviate $P := x = A and y = B$, #h(0.3em) $R_1 := x = A and y = B and t = A$, #h(0.3em) $R_2 := x = B and y = B and t = A$, #h(0.3em) $Q := x = B and y = A$.
+
+  #align(center, infer(
+    ${P} #raw("int t = x") {R_1}$,
+    infer(${R_1} #raw("x = y") {R_2}$, ${R_2} #raw("y = t") {Q}$, ${R_1} #raw("x = y; y = t") {Q}$),
+    ${P} #raw("swap()") {Q}$,
+  ))
+
+  Read *bottom-up*: the goal is split by the sequence rule, twice. Each leaf is an assignment axiom, plus consequence: e.g. the axiom gives ${R_2[x := y]} med #raw("x = y") med {R_2}$, and $R_1 => R_2[x := y] = (y = B and y = B and t = A)$. Note that $R_1$ and $R_2$ had to be *guessed*.
+])
+
+== Level 3: weakest preconditions --- §10.2
+
+The sequence rule needs an $R$ that someone has to *invent*: no good for a tool. Dijkstra: don't invent it, *compute* it, backwards from $Q$.
+
+#room(top: 1.4em, bottom: 0.3em)[$
+  markhl("wp", #<wpn>, #cP) (markhl(S, #<wps>, #cS), markhl(Q, #<wpq>, #cQ))
+  #annot(<wpn>, pos: left, dx: -1.5em)[weakest \ precondition]
+  #annot(<wps>, pos: top, dy: -0.8em)[statement]
+  #annot(<wpq>, pos: right, dx: 1.5em)[postcondition \ to reach]
+$]
+
+$"wp"(S, Q)$ describes *exactly* the start states from which $S$ (if it terminates) ends in a $Q$-state. Two properties:
+- it *works*: ${"wp"(S, Q)} med S med {Q}$ holds;
+- it is the *weakest*: whenever ${P} med S med {Q}$ holds, $P => "wp"(S, Q)$.
+
+#block(sticky: true)[Computed by recursion on $S$, from the back to the front:]
+
+#room(top: 0.2em, bottom: 0.2em)[$
+  "wp"(S_1; S_2, Q) & = "wp"(S_1, markhl(#$"wp"(S_2, Q)$, #<w2>, #cR)) \
+  "wp"(x := E, Q) & = Q[x := E] \
+  "wp"("if" c "then" S_1 "else" S_2, Q) & = markhl(#$(c => "wp"(S_1, Q))$, #<wt>, #cP) \
+  & #h(1em) and markhl(#$(not c => "wp"(S_2, Q))$, #<we>, #cP)
+  #annot(<w2>, pos: right, dx: 0.8em)[the computed $R$]
+  #annot(<wt>, pos: right, dx: 0.8em)[$c$: $S_1$ \ reaches $Q$]
+  #annot(<we>, pos: right, dx: 0.8em)[$not c$: $S_2$ \ reaches $Q$]
+$]
+
+#block(sticky: true)[To verify a function with `requires P; ensures Q;` and body $B$, prove the *verification condition*:]
+
+#room(top: 1.4em, bottom: 1.4em)[$
+  markhl(P, #<vp>, #cP) quad => quad "wp"(markhl(B, #<vb>, #cS), markhl(Q, #<vq>, #cQ))
+  #annot(<vp>, pos: top + left, dy: -0.8em)[`requires`]
+  #annot(<vb>, pos: bottom + left, dy: 0.6em)[the body]
+  #annot(<vq>, pos: top + right, dy: -0.8em)[`ensures`]
+$]
+
+No program is left in it: it is a plain first-order formula, which an automated prover (Z3, CVC3, Simplify) can decide. Why it suffices: $"wp"$ gives ${"wp"(B, Q)} med B med {Q}$, and consequence with $P => "wp"(B, Q)$ turns it into ${P} med B med {Q}$.
+
+Pipeline: code + contract $arrow.r$ wp rules $arrow.r$ $P => "wp"(B, Q)$ $arrow.r$ prover $arrow.r$ proved / not proved. Real tools extend the rules to C/Java: side effects, `return`, `break`, exceptions.
+
+#n(supplement: [example], [swap, computed instead of guessed])[
+  Start at the bottom with $Q$ and substitute upwards, one assignment at a time:
+
+  #table(
+    columns: (auto, 1fr, auto),
+    stroke: 0.4pt, inset: 4pt,
+    [statement], [predicate before it], [computed as],
+    [`int t = x;`], [$y = B and x = A$], [$[t := x]$],
+    [`x = y;`], [$y = B and t = A$], [$[x := y]$],
+    [`y = t;`], [$x = B and t = A$], [$Q[y := t]$],
+    [(end)], [$x = B and y = A$], [$Q$],
+  )
+
+  VC: $x = A and y = B => y = B and x = A$ #h(0.3em) ✓. The $R_1, R_2$ the proof tree had to guess are just rows of this table (or weaker).
+]
+
+#n(supplement: [example], [conditional])[
+  `if (x < 0) y = -x; else y = x;` with $Q = y >= 0$:
+  $ "wp" = (x < 0 => -x >= 0) and (not(x < 0) => x >= 0) equiv "true" $
+  so it holds under any precondition (with mathematical integers; in C, `-x` must also not overflow, cf. `abs` in Ch. 8).
+]
+
+#i[Strictly, Dijkstra's wp also demands termination (total correctness); the partial version is the weakest *liberal* precondition (wlp). For loop-free code they coincide.]
+
+== Level 4: function calls --- §10.3
+
+Verification is *modular*: each function is verified on its own, and a call inside a body is replaced by the callee's *contract*, never by its body (no inlining). The callee's code can change freely as long as it keeps its contract.
+
+#room(top: 1.7em, bottom: 1.6em)[$
+  (markhl(P => "Pre"_m (bold(x)), #<cp>, #cP) quad markhl(P and "Post"_m (bold(x)) => Q, #<cq>, #cQ)) / ({P} med m(mark(bold(x), #<cx>, #cS)) med {Q})
+  #annot(<cp>, pos: top + left, dy: -0.8em)[caller establishes $m$'s pre]
+  #annot(<cq>, pos: top + right, dy: -0.8em)[$m$'s post yields $Q$]
+  #annot(<cx>, pos: bottom, dy: 0.6em)[actual arguments, in place of the parameters]
+$]
+
+#n(supplement: [example], [`activityBonus` calls `addCredits` --- Ex. 10.3])[
+  Case `\old(s->credits) + bonus <= 180` (no cap needed). The call is replaced by the contract of `addCredits` (`requires c >= 0; ensures s->credits == \old(s->credits) + c;`):
+
+  #table(
+    columns: (1fr, auto),
+    stroke: 0.4pt, inset: 4pt,
+    [fact], [source],
+    [`0 <= bonus <= 5`], [pre `activityBonus`],
+    [`s->active && s->status == bachelor`], [pre `activityBonus`],
+    [`\old(s->credits) + bonus <= 180`], [case],
+    [`s->credits == \old(s->credits) + bonus`], [post `addCredits`],
+    [$=>$ `s->credits == \old(s->credits) + bonus`], [post `activityBonus`],
+  )
+
+  Left premise: `c >= 0` for `c = bonus` follows from `0 <= bonus`. ✓
+]
+
+== Level 4b: the frame problem --- §10.3
+
+The rule above keeps *all* of $P$ after the call ($P and "Post"_m$). That is only sound if $m$ changes nothing $P$ talks about --- and a plain pre/post contract doesn't say what $m$ changes.
+
+```
+class Point {                         // Fig. 10.3
+  //@ requires dx >= 0;
+  //@ ensures x == \old(x) + dx;
+  void moveHorizontal(int dx) { x = x + dx; }
+}
+class Line {                          // Fig. 10.4
+  Point begin, end;
+  //@ ensures \result == (begin.getY() == end.getY());
+  /*@ pure */ boolean isHorizontal() { ... }
+
+  //@ requires dx >= 0 && isHorizontal();
+  //@ ensures isHorizontal();
+  void stretchLine(int dx) { end.moveHorizontal(dx); }
+}
+```
+
+After the call the verifier only knows `end.x == \old(end.x) + dx`. Nothing about `end.y`: `moveHorizontal` *might* have changed it, so `isHorizontal()` can't be proved, although the code is fine. (The book's Fig. 10.3 already contains the fix, `assignable x;`.)
+
+- *frame* = the locations a function may change; *anti-frame* = all the others, which must stay unchanged.
+- Fix 1: `ensures y == \old(y);` --- one clause per untouched variable per function, and every new variable means editing every contract. Verbose and error-prone.
+- Fix 2: list only what *may* change, `assignable x;` (JML; also `modifiable`, `modifies`) $=$ `assigns x;` (ACSL). Everything else is implicitly unchanged. Syntax: see "Frame --- `assigns`" in Ch. 7.
+
+#block(sticky: true)[With $cal(A)_m$ the assignable set of $m$, the wp rule for a call:]
+
+#room(top: 1.5em, bottom: 2em)[$
+  "wp"(x.m(), Q) = markhl("Pre"_m, #<fp>, #cP) and (markhl(forall v in cal(A)_m, #<fa>, #cS) . med markhl("Post"_m => Q, #<fq>, #cQ))
+  #annot(<fp>, pos: bottom + left, dy: 0.6em)[(1) must hold \ at the call]
+  #annot(<fa>, pos: top, dy: -0.8em)[what $m$ may assign: new, *unknown* values]
+  #annot(<fq>, pos: bottom + right, dy: 0.6em)[(2) only $"Post"_m$ \ says what they are]
+$]
+
+- The $forall$ *forgets* the assignable locations: the proof must work for *every* value they might have afterwards, as long as $"Post"_m$ holds.
+- Locations *outside* $cal(A)_m$ are not quantified: what $Q$ says about them passes back unchanged, so it must already hold before the call.
+- Two obligations per call: (1) the code before the call establishes $"Pre"_m$ (i.e. the caller's pre implies $"wp"("code before", "Pre"_m)$); (2) $"Post"_m$ alone, plus untouched facts, gives $Q$.
+
+#n(supplement: [example], [`stretchLine` with the frame])[
+  With `assignable x;` we get $cal(A) = {"end.x"}$ and $Q = ("begin.y" = "end.y")$:
+  $ "dx" >= 0 and forall "end.x". med ("end.x" = #raw("\\old") ("end.x") + "dx" => "begin.y" = "end.y") $
+  `end.y` is not quantified, so $"begin.y" = "end.y"$ comes straight from `requires isHorizontal()`. ✓ #linebreak()
+  Without `assignable`, $cal(A)$ = everything: `end.y` is quantified too, and some value breaks $Q$. ✗
+]
+
+== Level 5: statement annotations --- §10.4
+
+The wp rules handle assignments, sequences, ifs and calls automatically. Two things need help from the user, written as annotations *inside* the body.
+
+#strong[`//@ assert P;`] --- give an intermediate predicate explicitly, e.g. to guide the prover through complex arithmetic (JavaCard class `Decimal`). It means two things:
+
+#room(top: 0.3em, bottom: 2.2em)[$
+  "wp"(#raw("assert P"), Q) = markhl(P, #<ap>, #cP) and markhl((P => Q), #<aq>, #cQ)
+  #annot(<ap>, pos: bottom + left, dy: 0.6em)[prove: $P$ holds whenever \ control reaches this point]
+  #annot(<aq>, pos: bottom + right, dy: 0.6em)[use: $P$ may be assumed \ by the code after it]
+$]
+
+(Logically that is just $P and Q$; the point is that the prover gets $P$ as a stepping stone, like a lemma.)
+
+#strong[Loops.] $"wp"("while" c "do" S, Q)$ would have to know how often the loop runs --- statically unknown. So the user supplies a *loop invariant* $I$, and the verifier replaces the loop by $I$:
+
+#room(top: 2.3em, bottom: 2.3em)[$
+  ({markhl(c and I, #<lc>, #cP)} med S med {markhl(I, #<li>, #cI)}) / ({markhl(I, #<lpre>, #cI)} med "while" c "do" S med {markhl(not c and I, #<lpost>, #cQ)})
+  #annot(<lc>, pos: top + left, dy: -0.8em)[an iteration starts: \ $c$ true, $I$ holds]
+  #annot(<li>, pos: top + right, dy: -0.8em)[$I$ holds again]
+  #annot(<lpre>, pos: bottom + left, dy: 0.6em)[holds when the \ loop is reached]
+  #annot(<lpost>, pos: bottom + right, dy: 0.6em)[after the loop: \ *all* you know]
+$]
+
+$I$ is true before the loop and preserved by every iteration, hence still true when the loop exits --- together with $not c$, since that is why it exited.
+
+#block(sticky: true)[Three proof obligations, for `S1; while (c) S; S2` in a function with pre $P$ and post $Q$ (it is induction on the number of iterations):]
+
+#table(
+  columns: (auto, auto, auto),
+  stroke: 0.4pt, inset: 4pt,
+  [obligation], [formula], [induction],
+  [establish: $I$ holds at loop entry], [$P => "wp"(S_1, I)$], [base case],
+  [preserve: one iteration keeps $I$], [$c and I => "wp"(S, I)$], [step],
+  [use: $I$ gives the post], [$not c and I => "wp"(S_2, Q)$], [conclusion],
+)
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [ACSL (before the loop)], [meaning],
+  [`loop invariant I;`], [holds before every iteration and after the loop],
+  [`loop assigns L;`], [frame of the loop: everything else is unchanged --- no need to put that in $I$],
+  [`loop variant V;`], [termination (§10.5); JML: `decreases V;`],
+)
+
+#i[A runtime checker just runs the loop as often as that execution needs (it can check $I$ each time, but doesn't need it). A static checker doesn't know the iteration count, so it *abstracts the loop by its invariant*: after the loop it only knows $not c and I$ and that nothing outside `loop assigns` changed. Whatever isn't in $I$ is lost --- the most common reason a proof fails.]
+
+#strong[`\old` inside a loop invariant.] JML: `\old(E)` is the value *before the loop started* (book), not at the previous iteration. ACSL makes you say which: `\at(E, Pre)` (function entry), `\at(E, LoopEntry)` (before the first iteration), `\at(E, LoopCurrent)` (start of the current iteration).
+
+#block(breakable: false, n(supplement: [example], [`thirdPower` --- Fig. 10.5, 10.7, Ex. 10.6])[
+  ```
+  /*@ requires n >= 0;
+      ensures \result == n * n * n;
+      assigns \nothing; */
+  int thirdPower(int n) {
+    int u = 0, v = 1, w = 6, k = 0;
+    /*@ loop invariant 0 <= k <= n;
+        loop invariant u == k * k * k;
+        loop invariant v == 3 * k * k + 3 * k + 1;
+        loop invariant w == 6 * (k + 1);
+        loop assigns k, u, v, w;
+        loop variant n - k; */
+    while (k < n) {
+      u = u + v; v = v + w; w = w + 6; k = k + 1;
+    }
+    return u;
+  }
+  ```
+  Computes $n^3$ with additions only. Each invariant pins one variable down as a function of the counter $k$:
+
+  #table(
+    columns: (auto, 1fr),
+    stroke: 0.4pt, inset: 4pt,
+    [invariant], [meaning],
+    [$0 <= k <= n$], [range of the counter],
+    [$u = k^3$], [the result so far],
+    [$v = 3k^2 + 3k + 1 = (k+1)^3 - k^3$], [the next increment of $u$],
+    [$w = 6(k + 1)$], [the next increment of $v$],
+  )
+
+  - *establish:* $k = 0$ gives $u = 0, v = 1, w = 6$ ✓; $0 <= n$ needs `requires n >= 0`.
+  - *preserve:* $u + v = (k+1)^3$, #h(0.3em) $v + w = 3(k+1)^2 + 3(k+1) + 1$, #h(0.3em) $w + 6 = 6(k + 2)$ ✓
+  - *use:* $not(k < n) and k <= n => k = n$, so $u = n^3$ ✓. Without $k <= n$ the exit only gives $k >= n$.
+])
+
+#n(supplement: [example], [`search` --- Fig. 10.6, 10.7])[
+  ```
+  /*@ requires \valid(a + (0..length-1));
+      requires a != \null && 0 < length;
+      assigns a[0..length-1];
+      ensures \result == true ==>
+        \exists integer i; 0 <= i < length && a[i] == val;
+  */
+  bool search(int *a, int val, int length) {
+    bool found = false;
+    int i = 0;
+    /*@ loop invariant found ==>
+          (\exists integer j; 0 <= j < i && a[j] == val);
+        loop invariant 0 <= i <= length;
+        loop invariant a != \null;
+        loop assigns found, i;
+        loop variant length - i; */
+    while (i < length && !found) {
+      if (a[i] == val) { found = true; }
+      i++;
+    }
+    return found;
+  }
+  ```
+  The standard *array pattern*: (1) a property of the part examined so far, `a[0..i-1]`; (2) the range of the index, `0 <= i <= length` --- almost always needed, never enough on its own. At exit, combining both gives a statement about the array as a whole.
+
+  #i[The book says `found` is true *iff* `val` was seen, but invariant and post only state $=>$. So `return false;` also satisfies this contract: the spec says nothing about the `false` case.]
+]
+
+#n(supplement: [example], [counting resources with a ghost --- Fig. 10.8, Ex. 10.7])[
+  ```
+  //@ ghost int countThings;
+  /*@ assigns countThings;
+      ensures countThings == \old(countThings) + 1; */
+  struct thing *thingInit() {
+    //@ ghost countThings = countThings + 1;
+    return malloc(sizeof(struct thing));
+  }
+
+  /*@ requires p >= 0 && \valid(storage + (0..p-1));
+      requires countThings + p <= MAX;
+      assigns storage[0..p-1], countThings;
+      ensures countThings == \old(countThings) + p; */
+  void makeThings(struct thing *storage[], int p) {
+    /*@ loop invariant 0 <= i <= p;
+        loop invariant countThings ==
+                       \at(countThings, Pre) + i;
+        loop assigns i, storage[0..p-1], countThings;
+        loop variant p - i; */
+    for (int i = 0; i < p; i++)
+      storage[i] = thingInit();
+  }
+  ```
+  `\at(countThings, Pre)` is the value at function entry; after $i$ iterations, $i$ things were made. To verify it completely, `malloc` needs a contract saying it does not change `countThings` --- otherwise, by the frame rule, the call may change *anything*.
+]
+
+== Level 6: termination --- §10.5
+
+Termination is a *liveness* property: no finite run shows that it fails, so runtime checking can't touch it, but static checking can. Straight-line code always terminates; loops need a *variant* $V$. The total-correctness rule for loops is the partial one plus $V$:
+
+#room(top: 2.3em, bottom: 0.3em)[$
+  ([c and I and markhl(V = v, #<vv>, #cV)] med S med [I and markhl(V < v, #<vd>, #cV)]) / ([I] med "while" c "do" S med [not c and I])
+  #annot(<vv>, pos: top + left, dy: -0.8em)[$v$: logical variable, \ $V$'s value before the body]
+  #annot(<vd>, pos: top + right, dy: -0.8em)[strictly smaller \ after the body]
+$]
+
+- $[dots]$ = total-correctness triples. For every other statement form the partial and total rules are the same.
+- $V$ must be *well-founded*: it can't decrease forever (typically an integer that stays $>= 0$). Decreasing at every iteration, but not forever $arrow.r$ finitely many iterations.
+- ACSL `loop variant V;` proves: $V >= 0$ whenever an iteration starts, and every iteration makes it strictly smaller. JML: `decreases V;`.
+- Like invariants, variants can't be found automatically in general; some tools suggest them.
+
+#table(
+  columns: (auto, auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [loop], [variant], [why it works (Ex. 10.8)],
+  [`thirdPower`], [`n - k`], [`k` grows by 1 per iteration; positive while `k < n`],
+  [`search`], [`length - i`], [`i++` every iteration; positive while `i < length`],
+  [`makeThings`], [`p - i`], [`i++` every iteration; positive while `i < p`],
+)
+
+*Further reading* (§10.6): all of this is for *sequential* code. For threads you must also specify that one thread can't disturb another: *concurrent separation logic* (Hoare logic + which part of the heap each code fragment accesses). Tools: VerCors, VeriFast, Viper.
+
+== Summary: annotation $arrow.r$ proof obligation
+
+#table(
+  columns: (auto, 1fr),
+  stroke: 0.4pt, inset: 4pt,
+  [annotation], [what the verifier proves / uses],
+  [`requires P` + `ensures Q` #linebreak() on body $B$], [$P => "wp"(B, Q)$],
+  [`\old(e)`], [a logical variable fixed at entry],
+  [call `m(x)`], [$"Pre"_m$ at the call; afterwards, only $"Post"_m$ is known about $cal(A)_m$],
+  [`assigns L`], [callee: writes only $L$ #linebreak() callers: everything else is unchanged],
+  [`assert P`], [prove $P$ here, assume it after],
+  [`loop invariant I`], [establish, preserve, use],
+  [`loop assigns L`], [an iteration writes only $L$],
+  [`loop variant V`], [$V >= 0$ at every iteration start, and strictly decreasing],
+  [`terminates T`], [total correctness $[P] B [Q]$ when $T$ holds],
 )

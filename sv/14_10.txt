@@ -1,0 +1,68 @@
+class SimpleProtocol{
+    void startProtocol(){...}
+    void endProtocol(){...}
+}
+
+Informal spec says that endProtocol must only be invoked after start protocol and viceversa
+
+
+/*@
+    ghost int happened = 0;
+*/
+
+
+/*@
+    requires happened == 0;
+    ensures happened == 1; 
+*/
+void startProtocol{
+    ...
+    /*@
+        ghost set happened = 1;
+    */ 
+}
+
+
+/*@
+    requires happened == 1;
+    ensures happened == 0; 
+*/
+void endProtocol{
+    ...
+    /*@
+        ghost set happened = 0;
+    */ 
+}
+
+
+What if the object has some internal state that records if a protocol is in progress
+
+class SimpleProtocol{
+    private ProtocolStack st;
+    //@ boolean ghost started;
+    //@ invariant started <==> (st != null);
+
+
+    void startProtocol(){
+
+    st = new ProtocolStack(...)
+    }
+
+}
+
+or 
+
+//@ requires !(st!=null);
+//@ ensures (st!=null);
+void startProtocol(){...}
+
+st then should be public! So
+
+
+
+
+RESET ARRAY exercise
+
+/*@
+    
+*/
