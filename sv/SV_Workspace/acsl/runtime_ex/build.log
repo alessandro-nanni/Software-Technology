@@ -1,6 +1,6 @@
-e-acsl-gcc: fatal error: aborted by Frama-C
-)
-[kernel:annot-error] basic.c:21: Failure: 
-  Assignment operators not allowed in annotations.
+++ /.opam/4.14.1/bin/frama-c -keep-unused-functions none -constfold -machdep gcc_x86_64 '-cpp-extra-args= -std=c99 -D_DEFAULT_SOURCE -D__NO_CTYPE -D__FC_MACHDEP_X86_64 ' -no-frama-c-stdlib basic.c -e-acsl -e-acsl-share=/.opam/4.14.1/bin/../share/frama-c/share/e-acsl -then-last -print -ocode a.out.frama.c
+[kernel] Parsing basic.c (with preprocessing)
+[kernel:annot-error] basic.c:21: Failure: unexpected token 'int'
 [kernel] User Error: warning annot-error treated as fatal error.
 [kernel] Frama-C aborted: invalid user input.
+e-acsl-gcc: fatal error: aborted by Frama-C
