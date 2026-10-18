@@ -161,44 +161,6 @@ union pthread_attr_t {
 typedef union pthread_attr_t pthread_attr_t;
 /*@ ghost extern int __e_acsl_init; */
 
-/*@ requires ¬\initialized(z);
-    ensures \valid(\old(z));
-    ensures \initialized(\old(z));
-    assigns *z;
-    assigns *z \from n;
-    allocates \old(z);
- */
-extern  __attribute__((__FC_BUILTIN__)) void __gmpz_init_set_ui(__e_acsl_mpz_struct ( __attribute__((
-                                                                __FC_BUILTIN__)) z)[1],
-                                                                unsigned long n);
-
-/*@ requires ¬\initialized(z);
-    ensures \valid(\old(z));
-    ensures \initialized(\old(z));
-    assigns *z;
-    assigns *z \from n;
-    allocates \old(z);
- */
-extern  __attribute__((__FC_BUILTIN__)) void __gmpz_init_set_si(__e_acsl_mpz_struct ( __attribute__((
-                                                                __FC_BUILTIN__)) z)[1],
-                                                                long n);
-
-/*@ requires \valid(x);
-    assigns *x;
-    assigns *x \from *x; */
-extern  __attribute__((__FC_BUILTIN__)) void __gmpz_clear(__e_acsl_mpz_struct ( __attribute__((
-                                                          __FC_BUILTIN__)) x)[1]);
-
-/*@ requires \valid_read(z1);
-    requires \valid_read(z2);
-    assigns \result;
-    assigns \result \from *z1, *z2;
- */
-extern  __attribute__((__FC_BUILTIN__)) int __gmpz_cmp(__e_acsl_mpz_struct const ( __attribute__((
-                                                       __FC_BUILTIN__)) z1)[1],
-                                                       __e_acsl_mpz_struct const ( __attribute__((
-                                                       __FC_BUILTIN__)) z2)[1]);
-
 /*@ requires \valid_read(data) ∧ \initialized(data);
     assigns \nothing;
     
@@ -242,51 +204,6 @@ extern size_t __e_acsl_heap_allocated_blocks;
 
 /*@ requires \valid(data);
     requires data->values ≡ \null ∨ \valid(data->values);
-    ensures \valid(\old(data)->values);
-    assigns __fc_heap_status, data->values;
-    assigns __fc_heap_status \from __fc_heap_status;
-    assigns data->values
-      \from &__fc_eacsl_assert_data_value_base, (indirect: name),
-            (indirect: is_enum), (indirect: value);
-    allocates \old(data)->values;
- */
- __attribute__((__FC_BUILTIN__)) void __e_acsl_assert_register_long(__e_acsl_assert_data_t *data,
-                                                                    char const *name,
-                                                                    int is_enum,
-                                                                    long value);
-
-/*@ requires \valid(data);
-    requires data->values ≡ \null ∨ \valid(data->values);
-    ensures \valid(\old(data)->values);
-    assigns __fc_heap_status, data->values;
-    assigns __fc_heap_status \from __fc_heap_status;
-    assigns data->values
-      \from &__fc_eacsl_assert_data_value_base, (indirect: name),
-            (indirect: is_enum), (indirect: value);
-    allocates \old(data)->values;
- */
- __attribute__((__FC_BUILTIN__)) void __e_acsl_assert_register_ulong(
-                                                                    __e_acsl_assert_data_t *data,
-                                                                    char const *name,
-                                                                    int is_enum,
-                                                                    unsigned long value);
-
-/*@ requires \valid(data);
-    requires data->values ≡ \null ∨ \valid(data->values);
-    ensures \valid(\old(data)->values);
-    assigns __fc_heap_status, data->values;
-    assigns __fc_heap_status \from __fc_heap_status;
-    assigns data->values
-      \from &__fc_eacsl_assert_data_value_base, (indirect: name),
-            (indirect: ptr);
-    allocates \old(data)->values;
- */
- __attribute__((__FC_BUILTIN__)) void __e_acsl_assert_register_ptr(__e_acsl_assert_data_t *data,
-                                                                   char const *name,
-                                                                   void *ptr);
-
-/*@ requires \valid(data);
-    requires data->values ≡ \null ∨ \valid(data->values);
     ensures \old(data)->values ≡ \null;
     assigns __fc_heap_status, data->values;
     assigns __fc_heap_status \from __fc_heap_status;
@@ -314,114 +231,6 @@ axiomatic dynamic_allocation {
 /*@ assigns \nothing; */
  __attribute__((__FC_BUILTIN__)) void __e_acsl_memory_clean(void);
 
-/*@ ensures \result ≡ \old(ptr);
-    assigns \result;
-    assigns \result \from *((char *)ptr + (0 .. size - 1)), ptr, size;
- */
- __attribute__((__FC_BUILTIN__)) void *__e_acsl_store_block(void *ptr,
-                                                            size_t size);
-
-/*@ assigns \nothing; */
- __attribute__((__FC_BUILTIN__)) void __e_acsl_delete_block(void *ptr);
-
-/*@ assigns \nothing; */
- __attribute__((__FC_BUILTIN__)) void __e_acsl_initialize(void *ptr,
-                                                          size_t size);
-
-/*@ assigns \nothing; */
- __attribute__((__FC_BUILTIN__)) void __e_acsl_full_init(void *ptr);
-
-/*@ assigns \result;
-    assigns \result \from *((char *)ptr + (0 .. size - 1)), ptr, size;
-    
-    behavior valid:
-      assumes \valid((char *)ptr + (0 .. size - 1));
-      assumes
-        size ≤ 0 ∨
-        ¬\separated(
-           (char *)ptr + (0 .. size - 1),
-           (char *)\base_addr(base) + (0 .. \block_length(base) - 1)
-           );
-      ensures \result ≡ 1;
-    
-    behavior invalid_ptr:
-      assumes ¬\valid((char *)ptr + (0 .. size - 1));
-      ensures \result ≡ 0;
-    
-    behavior separated_ptr:
-      assumes size > 0;
-      assumes
-        \separated(
-          (char *)ptr + (0 .. size - 1),
-          (char *)\base_addr(base) + (0 .. \block_length(base) - 1)
-          );
-      ensures \result ≡ 0;
-    
-    complete behaviors separated_ptr, invalid_ptr, valid;
-    disjoint behaviors separated_ptr, invalid_ptr, valid;
- */
- __attribute__((__FC_BUILTIN__)) int __e_acsl_valid(void *ptr, size_t size,
-                                                    void *base,
-                                                    void *addrof_base);
-
-/*@ requires alignment > 0;
-    assigns \result;
-    assigns \result \from ptr, alignment;
-    
-    behavior null:
-      assumes ptr ≡ \null;
-      ensures \result ≡ 1;
-    
-    behavior divisible:
-      assumes ptr ≢ \null;
-      assumes (uintptr_t)ptr % alignment ≡ 0;
-      ensures \result ≡ 1;
-    
-    behavior indivisible:
-      assumes ptr ≢ \null;
-      assumes (uintptr_t)ptr % alignment ≢ 0;
-      ensures \result ≡ 0;
-    
-    complete behaviors indivisible, divisible, null;
-    disjoint behaviors indivisible, divisible, null;
- */
- __attribute__((__FC_BUILTIN__)) int __e_acsl_aligned(void *ptr,
-                                                      size_t alignment);
-
-/*@ assigns \result;
-    assigns \result \from *((char *)ptr + (0 .. size - 1)), ptr, size;
-    
-    behavior valid:
-      assumes \valid_read((char *)ptr + (0 .. size - 1));
-      assumes
-        size ≤ 0 ∨
-        ¬\separated(
-           (char *)ptr + (0 .. size - 1),
-           (char *)\base_addr(base) + (0 .. \block_length(base) - 1)
-           );
-      ensures \result ≡ 1;
-    
-    behavior invalid_ptr:
-      assumes ¬\valid_read((char *)ptr + (0 .. size - 1));
-      ensures \result ≡ 0;
-    
-    behavior separated_ptr:
-      assumes size > 0;
-      assumes
-        \separated(
-          (char *)ptr + (0 .. size - 1),
-          (char *)\base_addr(base) + (0 .. \block_length(base) - 1)
-          );
-      ensures \result ≡ 0;
-    
-    complete behaviors separated_ptr, invalid_ptr, valid;
-    disjoint behaviors separated_ptr, invalid_ptr, valid;
- */
- __attribute__((__FC_BUILTIN__)) int __e_acsl_valid_read(void *ptr,
-                                                         size_t size,
-                                                         void *base,
-                                                         void *addrof_base);
-
 extern  __attribute__((__FC_BUILTIN__)) int __e_acsl_sound_verdict;
 
 int fun(int a)
@@ -439,263 +248,32 @@ int fun(int a)
     y = 5;
   }
   sum = x + y;
-  result = 10 / sum;
-  return result;
-}
-
-/*@ requires len ≥ 0;
-    requires \valid(a + (0 .. len - 1)); */
-void __gen_e_acsl_add1(int *a, int len);
-
-void add1(int *a, int len)
-{
-  unsigned long __lengthof_acopy;
-  int i;
-  __e_acsl_store_block((void *)(& a),8UL);
   {
-    int __gen_e_acsl_and;
     __e_acsl_assert_data_t __gen_e_acsl_assert_data = {.values = (void *)0};
-    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data,
-                                 "sizeof(int \\ghost)",0,4);
-    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data,"len",0,len);
-    if (0L < 4L * len) {
-      __e_acsl_mpz_t __gen_e_acsl_;
-      __e_acsl_mpz_t __gen_e_acsl__2;
-      int __gen_e_acsl_le;
-      __gmpz_init_set_si(__gen_e_acsl_,4L * len);
-      __gmpz_init_set_ui(__gen_e_acsl__2,18446744073709551615UL);
-      __gen_e_acsl_le = __gmpz_cmp((__e_acsl_mpz_struct const *)(__gen_e_acsl_),
-                                   (__e_acsl_mpz_struct const *)(__gen_e_acsl__2));
-      __e_acsl_assert_register_int(& __gen_e_acsl_assert_data,
-                                   "sizeof(int \\ghost)",0,4);
-      __e_acsl_assert_register_int(& __gen_e_acsl_assert_data,"len",0,len);
-      __gen_e_acsl_and = __gen_e_acsl_le <= 0;
-      __gmpz_clear(__gen_e_acsl_);
-      __gmpz_clear(__gen_e_acsl__2);
-    }
-    else __gen_e_acsl_and = 0;
+    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data,"sum",0,sum);
     __gen_e_acsl_assert_data.blocking = 1;
     __gen_e_acsl_assert_data.kind = "Assertion";
-    __gen_e_acsl_assert_data.pred_txt = "0 < sizeof(int \\ghost) * len \342\211\244 18446744073709551615";
+    __gen_e_acsl_assert_data.pred_txt = "sum \342\211\242 0";
     __gen_e_acsl_assert_data.file = "basic.c";
-    __gen_e_acsl_assert_data.fct = "add1";
-    __gen_e_acsl_assert_data.line = 21;
-    __gen_e_acsl_assert_data.name = "alloca_bounds";
-    __e_acsl_assert(__gen_e_acsl_and,& __gen_e_acsl_assert_data);
+    __gen_e_acsl_assert_data.fct = "fun";
+    __gen_e_acsl_assert_data.line = 12;
+    __e_acsl_assert(sum != 0,& __gen_e_acsl_assert_data);
     __e_acsl_assert_clean(& __gen_e_acsl_assert_data);
   }
-  /*@
-  assert alloca_bounds: 0 < sizeof(int) * len ≤ 18446744073709551615;
-   */
-  ;
-  __lengthof_acopy = (unsigned long)len;
-  int *acopy = __builtin_alloca(4UL * __lengthof_acopy);
-  __e_acsl_store_block((void *)acopy,4UL * __lengthof_acopy);
-  __e_acsl_store_block((void *)(& acopy),8UL);
-  __e_acsl_full_init((void *)(& acopy));
-  i = 0;
-  while (i < len) {
-    __e_acsl_initialize((void *)(acopy + i),sizeof(int));
-    *(acopy + i) = *(a + i);
-    i ++;
-  }
-  i = 0;
-  while (i < len) {
-    __e_acsl_initialize((void *)(a + i),sizeof(int));
-    *(a + i) += 2;
-    i ++;
-  }
-  {
-    int __gen_e_acsl_forall;
-    int __gen_e_acsl_i;
-    __e_acsl_assert_data_t __gen_e_acsl_assert_data_2 =
-      {.values = (void *)0};
-    __gen_e_acsl_forall = 1;
-    __gen_e_acsl_i = 0;
-    while (1) {
-      if (__gen_e_acsl_i < len) ; else break;
-      {
-        int __gen_e_acsl_valid_read;
-        int __gen_e_acsl_aligned;
-        int __gen_e_acsl_valid_read_2;
-        int __gen_e_acsl_aligned_2;
-        __e_acsl_assert_data_t __gen_e_acsl_assert_data_3 =
-          {.values = (void *)0};
-        __gen_e_acsl_valid_read = __e_acsl_valid_read((void *)(acopy + __gen_e_acsl_i),
-                                                      sizeof(int),
-                                                      (void *)acopy,
-                                                      (void *)(& acopy));
-        __e_acsl_assert_register_ptr(& __gen_e_acsl_assert_data_3,"acopy",
-                                     (void *)acopy);
-        __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_3,
-                                     "__gen_e_acsl_i",0,__gen_e_acsl_i);
-        __e_acsl_assert_register_ulong(& __gen_e_acsl_assert_data_3,
-                                       "sizeof(int)",0,sizeof(int));
-        __gen_e_acsl_assert_data_3.blocking = 1;
-        __gen_e_acsl_assert_data_3.kind = "RTE";
-        __gen_e_acsl_assert_data_3.pred_txt = "\\valid_read(acopy + __gen_e_acsl_i)";
-        __gen_e_acsl_assert_data_3.file = "basic.c";
-        __gen_e_acsl_assert_data_3.fct = "add1";
-        __gen_e_acsl_assert_data_3.line = 29;
-        __gen_e_acsl_assert_data_3.name = "mem_access";
-        __e_acsl_assert(__gen_e_acsl_valid_read,& __gen_e_acsl_assert_data_3);
-        __e_acsl_assert_clean(& __gen_e_acsl_assert_data_3);
-        __e_acsl_assert_data_t __gen_e_acsl_assert_data_4 =
-          {.values = (void *)0};
-        __gen_e_acsl_aligned = __e_acsl_aligned((void *)(acopy + __gen_e_acsl_i),
-                                                _Alignof(int));
-        __e_acsl_assert_register_ulong(& __gen_e_acsl_assert_data_4,
-                                       "alignof(int)",0,_Alignof(int));
-        __e_acsl_assert_register_ptr(& __gen_e_acsl_assert_data_4,"acopy",
-                                     (void *)acopy);
-        __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_4,
-                                     "__gen_e_acsl_i",0,__gen_e_acsl_i);
-        __gen_e_acsl_assert_data_4.blocking = 1;
-        __gen_e_acsl_assert_data_4.kind = "RTE";
-        __gen_e_acsl_assert_data_4.pred_txt = "\\aligned(acopy + __gen_e_acsl_i,alignof(int))";
-        __gen_e_acsl_assert_data_4.file = "basic.c";
-        __gen_e_acsl_assert_data_4.fct = "add1";
-        __gen_e_acsl_assert_data_4.line = 29;
-        __gen_e_acsl_assert_data_4.name = "pointer_alignment";
-        __e_acsl_assert(__gen_e_acsl_aligned,& __gen_e_acsl_assert_data_4);
-        __e_acsl_assert_clean(& __gen_e_acsl_assert_data_4);
-        __e_acsl_assert_data_t __gen_e_acsl_assert_data_5 =
-          {.values = (void *)0};
-        __gen_e_acsl_valid_read_2 = __e_acsl_valid_read((void *)(a + __gen_e_acsl_i),
-                                                        sizeof(int),
-                                                        (void *)a,
-                                                        (void *)(& a));
-        __e_acsl_assert_register_ptr(& __gen_e_acsl_assert_data_5,"a",
-                                     (void *)a);
-        __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_5,
-                                     "__gen_e_acsl_i",0,__gen_e_acsl_i);
-        __e_acsl_assert_register_ulong(& __gen_e_acsl_assert_data_5,
-                                       "sizeof(int)",0,sizeof(int));
-        __gen_e_acsl_assert_data_5.blocking = 1;
-        __gen_e_acsl_assert_data_5.kind = "RTE";
-        __gen_e_acsl_assert_data_5.pred_txt = "\\valid_read(a + __gen_e_acsl_i)";
-        __gen_e_acsl_assert_data_5.file = "basic.c";
-        __gen_e_acsl_assert_data_5.fct = "add1";
-        __gen_e_acsl_assert_data_5.line = 29;
-        __gen_e_acsl_assert_data_5.name = "mem_access";
-        __e_acsl_assert(__gen_e_acsl_valid_read_2,
-                        & __gen_e_acsl_assert_data_5);
-        __e_acsl_assert_clean(& __gen_e_acsl_assert_data_5);
-        __e_acsl_assert_data_t __gen_e_acsl_assert_data_6 =
-          {.values = (void *)0};
-        __gen_e_acsl_aligned_2 = __e_acsl_aligned((void *)(a + __gen_e_acsl_i),
-                                                  _Alignof(int));
-        __e_acsl_assert_register_ulong(& __gen_e_acsl_assert_data_6,
-                                       "alignof(int)",0,_Alignof(int));
-        __e_acsl_assert_register_ptr(& __gen_e_acsl_assert_data_6,"a",
-                                     (void *)a);
-        __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_6,
-                                     "__gen_e_acsl_i",0,__gen_e_acsl_i);
-        __gen_e_acsl_assert_data_6.blocking = 1;
-        __gen_e_acsl_assert_data_6.kind = "RTE";
-        __gen_e_acsl_assert_data_6.pred_txt = "\\aligned(a + __gen_e_acsl_i,alignof(int))";
-        __gen_e_acsl_assert_data_6.file = "basic.c";
-        __gen_e_acsl_assert_data_6.fct = "add1";
-        __gen_e_acsl_assert_data_6.line = 29;
-        __gen_e_acsl_assert_data_6.name = "pointer_alignment";
-        __e_acsl_assert(__gen_e_acsl_aligned_2,& __gen_e_acsl_assert_data_6);
-        __e_acsl_assert_clean(& __gen_e_acsl_assert_data_6);
-        if ((long)*(a + __gen_e_acsl_i) == *(acopy + __gen_e_acsl_i) + 1L) 
-          ;
-        else {
-          __gen_e_acsl_forall = 0;
-          goto e_acsl_end_loop1;
-        }
-      }
-      __gen_e_acsl_i ++;
-    }
-    e_acsl_end_loop1: ;
-    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_2,
-                                 "\342\210\200 \342\204\244 i; 0 \342\211\244 i < len \342\207\222 *(a + i) \342\211\241 *(acopy + i) + 1",
-                                 0,__gen_e_acsl_forall);
-    __gen_e_acsl_assert_data_2.blocking = 1;
-    __gen_e_acsl_assert_data_2.kind = "Assertion";
-    __gen_e_acsl_assert_data_2.pred_txt = "\342\210\200 \342\204\244 i; 0 \342\211\244 i < len \342\207\222 *(a + i) \342\211\241 *(acopy + i) + 1";
-    __gen_e_acsl_assert_data_2.file = "basic.c";
-    __gen_e_acsl_assert_data_2.fct = "add1";
-    __gen_e_acsl_assert_data_2.line = 29;
-    __e_acsl_assert(__gen_e_acsl_forall,& __gen_e_acsl_assert_data_2);
-    __e_acsl_assert_clean(& __gen_e_acsl_assert_data_2);
-  }
-  /*@ assert ∀ ℤ i; 0 ≤ i < len ⇒ *(a + i) ≡ *(acopy + i) + 1; */ ;
-  __e_acsl_delete_block((void *)acopy);
-  /* __fc_vla_free((void *)acopy); */
-  __e_acsl_delete_block((void *)(& a));
-  __e_acsl_delete_block((void *)(& acopy));
-  return;
+  /*@ assert sum ≢ 0; */ ;
+  result = 10 / sum;
+  return result;
 }
 
 int main(void)
 {
   int __retres;
   __e_acsl_memory_init((int *)0,(char ***)0,8UL);
-  int a[4] = {1, -2, 0, 41};
-  __e_acsl_store_block((void *)(a),16UL);
-  __e_acsl_full_init((void *)(& a));
-  __gen_e_acsl_add1(a,4);
+  fun(42);
+  fun(0);
   __retres = 0;
-  __e_acsl_delete_block((void *)(a));
   __e_acsl_memory_clean();
   return __retres;
-}
-
-/*@ requires len ≥ 0;
-    requires \valid(a + (0 .. len - 1)); */
-void __gen_e_acsl_add1(int *a, int len)
-{
-  {
-    long __gen_e_acsl_size;
-    long __gen_e_acsl_if;
-    int __gen_e_acsl_valid;
-    __e_acsl_store_block((void *)(& a),8UL);
-    __e_acsl_assert_data_t __gen_e_acsl_assert_data = {.values = (void *)0};
-    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data,"len",0,len);
-    __gen_e_acsl_assert_data.blocking = 1;
-    __gen_e_acsl_assert_data.kind = "Precondition";
-    __gen_e_acsl_assert_data.pred_txt = "len \342\211\245 0";
-    __gen_e_acsl_assert_data.file = "basic.c";
-    __gen_e_acsl_assert_data.fct = "add1";
-    __gen_e_acsl_assert_data.line = 17;
-    __e_acsl_assert(len >= 0,& __gen_e_acsl_assert_data);
-    __e_acsl_assert_clean(& __gen_e_acsl_assert_data);
-    __e_acsl_assert_data_t __gen_e_acsl_assert_data_2 =
-      {.values = (void *)0};
-    __gen_e_acsl_size = 4L * (((len - 1L) - 0L) + 1L);
-    __e_acsl_assert_register_long(& __gen_e_acsl_assert_data_2,"size",0,
-                                  __gen_e_acsl_size);
-    if (__gen_e_acsl_size <= 0L) __gen_e_acsl_if = 0L;
-    else __gen_e_acsl_if = __gen_e_acsl_size;
-    __gen_e_acsl_valid = __e_acsl_valid((void *)((char *)a + 4 * 0),
-                                        (size_t)__gen_e_acsl_if,(void *)a,
-                                        (void *)(& a));
-    __e_acsl_assert_register_ptr(& __gen_e_acsl_assert_data_2,"a",(void *)a);
-    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_2,"sizeof(int)",
-                                 0,4);
-    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_2,"sizeof(int)",
-                                 0,4);
-    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_2,"len",0,len);
-    __e_acsl_assert_register_long(& __gen_e_acsl_assert_data_2,"size",0,
-                                  __gen_e_acsl_size);
-    __e_acsl_assert_register_int(& __gen_e_acsl_assert_data_2,
-                                 "\\valid(a + (0 .. len - 1))",0,
-                                 __gen_e_acsl_valid);
-    __gen_e_acsl_assert_data_2.blocking = 1;
-    __gen_e_acsl_assert_data_2.kind = "Precondition";
-    __gen_e_acsl_assert_data_2.pred_txt = "\\valid(a + (0 .. len - 1))";
-    __gen_e_acsl_assert_data_2.file = "basic.c";
-    __gen_e_acsl_assert_data_2.fct = "add1";
-    __gen_e_acsl_assert_data_2.line = 18;
-    __e_acsl_assert(__gen_e_acsl_valid,& __gen_e_acsl_assert_data_2);
-    __e_acsl_assert_clean(& __gen_e_acsl_assert_data_2);
-  }
-  add1(a,len);
-  __e_acsl_delete_block((void *)(& a));
-  return;
 }
 
 

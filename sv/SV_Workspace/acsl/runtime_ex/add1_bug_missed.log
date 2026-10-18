@@ -1,0 +1,22 @@
+++ /.opam/4.14.1/bin/frama-c -keep-unused-functions none -constfold -machdep gcc_x86_64 '-cpp-extra-args= -std=c99 -D_DEFAULT_SOURCE -D__NO_CTYPE -D__FC_MACHDEP_X86_64 ' -no-frama-c-stdlib add1_bug_missed.c -e-acsl -e-acsl-share=/.opam/4.14.1/bin/../share/frama-c/share/e-acsl -then-last -print -ocode add1_bug_missed.frama.c
+[kernel] Parsing add1_bug_missed.c (with preprocessing)
+[e-acsl] beginning translation.
+[kernel] Parsing FRAMAC_SHARE/e-acsl/e_acsl.h (with preprocessing)
+[kernel:attrs] Warning: unexpected statement attribute cold
+[kernel:attrs] Warning: unexpected statement attribute cold
+[e-acsl] translation done in project "e-acsl".
++ gcc -DE_ACSL_SEGMENT_MMODEL -std=c99 -m64 -g -O2 -fno-builtin -fno-merge-constants -Wall -Wno-long-long -Wno-attributes -Wno-nonnull -Wno-undef -Wno-unused -Wno-unused-function -Wno-unused-result -Wno-unused-value -Wno-unused-function -Wno-unused-variable -Wno-unused-but-set-variable -Wno-implicit-function-declaration -Wno-empty-body -I/.opam/4.14.1/bin/../share/frama-c/share/e-acsl -o add1_bug_missed.e-acsl add1_bug_missed.frama.c /.opam/4.14.1/bin/../share/frama-c/share/e-acsl/e_acsl_rtl.c /.opam/4.14.1/bin/../lib/frama-c-e-acsl/libeacsl-dlmalloc.a -lgmp -lm
+In file included from /.opam/4.14.1/bin/../share/frama-c/share/e-acsl/e_acsl_rtl.c:31:
+/.opam/4.14.1/bin/../share/frama-c/share/e-acsl/internals/e_acsl_trace.c: In function ‘native_backtrace’:
+/.opam/4.14.1/bin/../share/frama-c/share/e-acsl/internals/e_acsl_trace.c:43:13: warning: using a dangling pointer to ‘__csf’ [-Wdangling-pointer=]
+   43 |   top_stack = ({
+      |   ~~~~~~~~~~^~~~
+   44 |     char __csf;
+      |     ~~~~~~~~~~~
+   45 |     &__csf;
+      |     ~~~~~~~  
+   46 |   });
+      |   ~~         
+/.opam/4.14.1/bin/../share/frama-c/share/e-acsl/internals/e_acsl_trace.c:44:10: note: ‘__csf’ declared here
+   44 |     char __csf;
+      |          ^~~~~
