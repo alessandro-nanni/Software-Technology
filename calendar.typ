@@ -39,11 +39,11 @@
     y(2),
     c([System Validation], "core"),
     c([Design of Software Architecture], "core"),
-    c(colspan: 2, [Research Topic], "mandatory"),
+    c([Capita Selecta Software Technology], "elective"),
+    c(rowspan: 2, [Research Topic], "mandatory"),
     c([Model Driven Engineering], "mantle"),
     c([Computer Ethics], "mandatory"),
     c([Quantitative Evaluation of Systems], "mantle"),
-    c([E-Law], "elective"),
     c(
         colspan: 2,
         [Industrial Software Engineering Project
@@ -56,7 +56,7 @@
         ],
         "elective",
     ),
-    c([Capita Selecta Software Technology], "elective"),
+    c([E-Law], "elective"),
     y(3),
     c([Final Project], "mandatory", colspan: 2, rowspan: 3), table.cell(rowspan: 3, colspan: 2)[],
 )
