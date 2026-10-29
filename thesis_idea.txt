@@ -1,0 +1,83 @@
+THESIS AND CAPITA SELECTA
+
+1. THE THESIS: COMPOSE-STYLE TERMINAL UIs IN PLAIN JAVA
+
+What is it about?
+
+Some programs run fully inside the terminal, like Claude Code or vim. These are terminal user interfaces (TUIs).
+
+On Android, many apps build their UI with Jetpack Compose. Each part of the screen is a normal function that can keep its own data ("state"). When the state changes, the screen updates by itself.
+
+Compose needs a Kotlin compiler plugin for this, and Java has nothing like it. My thesis asks:
+
+Can the Compose way of building UIs work in plain Java, without changing the Java language or compiler?
+
+How would it work?
+
+You write normal Java and javac compiles it to bytecode. My tool then rewrites that bytecode, adding what the Compose plugin would add, so the program can:
+
+- find each piece of state again when a function runs again
+- run a function again when its state changes
+- skip a function when nothing it uses has changed
+
+Example (normal Java, compiled by javac as it is):
+
+@Composable
+static void Counter(String label) {
+    var count = state(0);
+    Row(row -> {
+        Text(label + ": " + count.get());
+        Button("+", () -> count.set(count.get() + 1));
+    });
+}
+
+Three Java 25 features help: the Class-File API to change compiled classes, Scoped Values to pass hidden context, and Virtual Threads to run background work as normal code.
+
+Why is this interesting?
+
+The hard part is a language problem, not a UI problem. As far as I know, nobody has brought Compose to plain Java; Mosaic does it only for Kotlin.
+
+Plan
+
+1. A simple version that works while the program runs, with no build step. Slow, but it lets me test the idea early.
+2. The tool that changes class files after javac, tested against the simple version: both should give the same result.
+3. Background work, demo apps, measuring, and writing.
+
+The terminal part only tests the idea, so the widget set stays small.
+
+2. THE CAPITA SELECTA: HOW JAVA WORKS AROUND OLD DESIGN CHOICES
+
+What is it about?
+
+Java almost never removes an old feature: old programs must keep running and old code must keep compiling. So bad early choices were worked around instead: with compiler tricks, a second API, or a new feature years later.
+
+I want to study a few such cases from Java 1.0 to 5. For each:
+
+- What was decided, and why?
+- What went wrong?
+- How was it fixed?
+- What did compatibility cost: how long did the fix take, and what of the old choice is still visible?
+
+Some ideas
+
+- Generics. Added with "erasure", which removes most type information from compiled code so old class files keep working. Never undone.
+- Every object is a lock (synchronized). Virtual threads lost much of their benefit inside synchronized code until Java 24.
+- ThreadLocal (Java 1.2). Its value can change at any time and lives as long as its thread. Java 25 added ScopedValue as a better option.
+- null (Java 1.0), the "billion-dollar mistake". Any reference can be null, so code needs explicit null checks. Java 8 added Optional.
+- No primitives in generics (autoboxing)
+
+OR how/why java is slowly shifting away from OOP and inheritance to Data oriented programming (records, sealed classes...)
+
+OR how java is evolving to be less verbose and more user fiendly 
+
+How does it link to the thesis?
+
+The thesis also adds a feature to Java without changing the language, compiler or JVM, and runs into each of these cases. For example, it keeps method signatures unchanged for the same reason Java chose erasure: so old compiled code keeps working.
+
+3. QUESTIONS
+
+- I plan to start and finish research in Q4 (2 classes, see calendar), and do the capita selecta in Q3.
+- Can I start working on the thesis/project during the summer, to graduate sooner?
+- For the capita selecta, do you expect a report, a presentation, or both?
+- If not valid topics, anything else revolving java architecture/new java features?
+- I don't know anything about how java works under the hood, hence why I may not know the answer to all your questions, and why I would use the research topic time in a productive way
