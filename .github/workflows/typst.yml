@@ -24,8 +24,8 @@ jobs:
         run: |
           mkdir -p build/notes
           : > titles.tsv
-          for typ_file in */*.typ; do
-            if grep -q '#import "../mono.typ"' "$typ_file"; then
+          for typ_file in */notes.typ */summary.typ; do
+            if [ -f "$typ_file" ] && grep -q '#import "../mono.typ"' "$typ_file"; then
               course_name=$(dirname "$typ_file")
               title=$(grep -m1 'template.with(' "$typ_file" | sed -E 's/.*\[(.*)\].*/\1/')
               typst compile --root . "$typ_file" "build/notes/${course_name}.pdf"
